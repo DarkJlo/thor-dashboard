@@ -234,7 +234,7 @@ def hl_meta():
 def hl_asset(sym,M):
     if '/' in sym and not sym.endswith('/USD'): return None   # crosses like SOL/BTC are not HL perps
     b=base(sym); A=M['assets']
-    for k in (b,'k'+b):
+    for k in (b,'k'+b,b+'COIN'):   # FART -> FARTCOIN on Hyperliquid
         if k in A and not A[k]['delisted']: return A[k]
     return None
 def leverage(sym,direction,entry,stop,M):

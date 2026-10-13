@@ -1,0 +1,110 @@
+{
+  "checked_at": "2026-10-12T18:23:00-07:00",
+  "source": "Telegram Web, CyberFrogsThor bot chat (web.telegram.org/k/)",
+  "native_assets": [
+    "W/USD (1)",
+    "FART/USD (2)",
+    "ADA/USD (6)",
+    "ARB/USD (1)",
+    "AVAX/USD (2)",
+    "BNB/USD (0)",
+    "BONK/USD (4)",
+    "BTC/USD (3)",
+    "DOGE/USD (6)",
+    "DOT/USD (3)",
+    "ETH/USD (2)",
+    "HBAR/USD (1)",
+    "HYPE/USD (5)",
+    "INJ/USD (2)",
+    "JTO/USD (4)",
+    "JUP/USD (2)",
+    "LTC/USD (0)",
+    "SAND/USD (2)",
+    "SEI/USD (0)",
+    "SHIB/USD (5)",
+    "SOL/BTC (0)",
+    "SOL/USD (1)",
+    "SUI/USD (2)",
+    "WIF/USD (0)",
+    "XRP/USD (4)"
+  ],
+  "active": [
+    {
+      "symbol": "ADA/USD",
+      "timeframe": "1h",
+      "direction": "Long",
+      "status_text": "Hitrate: 62.5% (All active)",
+      "entry_low": 0.2268,
+      "entry_high": 0.2278,
+      "tp1": 0.2387,
+      "tp2": 0.2421,
+      "tp3": 0.2455,
+      "invalid": 0.2564,
+      "dt": "2026-10-11 17:34:09",
+      "raw_text": "1h\nADA/USD | Price: 0.2293\nHitrate: 62.5%\nLong 0.2278 - 0.2268\nTPs: 0.2387, 0.2421, 0.2455\nInvalid: 0.2564\nDt: 2026-10-11 17:34:09"
+    },
+    {
+      "symbol": "SOL/USD",
+      "timeframe": "4h",
+      "direction": "Long",
+      "status_text": "Hitrate: 56.4% (All active)",
+      "entry_low": 104.328,
+      "entry_high": 104.8,
+      "tp1": 112.05,
+      "tp2": 114.29,
+      "tp3": 116.53,
+      "invalid": 123.78,
+      "dt": "2026-10-02 08:01:06",
+      "raw_text": "4h\nSOL/USD | Price: 104.45\nHitrate: 56.4%\nLong 104.8 - 104.328\nTPs: 112.05, 114.29, 116.53\nInvalid: 123.78\nDt: 2026-10-02 08:01:06"
+    },
+    {
+      "symbol": "AVAX/USD",
+      "timeframe": "4h",
+      "direction": "Long",
+      "status_text": "Hitrate: 65.5% (All active)",
+      "entry_low": 10.05,
+      "entry_high": 10.07,
+      "tp1": 10.47,
+      "tp2": 10.59,
+      "tp3": 10.72,
+      "invalid": 11.12,
+      "dt": "2026-10-12 12:31:06",
+      "raw_text": "4h\nAVAX/USD | Price: 10.01\nHitrate: 65.5%\nLong 10.07 - 10.05\nTPs: 10.47, 10.59, 10.72\nInvalid: 11.12\nDt: 2026-10-12 12:31:06"
+    },
+    {
+      "symbol": "DOGE/USD",
+      "timeframe": "4h",
+      "direction": "Long",
+      "status_text": "Hitrate: 62.4% (All active)",
+      "entry_low": 0.08098,
+      "entry_high": 0.08235,
+      "tp1": 0.08903,
+      "tp2": 0.09109,
+      "tp3": 0.09315,
+      "invalid": 0.09983,
+      "dt": "2026-09-26 00:38:07",
+      "raw_text": "4h\nDOGE/USD | Price: 0.08147\nHitrate: 62.4%\nLong 0.08235 - 0.08098\nTPs: 0.08903, 0.09109, 0.09315\nInvalid: 0.09983\nDt: 2026-09-26 00:38:07"
+    }
+  ],
+  "all_active_message_summary": "4 signals, same as 18:09 (1h ADA; 4h SOL, AVAX, DOGE).",
+  "pair_views": {
+    "BTC/USD (3)": "BTC/USD 1h | Price: 81571\nHitrate: 72.9%\n\n Short 85508.15 - 85260.09\nTPs: 83644.65, 83145.65, 82646.64\nInvalid: 81031.2\nDt: 2026-10-13 01:02:08\n\nBTC/USD 4h | Price: 81571\nHitrate: 61.5%\n\n Long 76689.77 - 76363.63\nTPs: 80726.19, 81973.04, 83219.89\nInvalid: 87256.3\nDt: 2026-10-02 16:21:06\n\nBTC/USD 1d | Price: 81571\nHitrate: 62.9%\n\n Long 76689.77 - 76363.63\nTPs: 80726.19, 81973.04, 83219.89\nInvalid: 87256.3\nDt: 2026-10-03 00:14:04"
+  },
+  "notes": [
+    "Scheduled 6 PM run. All pair counts identical to 18:11 list; only BTC/USD tapped (uncaptured 1h Short from 18:13 push).",
+    "BTC 1h Short is not on All active, so treated as pending.",
+    "Telegram new-login banner (MacBook Pro M1, Tempe) still shown; not tapped."
+  ],
+  "taps": {
+    "text_messages_sent": [
+      "/start"
+    ],
+    "button_taps": [
+      "THOR",
+      "All active",
+      "pair BTC/USD (3)"
+    ],
+    "button_tap_count": 3,
+    "cancel_tapped": false
+  }
+}

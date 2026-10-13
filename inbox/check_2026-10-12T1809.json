@@ -1,0 +1,131 @@
+{
+  "checked_at": "2026-10-12T18:09:00-07:00",
+  "source": "Telegram Web, CyberFrogsThor bot chat (web.telegram.org/k/)",
+  "native_assets": [
+    "W/USD (1)",
+    "FART/USD (2)",
+    "ADA/USD (6)",
+    "ARB/USD (1)",
+    "AVAX/USD (2)",
+    "BNB/USD (0)",
+    "BONK/USD (4)",
+    "BTC/USD (3)",
+    "DOGE/USD (6)",
+    "DOT/USD (3)",
+    "ETH/USD (2)",
+    "HBAR/USD (1)",
+    "HYPE/USD (5)",
+    "INJ/USD (2)",
+    "JTO/USD (4)",
+    "JUP/USD (2)",
+    "LTC/USD (0)",
+    "SAND/USD (2)",
+    "SEI/USD (0)",
+    "SHIB/USD (5)",
+    "SOL/BTC (0)",
+    "SOL/USD (1)",
+    "SUI/USD (2)",
+    "WIF/USD (0)",
+    "XRP/USD (4)"
+  ],
+  "active": [
+    {
+      "symbol": "ADA/USD",
+      "timeframe": "1h",
+      "direction": "Long",
+      "status_text": "Hitrate: 62.5% (All active)",
+      "entry_low": 0.2268,
+      "entry_high": 0.2278,
+      "tp1": 0.2387,
+      "tp2": 0.2421,
+      "tp3": 0.2455,
+      "invalid": 0.2564,
+      "dt": "2026-10-11 17:34:09",
+      "raw_text": "1h\nADA/USD | Price: 0.2293\nHitrate: 62.5%\nLong 0.2278 - 0.2268\nTPs: 0.2387, 0.2421, 0.2455\nInvalid: 0.2564\nDt: 2026-10-11 17:34:09"
+    },
+    {
+      "symbol": "SOL/USD",
+      "timeframe": "4h",
+      "direction": "Long",
+      "status_text": "Hitrate: 56.4% (All active)",
+      "entry_low": 104.328,
+      "entry_high": 104.8,
+      "tp1": 112.05,
+      "tp2": 114.29,
+      "tp3": 116.53,
+      "invalid": 123.78,
+      "dt": "2026-10-02 08:01:06",
+      "raw_text": "4h\nSOL/USD | Price: 103.68\nHitrate: 56.4%\nLong 104.8 - 104.328\nTPs: 112.05, 114.29, 116.53\nInvalid: 123.78\nDt: 2026-10-02 08:01:06"
+    },
+    {
+      "symbol": "AVAX/USD",
+      "timeframe": "4h",
+      "direction": "Long",
+      "status_text": "Hitrate: 65.5% (All active)",
+      "entry_low": 10.05,
+      "entry_high": 10.07,
+      "tp1": 10.47,
+      "tp2": 10.59,
+      "tp3": 10.72,
+      "invalid": 11.12,
+      "dt": "2026-10-12 12:31:06",
+      "raw_text": "4h\nAVAX/USD | Price: 10.01\nHitrate: 65.5%\nLong 10.07 - 10.05\nTPs: 10.47, 10.59, 10.72\nInvalid: 11.12\nDt: 2026-10-12 12:31:06"
+    },
+    {
+      "symbol": "DOGE/USD",
+      "timeframe": "4h",
+      "direction": "Long",
+      "status_text": "Hitrate: 62.4% (All active)",
+      "entry_low": 0.08098,
+      "entry_high": 0.08235,
+      "tp1": 0.08903,
+      "tp2": 0.09109,
+      "tp3": 0.09315,
+      "invalid": 0.09983,
+      "dt": "2026-09-26 00:38:07",
+      "raw_text": "4h\nDOGE/USD | Price: 0.08147\nHitrate: 62.4%\nLong 0.08235 - 0.08098\nTPs: 0.08903, 0.09109, 0.09315\nInvalid: 0.09983\nDt: 2026-09-26 00:38:07"
+    }
+  ],
+  "all_active_message_summary": "4 signals (1h ADA; 4h SOL, AVAX, DOGE). No 15m or 1d section.",
+  "pair_views": {
+    "ADA/USD (6)": "ADA/USD 15m | Price: 0.2293\nHitrate: 71.3%\n\n Long 0.2209 - 0.219\nTPs: 0.2345, 0.2387, 0.2428\nInvalid: 0.2564\nDt: 2026-10-11 17:34:11\n\nADA/USD 1h | Price: 0.2293\nHitrate: 62.5%\n\n Long 0.2278 - 0.2268\nTPs: 0.2387, 0.2421, 0.2455\nInvalid: 0.2564\nDt: 2026-10-11 17:34:09\n\n Long 0.2209 - 0.219\nTPs: 0.2345, 0.2387, 0.2428\nInvalid: 0.2564\nDt: 2026-10-11 17:34:09\n\n Long 0.2209 - 0.219\nTPs: 0.2345, 0.2387, 0.2428\nInvalid: 0.2564\nDt: 2026-10-11 17:34:09\n\nADA/USD 4h | Price: 0.2293\nHitrate: 62.3%\n\n Short 0.3024 - 0.3\nTPs: 0.2581, 0.2451, 0.2322\nInvalid: 0.1903\nDt: 2026-09-16 20:33:06\n\nADA/USD 1d | Price: 0.2293\nHitrate: 76.9%\n\n Short 0.3024 - 0.3\nTPs: 0.2581, 0.2451, 0.2322\nInvalid: 0.1903\nDt: 2026-09-17 00:08:05",
+    "SOL/USD (1)": "SOL/USD 4h | Price: 103.85\nHitrate: 56.4%\n\n Long 104.8 - 104.328\nTPs: 112.05, 114.29, 116.53\nInvalid: 123.78\nDt: 2026-10-02 08:01:06",
+    "DOGE/USD (6)": "DOGE/USD 4h | Price: 0.08147\nHitrate: 62.4%\n\n Long 0.08235 - 0.08098\nTPs: 0.08903, 0.09109, 0.09315\nInvalid: 0.09983\nDt: 2026-09-26 00:38:07\n\n Long 0.07239 - 0.07019\nTPs: 0.08287, 0.08611, 0.08935\nInvalid: 0.09983\nDt: 2026-09-26 00:38:07\n\nDOGE/USD 1d | Price: 0.08147\nHitrate: 76.6%\n\n Long 0.06438 - 0.06125\nTPs: 0.08024, 0.08515, 0.09005\nInvalid: 0.10591\nDt: 2026-09-23 00:14:04\n\n Short 0.13972 - 0.13461\nTPs: 0.10903, 0.10113, 0.09323\nInvalid: 0.06766\nDt: 2026-08-02 00:20:05\n\n Short 0.15266 - 0.14909\nTPs: 0.12205, 0.1137, 0.10535\nInvalid: 0.07831\nDt: 2026-09-17 00:11:04\n\n Short 0.16958 - 0.16651\nTPs: 0.12875, 0.11708, 0.10542\nInvalid: 0.06766\nDt: 2026-08-02 00:20:05",
+    "AVAX/USD (2)": "AVAX/USD 4h | Price: 10.01\nHitrate: 65.5%\n\n Long 10.07 - 10.05\nTPs: 10.47, 10.59, 10.72\nInvalid: 11.12\nDt: 2026-10-12 12:31:06\n\n Long 9.75 - 9.65\nTPs: 10.5, 10.74, 10.97\nInvalid: 11.73\nDt: 2026-10-07 00:39:06",
+    "SEI/USD (0)": "No signals.",
+    "BNB/USD (0)": "No signals.",
+    "WIF/USD (0)": "No signals.",
+    "SAND/USD (2)": "SAND/USD 1h | Price: 0.0581\nHitrate: 63.9%\n\n Long 0.0507 - 0.0457\nTPs: 0.0649, 0.0693, 0.0737\nInvalid: 0.088\nDt: 2026-10-07 17:18:09\n\nSAND/USD 4h | Price: 0.0581\nHitrate: 64.5%\n\n Long 0.0507 - 0.0457\nTPs: 0.0649, 0.0693, 0.0737\nInvalid: 0.088\nDt: 2026-10-07 20:10:06",
+    "HBAR/USD (1)": "HBAR/USD 1d | Price: 0.08597\nHitrate: 64%\n\n Long 0.06236 - 0.05437\nTPs: 0.11444, 0.13053, 0.14661\nInvalid: 0.19869\nDt: 2025-11-11 00:06:04",
+    "XRP/USD (4)": "XRP/USD 4h | Price: 1.3347\nHitrate: 65.1%\n\n Long 1.2956 - 1.274\nTPs: 1.4233, 1.4628, 1.5022\nInvalid: 1.63\nDt: 2026-09-25 16:00:06\n\n Long 0.9931 - 0.981\nTPs: 1.2364, 1.3115, 1.3867\nInvalid: 1.63\nDt: 2026-09-25 16:00:06\n\nXRP/USD 1d | Price: 1.3347\nHitrate: 72.4%\n\n Long 1.1476 - 1.1354\nTPs: 1.3428, 1.4032, 1.4635\nInvalid: 1.6587\nDt: 2026-09-24 00:34:04\n\n Long 0.3908 - 0.3413\nTPs: 1.1647, 1.4037, 1.6428\nInvalid: 2.4167\nDt: 2026-01-07 00:14:04"
+  },
+  "notes": [
+    "All active captured 18:09, pairs menu 18:11, pair views 18:12-18:15 local.",
+    "10-tap cap: skipped BTC/USD (3), DOT/USD (3), JTO/USD (4), SUI/USD (2), W/USD (1), FART/USD (2), ETH/USD (2), HYPE/USD (5), SHIB/USD (5).",
+    "Bot posted an untapped BTC/USD pair view at 18:13 (1h Short 85508.15 - 85260.09, Dt 2026-10-13 01:02:08, plus 4h/1d Longs); full text not captured, likely an alert push.",
+    "Telegram showed a 'Someone just got access to your messages' banner (MacBook Pro M1, Tempe); not tapped."
+  ],
+  "taps": {
+    "text_messages_sent": [
+      "/start",
+      "/start"
+    ],
+    "button_taps": [
+      "THOR",
+      "THOR",
+      "All active",
+      "pair ADA/USD (6)",
+      "pair SOL/USD (1)",
+      "pair DOGE/USD (6)",
+      "pair AVAX/USD (2)",
+      "pair SEI/USD (0)",
+      "pair BNB/USD (0)",
+      "pair WIF/USD (0)",
+      "pair SAND/USD (2)",
+      "pair HBAR/USD (1)",
+      "pair XRP/USD (4)"
+    ],
+    "button_tap_count": 13,
+    "cancel_tapped": false
+  }
+}

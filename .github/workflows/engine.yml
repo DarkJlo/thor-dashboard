@@ -21,7 +21,7 @@ jobs:
         with: {path: engine/candle_cache, key: 'candles-${{ github.run_id }}', restore-keys: 'candles-'}
       - name: Load state + new inbox files
         run: |
-          git fetch -q --depth=1 origin state inbox
+          git fetch -q --depth=1 origin +refs/heads/state:refs/remotes/origin/state +refs/heads/inbox:refs/remotes/origin/inbox
           git worktree add -q ../state origin/state --detach && git worktree add -q ../inbox origin/inbox --detach
           cp -r ../state/. engine/ ; rm -f engine/.git
           mkdir -p engine/inbox/processed; touch engine/ingested.txt

@@ -60,7 +60,7 @@ $("#meta").innerHTML=PUB?`<span><span class=dot style="color:${hc};background:${
 let TAB="OVERVIEW";
 function cards(){$("#cards").innerHTML=PORTS.map(p=>{const s=pstats(p),o=TR.filter(t=>t.portfolio===p&&t.status==="open").length;return`<div class="card${TAB===p?" on":""}" data-p="${p}"><div class=n style="color:${col(p)}">${p}</div><div class=v>$${s.last.toFixed(2)}</div><div class="s"><span class=${cls(s.chg)}>${pc(s.chg)}</span> · ${o} open · DD ${s.dd.toFixed(1)}%${(DATA.margin||{})[p]?` · margin ${(100*DATA.margin[p].used/DATA.margin[p].equity).toFixed(1)}%`:""}</div></div>`}).join("");
  document.querySelectorAll(".card").forEach(c=>c.onclick=()=>go(c.dataset.p))}
-function tabs(){$("#tabs").innerHTML=["OVERVIEW","JOURNAL",...PORTS].map(t=>`<button class="${t===TAB?"on":""}" data-t="${t}">${t}</button>`).join("");document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>go(b.dataset.t))}
+function tabs(){$("#tabs").innerHTML=["OVERVIEW","JOURNAL","WATCHLIST",...PORTS].map(t=>`<button class="${t===TAB?"on":""}" data-t="${t}">${t}</button>`).join("");document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>go(b.dataset.t))}
 // generic table
 const COLS={
  sym:{k:"symbol",l:"Asset"},tf:{k:"timeframe",l:"TF"},dir:{k:"direction",l:"Dir",f:dir},cf:{k:"confluence",l:"Score"},htf:{k:"htf_confluent",l:"HTF"},pf:{k:"portfolio",l:"Pf"},lv:{k:"leverage",l:"Lev",f:(v,r)=>v==null?"":v+"x"+(r&&r.max_lev===v?" <span class=y title=\"at asset max leverage\">max</span>":"")},mgs:{k:"margin",l:"Margin (all pfs)",f:v=>v?fm(v):""},lq:{k:"liq_px",l:"Liq px",f:fp},mg:{k:"margin",l:"Margin",f:v=>v?fm(v):""},
@@ -204,6 +204,13 @@ function stats(trs,key,label){const g={};trs.filter(t=>t.status==="open"||t.stat
  return`<div class=panel><h2>${label}</h2><div class=tw><table><thead><tr><th>${label.split(" ").pop()}</th><th>Taken</th><th>Closed</th><th>Win%</th><th>Realized</th><th>Unreal.</th><th>Avg R</th></tr></thead><tbody>${body||`<tr><td class=empty colspan=7>no trades yet</td></tr>`}</tbody></table></div></div>`}
 // views
 function go(t){TAB=t;TID=0;CID=0;for(const k in ROWS)delete ROWS[k];for(const k in CH)delete CH[k];tabs();cards();
+ if(t==="WATCHLIST"){const X=DATA.extc||{},lpx=s=>{if(s.last_px!=null)return s.last_px;const b=(X[s.symbol]||{}).bars||{},a=b["15m"]||b["1h"]||b["1d"]||[];return a.length?a[a.length-1][4]:null};
+  const wl=SIG.filter(s=>!(DATA.hlcoin||{})[s.symbol]&&s.status!=="malformed").map(s=>{const lp=lpx(s);return{...s,last_px:lp,dist:lp==null?null:(lp>=s.entry_low&&lp<=s.entry_high?0:100*Math.min(Math.abs(lp-s.entry_low),Math.abs(lp-s.entry_high))/lp)}});
+  const act=wl.filter(s=>s.status==="pending"||s.status==="filled"),old=wl.filter(s=>!(s.status==="pending"||s.status==="filled"));
+  let h=`<div class=panel><h2>Watchlist (view only)</h2><div class=mu style="font-size:12px">Stocks and other signals that aren't tradable on Hyperliquid. They never go into any account. Click a row for its chart (Yahoo Finance candles).</div></div>`;
+  h+=table("Active watchlist signals",act,["sym","tf","dir","st","dz","el","eh","t1","iv","lp","start","src"],{sort:"dist",dirn:1});
+  if(old.length)h+=table("Older watchlist signals",old,["sym","tf","dir","st","rs","el","eh","t1","iv","start","src"],{sort:"start_ts"});
+  $("#view").innerHTML=h;collapsibles();wire();return}
  if(t==="JOURNAL"){let sel="MAIN";try{sel=localStorage.getItem("thor.journal.acct")||"MAIN"}catch(e){}if(sel!=="__ALL__"&&!PORTS.includes(sel))sel="MAIN";
   const allc=TR.filter(x=>x.status==="closed"),cl=sel==="__ALL__"?allc:allc.filter(x=>x.portfolio===sel);
   const acc=PORTS.map(p=>{const s=pstats(p),a=TR.filter(x=>x.portfolio===p),c=a.filter(x=>x.status==="closed"),o=a.filter(x=>x.status==="open"),rp=c.reduce((q,x)=>q+(x.pnl||0),0),up=o.reduce((q,x)=>q+(x.pnl||0),0),w=c.filter(x=>x.pnl>0).length,chk=Math.abs(s.last-s.start-rp-up)<0.05;

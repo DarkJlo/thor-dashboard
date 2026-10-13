@@ -1,0 +1,53 @@
+name: thor-engine
+# PAPER ONLY. One tracker cycle every ~5 min (GitHub cron is best-effort: expect 5-15 min gaps).
+# Code on main/engine, state on orphan branch `state` (force-pushed single commit), new Telegram checks on branch `inbox` (pushed by the box).
+on:
+  schedule: [{cron: '2-57/5 * * * *'}]
+  workflow_dispatch:
+permissions: {contents: write, pages: write, id-token: write, actions: write}
+concurrency: {group: thor-engine, cancel-in-progress: false}
+env: {TZ: America/Phoenix, THOR_ENGINE: actions}
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13', cache: pip, cache-dependency-path: engine/requirements.txt}
+      - run: pip install -q -r engine/requirements.txt
+      - name: Restore candle cache
+        uses: actions/cache/restore@v4
+        with: {path: engine/candle_cache, key: 'candles-${{ github.run_id }}', restore-keys: 'candles-'}
+      - name: Load state + new inbox files
+        run: |
+          git fetch -q --depth=1 origin state inbox
+          git worktree add -q ../state origin/state --detach && git worktree add -q ../inbox origin/inbox --detach
+          cp -r ../state/. engine/ ; rm -f engine/.git
+          mkdir -p engine/inbox/processed; touch engine/ingested.txt
+          for f in ../inbox/inbox/*.json; do [ -e "$f" ] || continue; b=$(basename "$f"); grep -qxF "$b" engine/ingested.txt || { cp "$f" engine/inbox/; echo "$b" >> engine/ingested.txt; echo "new inbox: $b"; }; done
+      - name: Tracker cycle
+        working-directory: engine
+        run: |
+          s=$(date +%s); python -u tracker.py --once 2>&1 | tee last_run.log; echo "cycle_seconds=$(( $(date +%s)-s ))" | tee -a last_run.log
+          test -s dashboard.html
+      - name: Save state (single orphan commit on `state`)
+        run: |
+          mkdir -p ../out && cd engine && cp -r tracker.db journal.csv stats hl_meta.json heartbeat ingested.txt last_run.log dashboard.html ../../out/ 2>/dev/null || true
+          cd ../../out && git init -q && git checkout -q -b state && git add -A
+          git -c user.name=thor-engine -c user.email=actions@users.noreply.github.com commit -qm "state $(date '+%F %T %Z') run ${{ github.run_id }}"
+          for i in 1 2 3; do git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" state && break; sleep 5; done
+      - name: Save candle cache
+        if: always()
+        uses: actions/cache/save@v4
+        with: {path: engine/candle_cache, key: 'candles-${{ github.run_id }}'}
+      - name: Pages artifact
+        run: mkdir -p site && cp engine/dashboard.html site/index.html && touch site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: site}
+      - uses: actions/deploy-pages@v4
+  keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1

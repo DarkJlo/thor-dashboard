@@ -1,0 +1,28 @@
+# THOR paper tracker config (paper only, no orders ever placed)
+poll_seconds: 180
+candles: {source: hyperliquid, interval: 1m, fallback: [binance, okx, okxswap], fallback_intervals: [1m, 5m], cache_dir: candle_cache, request_pause: 0.25}   # HL candleSnapshot first (~5000 candles deep); older/missing windows from fallback; live price = HL allMids
+costs: {taker_fee: 0.00045, slippage: 0.0002}   # per side
+stop_rr: 1.5            # stop distance = TP1 distance / stop_rr
+timeouts_days: {15m: 1, 1h: 3, 4h: 7, 1d: 21}   # max wait for fill, and max hold after fill
+max_backfill_hours: 48  # inbox items without msg time start at max(dt, checked_at - this)
+portfolio_defaults: {start: 1000, risk: 0.01, caps: {15m: 3, 1h: 2, 4h: 1, 1d: 99}, pause_loss_frac: 0.02, pause_hours: 24, max_notional_frac: 1.0}
+portfolios:
+  MAIN:      {timeframes: [4h], directions: [Long], min_tp1_dist: 0.02, purpose: "Best backtest setup: 4h longs with TP1 at least 2% away."}
+  MAIN_TP2:  {timeframes: [4h], directions: [Long], min_tp1_dist: 0.02, execution: tp2, purpose: "Same as MAIN but exits 100% at TP2 instead of TP1 (stop unchanged, no break-even). Backtest Feb-Oct: $1,192 vs MAIN $1,126 (rr.md)."}
+  MAIN_LOOSE: {timeframes: [4h], directions: [Long], min_tp1_dist: 0.02, caps: {15m: 3, 1h: 2, 4h: 2, 1d: 99}, purpose: "Same signals as MAIN but allows 2 open 4h trades instead of 1 (backtest caps.md: best of the looser cap schemes, modest drawdown)."}   # optional generic limits any portfolio can use: max_open_risk (e.g. 0.04), max_same_direction (e.g. 3)
+  CONTROL:   {timeframes: [4h], directions: [Long, Short], min_tp1_dist: 0.02, purpose: "All 4h signals including shorts, to test whether skipping shorts (MAIN) actually helps."}
+  TOP_ASSETS: {timeframes: [4h, 1d], directions: [Long, Short], min_tp1_dist: 0.02, assets_file: top_assets.txt, purpose: "Only assets with >=65% 30-day taptrade win rate (list refreshed daily from taptrade.io/signal-stats)."}
+  FAST:      {timeframes: [15m, 1h], directions: [Long, Short], min_tp1_dist: 0.0, require_htf_confluence: false, prioritize_confluence: true, caps_confluent: {15m: 4, 1h: 3}, purpose: "Fast 15m/1h trades; trades backed by a live same-direction 4h/1d signal get priority and higher open caps."}   # all 15m/1h; HTF-confluent (live same-dir 4h/1d) signals get cap slots first; trades flagged htf_confluent yes/no
+  ALL:       {timeframes: [15m, 1h, 4h, 1d], directions: [Long, Short], min_tp1_dist: 0.0, purpose: "Every signal on every timeframe: the baseline everything else is compared against.", caps: {15m: 999, 1h: 999, 4h: 999, 1d: 999}, no_caps: true}
+  CONFLUENCE_ONLY: {timeframes: [4h, 1d], directions: [Long, Short], min_tp1_dist: 0.0, require_live_tfs: [4h, 1d], start_after: "2026-10-12 16:35", purpose: "v2 (reset 2026-10-12 16:35): trades only 4h/1d signals, and only when a same-direction 4h AND 1d signal on that asset are both live. v1 (score>=5 on all TFs) archived in archive/."}
+  FAST_HALF: {timeframes: [15m], directions: [Long, Short], min_tp1_dist: 0.0, caps: {15m: 999, 1h: 999, 4h: 999, 1d: 999}, no_caps: true, execution: half_tp1, purpose: "All 15m signals, no position caps; same stop (TP1 dist / 1.5) but takes all profit at 50% of the way to TP1 (R:R 0.75:1). Backtest: $762 vs $692 for 15m at TP1 (both lose)."}
+  FAST_RUNNERS: {timeframes: [15m, 1h], directions: [Long, Short], min_tp1_dist: 0.0, require_htf_confluence: false, prioritize_confluence: true, caps_confluent: {15m: 4, 1h: 3}, execution: runners, purpose: "FAST signals, caps and confluence priority, but with the RUNNERS exit (half at TP1, stop to entry, TP2 moves stop to TP1, rest at TP3/stop/timeout)."}
+  RUNNERS:   {timeframes: [4h], directions: [Long], min_tp1_dist: 0.02, execution: runners, purpose: "MAIN signals, but only half is taken off at TP1; the rest rides toward TP2/TP3 with the stop moved to break-even (then to TP1 after TP2)."}
+  BETTER_ENTRY: {timeframes: [4h], directions: [Long], min_tp1_dist: 0.02, execution: better_entry, purpose: "MAIN signals, but buys only at the middle of the entry range or better; if price never gets there before the signal ends, the trade is skipped."}
+  BTC_TREND: {timeframes: [4h], directions: [Long, Short], min_tp1_dist: 0.0, btc_trend_filter: true, purpose: "All 4h signals, but longs only while BTC's 4h close is above its 50-period EMA and shorts only while below."}
+  FRESH_ONLY: {timeframes: [4h], directions: [Long, Short], min_tp1_dist: 0.0, max_stale_frac: 0.25, purpose: "All 4h signals, skipping ones that were already 'running' when detected (price more than 25% of the way from entry to TP1)."}
+variants: {btc_ema: 50, half_frac: 0.5}   # BTC_TREND: EMA period on Hyperliquid BTC 4h closes
+confluence_weights: {15m: 1, 1h: 2, 4h: 3, 1d: 4}   # recorded only; not used for sizing/filters
+confluence_buckets: [0, 2, 4, 7, 100]              # stats buckets (right-inclusive)
+# 'all_active' items are marked entered on ingest (fill time = checked_at, entry = range edge price reaches first); pair-view-only items start pending
+leverage: {liq_buffer: 1.5}   # paper model: liq must be >= liq_buffer x stop distance from entry. Assets not listed on Hyperliquid (hl_meta.json) are skipped in every portfolio (not_on_hyperliquid)

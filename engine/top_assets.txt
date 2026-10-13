@@ -1,0 +1,18 @@
+# one symbol per line, e.g. SOL/USD (base like SOL also accepted). Maintained from taptrade.io/signal-stats.
+# source: https://taptrade.io/signal-stats  fetched 2026-10-13  rule: listed on Hyperliquid, 30d accuracy>=65%, >=10 resolved signals, top 8
+# BNB/USD 30d 95.7% (22W/1L)
+BNB/USD
+# BTC/USD 30d 91.7% (11W/1L)
+BTC/USD
+# TRX/USD 30d 90.9% (10W/1L)
+TRX/USD
+# SOL/USD 30d 90.7% (39W/4L)
+SOL/USD
+# ATOM/USD 30d 86.7% (26W/4L)
+ATOM/USD
+# ARB/USD 30d 86.3% (63W/10L)
+ARB/USD
+# HYPE/USD 30d 85.2% (46W/8L)
+HYPE/USD
+# WLFI/USD 30d 84.6% (22W/4L)
+WLFI/USD

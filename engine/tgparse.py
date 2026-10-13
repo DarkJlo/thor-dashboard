@@ -1,6 +1,7 @@
 """Reuses /workspace/thor/parse_export.py parsing logic on a Telegram Desktop export."""
 import json,re,pandas as pd
-SRC=open('/workspace/thor/parse_export.py').read()
+import os
+SRC=open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'parse_export.py')).read()
 BODY=SRC[SRC.index('rows=[];'):SRC.index('D=pd.DataFrame')]
 COLS='msg_time,symbol,timeframe,direction,entry_low,entry_high,tp1,tp2,tp3,invalid,dt,raw_text,format,msg_id'.split(',')
 def parse(path):

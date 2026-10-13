@@ -68,7 +68,7 @@ def payload(c):
         HA=json.load(open(os.path.join(D,'hl_meta.json')))['assets']
         for sym in S.symbol.unique():
             if '/' in sym and not sym.endswith('/USD'): continue
-            b=sym.replace('/USD','').replace('/','')
+            b=(sym[2:].replace('USDT','') if sym.startswith('T:') else sym.replace('/USD','')).replace('/','')   # same as tracker.base()
             for k in (b,'k'+b,b+'COIN'):
                 if k in HA and not HA[k].get('delisted'): hlmax[sym]=HA[k]['max_lev']; hlcoin[sym]=[k,1e-3 if k=='k'+b else 1]; break
     except Exception: pass

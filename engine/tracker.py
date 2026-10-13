@@ -126,7 +126,7 @@ def candles(sym,start):
     have_to=int(cache[-1,0]+cache[-1,5]) if len(cache) else int(start)
     new=[]; iv=CC.get('interval','1m'); M=hl_meta(); a=hl_asset(sym,M)
     if CC.get('source','hyperliquid')=='hyperliquid' and a is not None:
-        coin=next(k for k in (base(sym),'k'+base(sym)) if k in M['assets']); sc=1e-3 if coin.startswith('k') and coin!=base(sym) else 1
+        coin=next(k for k in (base(sym),'k'+base(sym),base(sym)+'COIN') if k in M['assets']); sc=1e-3 if coin.startswith('k') and coin!=base(sym) else 1
         try: h=[[x[0],x[1]*sc,x[2]*sc,x[3]*sc,x[4]*sc,IVMS[iv],0] for x in _hl(coin,have_to,now,iv)]
         except Exception as e: log('hl candles failed',sym,e); h=[]
         first=h[0][0] if h else now

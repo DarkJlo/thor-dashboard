@@ -28,16 +28,16 @@ def payload(c):
     except Exception: MG={}
     try: hm=json.load(open(os.path.join(D,'hl_meta.json'))); hlm=dict(fetched_at=hm.get('fetched_at'),source=hm.get('source'))
     except Exception: hlm={}
-    hlmax={}
+    hlmax={}; hlcoin={}   # hlcoin: symbol -> [HL coin, price scale] for client-side candle charts (kPEPE etc. quote per 1000)
     try:
         HA=json.load(open(os.path.join(D,'hl_meta.json')))['assets']
         for sym in S.symbol.unique():
             if '/' in sym and not sym.endswith('/USD'): continue
             b=sym.replace('/USD','').replace('/','')
             for k in (b,'k'+b):
-                if k in HA and not HA[k].get('delisted'): hlmax[sym]=HA[k]['max_lev']; break
+                if k in HA and not HA[k].get('delisted'): hlmax[sym]=HA[k]['max_lev']; hlcoin[sym]=[k,1e-3 if k!=b else 1]; break
     except Exception: pass
-    return dict(engine=os.environ.get('THOR_ENGINE','box'),hlmax=hlmax,variants=cfg.get('variants',{}),margin=MG,hl_meta=hlm,leverage_cfg=cfg.get('leverage',{}),defaults=pd_,stop_rr=cfg.get('stop_rr'),timeouts=cfg.get('timeouts_days',{}),confluence_weights=cfg.get('confluence_weights',{}),generated=int(time.time()*1000),heartbeat=hb,poll_seconds=cfg.get('poll_seconds',180),costs=cfg.get('costs',{}),
+    return dict(engine=os.environ.get('THOR_ENGINE','box'),hlmax=hlmax,hlcoin=hlcoin,variants=cfg.get('variants',{}),margin=MG,hl_meta=hlm,leverage_cfg=cfg.get('leverage',{}),defaults=pd_,stop_rr=cfg.get('stop_rr'),timeouts=cfg.get('timeouts_days',{}),confluence_weights=cfg.get('confluence_weights',{}),generated=int(time.time()*1000),heartbeat=hb,poll_seconds=cfg.get('poll_seconds',180),costs=cfg.get('costs',{}),
         buckets=cfg.get('confluence_buckets',[0,2,4,7,100]),portfolios=ports,
         signal_cols=sc,signals=_rows(S,sc),trade_cols=tc,trades=_rows(T,tc),
         equity={p:_rows(g,['ts','equity']) for p,g in E.groupby('portfolio',sort=False)})

@@ -139,7 +139,7 @@ async function drawChart(r,tf){const seq=++PCHSEQ,w=document.querySelector("#det
   const SG=SK[r.key]||{},v=k=>r[k]!=null?r[k]:SG[k],L=(p,c,t,ls)=>{if(p!=null&&isFinite(p))s.createPriceLine({price:+p,color:c,lineWidth:1,lineStyle:ls==null?0:ls,axisLabelVisible:true,title:t})};
   const ent=v("entry");L(ent,"#e6e6e6","Entry",0);L(v("stop"),"#ff4d4f","Stop",0);L(v("tp1"),"#19f28c","TP1",2);L(v("tp2"),"#7dffb8","TP2",2);if(v("tp3")!=null)L(v("tp3"),"#b8ffd9","TP3",3);
   const fl=t=>t?Math.floor(t/iv)*iv/1000+MSTOFF:null,lo=bars[0].time,hi=bars[bars.length-1].time,inR=t=>t!=null&&t>=lo&&t<=hi,mk=[],sh=v("direction")==="Short";
-  if(inR(fl(r.start_ts)))mk.push({time:fl(r.start_ts),position:"aboveBar",color:"#ffc94d",shape:"arrowDown",text:"signal"});
+  const _d=v("dt"),_dp=_d?Date.parse(String(_d).trim().replace(" ","T")+(/Z|[+-]\d\d:?\d\d$/.test(String(_d))?"":"Z")):NaN,sT=isFinite(_dp)?_dp:r.start_ts;if(inR(fl(sT)))mk.push({time:fl(sT),position:"aboveBar",color:"#ffc94d",shape:"arrowDown",text:"signal"});
   if(inR(fl(r.fill_ts)))mk.push({time:fl(r.fill_ts),position:sh?"aboveBar":"belowBar",color:"#e6e6e6",shape:sh?"arrowDown":"arrowUp",text:"fill"});
   if(inR(fl(r.exit_ts)))mk.push({time:fl(r.exit_ts),position:"aboveBar",color:(r.pnl||0)>=0?"#19f28c":"#ff4d4f",shape:"square",text:"exit"+(r.reason?" ("+String(r.reason).slice(0,14)+")":"")});
   mk.sort((a,b)=>a.time-b.time);s.setMarkers(mk);

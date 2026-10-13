@@ -205,10 +205,17 @@ function stats(trs,key,label){const g={};trs.filter(t=>t.status==="open"||t.stat
 // views
 function go(t){TAB=t;TID=0;CID=0;for(const k in ROWS)delete ROWS[k];for(const k in CH)delete CH[k];tabs();cards();
  if(t==="WATCHLIST"){const X=DATA.extc||{},lpx=s=>{if(s.last_px!=null)return s.last_px;const b=(X[s.symbol]||{}).bars||{},a=b["15m"]||b["1h"]||b["1d"]||[];return a.length?a[a.length-1][4]:null};
-  const wl=SIG.filter(s=>!(DATA.hlcoin||{})[s.symbol]&&s.status!=="malformed").map(s=>{const lp=lpx(s);return{...s,last_px:lp,dist:lp==null?null:(lp>=s.entry_low&&lp<=s.entry_high?0:100*Math.min(Math.abs(lp-s.entry_low),Math.abs(lp-s.entry_high))/lp)}});
-  const act=wl.filter(s=>s.status==="pending"||s.status==="filled"),old=wl.filter(s=>!(s.status==="pending"||s.status==="filled"));
-  let h=`<div class=panel><h2>Watchlist (view only)</h2><div class=mu style="font-size:12px">Stocks and other signals that aren't tradable on Hyperliquid. They never go into any account. Click a row for its chart (Yahoo Finance candles).</div></div>`;
-  h+=table("Active watchlist signals",act,["sym","tf","dir","st","dz","el","eh","t1","iv","lp","start","src"],{sort:"dist",dirn:1});
+  const sim=s=>{const b=(X[s.symbol]||{}).bars||{},a=(b["15m"]&&b["15m"].length&&b["15m"][0][0]<=s.start_ts?b["15m"]:b["1h"])||[],sh=s.direction==="Short",e=sh?s.entry_low:s.entry_high,st=e-(sh?-1:1)*Math.abs(s.tp1-e)/(DATA.stop_rr||1.5),to=((DATA.timeouts||{})[s.timeframe]||7)*864e5;
+   if(!a.length)return null;let f=null,hit=0;for(const[t,o,h,l,c]of a){if(t+9e5<s.start_ts)continue;
+    if(f==null){if(t>s.start_ts+to)return{status:"cancelled",reason:"timeout_nofill"};if(sh?l<=s.invalid:h>=s.invalid)return{status:"cancelled",reason:"invalid_before_fill"};if(h>=s.entry_low&&l<=s.entry_high){f=t;}else continue}
+    if(sh?h>=st:l<=st)return{status:"closed",reason:hit?"stop after TP"+hit:"stop",fill_ts:f,exit_ts:t};
+    for(const[k,n]of[["tp3",3],["tp2",2],["tp1",1]])if(n>hit&&s[k]!=null&&(sh?l<=s[k]:h>=s[k])){hit=n;break}
+    if(hit===3)return{status:"closed",reason:"TP3",fill_ts:f,exit_ts:t}}
+   return f==null?null:{status:hit?"TP"+hit+" hit":"filled",fill_ts:f}};
+  const wl=SIG.filter(s=>!(DATA.hlcoin||{})[s.symbol]&&s.status!=="malformed").map(s=>{const lp=lpx(s),r=(DATA.extc||{})[s.symbol]?sim(s):null;s={...s,...(r||{})};return{...s,last_px:lp,dist:lp==null?null:(lp>=s.entry_low&&lp<=s.entry_high?0:100*Math.min(Math.abs(lp-s.entry_low),Math.abs(lp-s.entry_high))/lp)}});
+  const act=wl.filter(s=>!["closed","cancelled"].includes(s.status)),old=wl.filter(s=>["closed","cancelled"].includes(s.status));
+  let h=`<div class=panel><h2>Watchlist (view only)</h2><div class=mu style="font-size:12px">Stocks and other signals that aren't tradable on Hyperliquid. They never go into any account. Click a row for its chart (Yahoo Finance candles). Status (entry, TPs, stop) is worked out from those candles with our normal rules: entry at the edge of the zone, stop at 1:1.5, ride to TP3.</div></div>`;
+  h+=table("Active watchlist signals",act,["sym","tf","dir","st","rs","dz","el","eh","t1","iv","lp","start","src"],{sort:"dist",dirn:1});
   if(old.length)h+=table("Older watchlist signals",old,["sym","tf","dir","st","rs","el","eh","t1","iv","start","src"],{sort:"start_ts"});
   $("#view").innerHTML=h;collapsibles();wire();return}
  if(t==="JOURNAL"){let sel="MAIN";try{sel=localStorage.getItem("thor.journal.acct")||"MAIN"}catch(e){}if(sel!=="__ALL__"&&!PORTS.includes(sel))sel="MAIN";

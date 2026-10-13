@@ -13,7 +13,7 @@ for x in m:
         if not r: bad+=1; continue
         s,tf,dr,a,b,t1,t2,t3,inv,dt=r.groups(); lo,hi=sorted([num(a),num(b)])
         rows.append([mt,s,tf,dr,lo,hi,t1.replace(',',''),t2.replace(',',''),t3.replace(',',''),num(inv),dt,' | '.join(l for l in t.split('\n') if l.strip()),'new',x['id']])
-    elif 'Hitrate' in t:
+    elif 'Hitrate' in t or re.search(r'(?m)^\s*\S+(?: \d+[mhdw])? \| Price',t):   # stock views have no Hitrate line
         sym=tf=None
         for tok in re.finditer(r'(?m)^\s*(?P<h>(?P<hs>[^\s|]+)(?: (?P<htf>\d+[mhdw]))? \| Price)|^\s*(?P<tf>\d+[mhdw])\s*$|(?P<dr>Long|Short) (?P<a>[\d.,]+) - (?P<b>[\d.,]+)\s*TPs: (?P<t1>[\d.,]+), (?P<t2>[\d.,]+), (?P<t3>[\d.,]+)\s*Invalid: (?P<inv>[\d.,]+)\s*Dt: (?P<dt>[\d-]+(?: [\d:]+)?)',t):
             g=tok.groupdict()

@@ -1,0 +1,57 @@
+{
+  "checked_at": "2026-10-13T12:35:00-07:00",
+  "source": "Telegram Web, CyberFrogsThor bot chat (web.telegram.org/k/)",
+  "native_assets": [
+    "W/USD (0)",
+    "FART/USD (8)",
+    "ADA/USD (11)",
+    "ARB/USD (2)",
+    "AVAX/USD (6)",
+    "BNB/USD (2)",
+    "BONK/USD (11)",
+    "BTC/USD (6)",
+    "DOGE/USD (13)",
+    "DOT/USD (5)",
+    "ETH/USD (6)",
+    "HBAR/USD (4)",
+    "HYPE/USD (12)",
+    "INJ/USD (1)",
+    "JTO/USD (4)",
+    "JUP/USD (4)",
+    "LTC/USD (4)",
+    "SAND/USD (8)",
+    "SEI/USD (5)",
+    "SHIB/USD (16)",
+    "SOL/BTC (6)",
+    "SOL/USD (5)",
+    "SUI/USD (4)",
+    "WIF/USD (7)",
+    "XRP/USD (5)",
+    "T:ATOMUSDT (1)",
+    "ASTS (3)",
+    "ASTS (3)",
+    "T:ENAUSDT (1)"
+  ],
+  "active": [],
+  "all_active_message_summary": "Supplemental noon Ask-Thor follow-up only; All active not re-fetched (see check_2026-10-13T1226.json).",
+  "all_active_raw": "",
+  "pair_views": {
+    "T:ATOMUSDT (1) [12:34 menu]": "T:ATOMUSDT 15m | Price: 1.861\nHitrate: 65.7%\n\n Short 1.8679 - 1.8645\nTPs: 1.8376, 1.8293, 1.8209\nInvalid: 1.794\nDt: 2026-10-13 16:36:10\n\n Short 1.906 - 1.8943\nTPs: 1.8518, 1.8386, 1.8255\nInvalid: 1.783\nDt: 2026-10-13 13:01:11\n\nT:ATOMUSDT 1h | Price: 1.861\nHitrate: 59%\n\n Long 1.7237 - 1.691\nTPs: 1.8495, 1.8884, 1.9272\nInvalid: 2.053\nDt: 2026-10-11 14:26:08\n\n Long 1.5914 - 1.5791\nTPs: 1.7677, 1.8222, 1.8767\nInvalid: 2.053\nDt: 2026-10-11 14:26:08\n\n Short 1.906 - 1.8943\nTPs: 1.8518, 1.8386, 1.8255\nInvalid: 1.783\nDt: 2026-10-13 13:01:09\n\n Short 2.029 - 2.0187\nTPs: 1.9287, 1.9008, 1.873\nInvalid: 1.783\nDt: 2026-10-13 13:01:09\n\nT:ATOMUSDT 4h | Price: 1.861\nHitrate: 59.1%\n\n Long 1.7237 - 1.691\nTPs: 1.8495, 1.8884, 1.9272\nInvalid: 2.053\nDt: 2026-10-11 16:35:06\n\n Long 1.5914 - 1.5791\nTPs: 1.7677, 1.8222, 1.8767\nInvalid: 2.053\nDt: 2026-10-11 16:35:06\n\nT:ATOMUSDT 1d | Price: 1.861\nHitrate: 58.8%\n\n Short 2.243 - 2.1856\nTPs: 1.9653, 1.8973, 1.8292\nInvalid: 1.609\nDt: 2026-10-03 00:02:04"
+  },
+  "notes": [
+    "Noon Ask Thor follow-up after check_2026-10-13T1226. Submitted T:TRXUSDT, T:ATOMUSDT, T:WLFIUSDT at ~12:27-12:28 MST.",
+    "T:ATOMUSDT (1) button appeared; pair view captured at 12:34. T:TRXUSDT and T:WLFIUSDT still no button by 12:35 (left pending; next checks will open_always if they land).",
+    "Logged in live/askthor_log.csv (3 today / under weekly cap).",
+    "Menu drift vs 12:16: ARB 3\u21922, WIF 5\u21927, INJ 0\u21921, T:ATOMUSDT new."
+  ],
+  "taps": {
+    "text_messages_sent": [],
+    "button_taps": [
+      "pair T:ATOMUSDT (1)",
+      "Cancel",
+      "THOR"
+    ],
+    "button_tap_count": 3,
+    "cancel_tapped": true
+  }
+}

@@ -27,6 +27,9 @@ def db():
     have=[x[1] for x in c.execute('pragma table_info(signals)')]
     for col in['confluence','live_state','px_src']:
         if col not in have: c.execute(f'alter table signals add column {col}')
+    if c.execute('pragma user_version').fetchone()[0]<1:   # one-time: re-check every All active catch with the late-catch rule
+        c.execute("update signals set status='filled',last_ts=fill_ts,exit_ts=null,exit_px=null,reason=null where source like '%all_active%' and fill_ts is not null")
+        c.execute('pragma user_version=1'); c.commit()
     return c
 # ---------- ingest ----------
 def add_signal(c,r,source,start_ts,fmt='new'):
@@ -155,6 +158,10 @@ def step(s,a):
                 s.update(status='filled',fill_ts=int(ts),entry=e,stop=e-sg*d1/CFG['stop_rr'],px_src=sn)
                 if (h>=s['stop']) if sh else (l<=s['stop']): s.update(status='closed',exit_ts=int(ts),exit_px=s['stop'],reason='stop',px_src=sn);break
         elif s['status']=='filled':
+            if s['last_ts']==s['fill_ts'] and 'all_active' in str(s.get('source') or ''):
+                # caught late on All active: if price at catch is already past our stop or TP1, no real entry was possible
+                if ((o>=s['stop']) if sh else (o<=s['stop'])) or ((o<=s['tp1']) if sh else (o>=s['tp1'])):
+                    s.update(status='cancelled',reason='missed_late',exit_ts=int(ts),exit_px=None,entry=None,fill_ts=None,last_px=o,px_src=sn);break
             if ts>s['fill_ts']+TO: s.update(status='closed',exit_ts=int(ts),exit_px=s['last_px'],reason='timeout',px_src=sn);break
             if (h>=s['stop']) if sh else (l<=s['stop']): s.update(status='closed',exit_ts=int(ts),exit_px=s['stop'],reason='stop',px_src=sn);break
             if (l<=s['tp1']) if sh else (h>=s['tp1']): s.update(status='closed',exit_ts=int(ts),exit_px=s['tp1'],reason='tp1',px_src=sn);break

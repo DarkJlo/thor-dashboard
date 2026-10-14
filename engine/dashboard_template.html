@@ -1,4 +1,4 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=refresh content=180>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>THOR paper tracker</title>
 <style>
 :root{--bg:#060a14;--p1:#0c1424;--p2:#111c31;--ln:#1d2a44;--tx:#d6e2f5;--mu:#7486a6;--g:#19f28c;--r:#ff4d6a;--c:#22d3ee;--y:#ffc94d}
@@ -30,7 +30,7 @@ svg text{fill:var(--mu);font-size:10px}.tip{position:fixed;pointer-events:none;b
 .panel>h2{cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}.panel>h2:before{content:"▾ ";color:var(--mu);display:inline-block;width:1.1em;transition:transform .15s}.panel.col>h2:before{transform:rotate(-90deg)}.panel.col>:not(h2){display:none!important}.panel.col>h2{margin-bottom:0}
 .empty{color:var(--mu);padding:8px}
 </style></head><body>
-<header><h1><b>THOR</b> PAPER TRACKER <small>paper only · no orders · no keys</small></h1><div style="display:flex;gap:10px;align-items:center"><div class=meta id=meta></div><button class=qb id=qb title="Account key">?</button></div></header><div id=keym><div id=keyb></div></div>
+<header><h1><b>THOR</b> PAPER TRACKER <small>paper only · no orders · no keys</small></h1><div style="display:flex;gap:10px;align-items:center"><div class=meta id=meta></div><span class=meta id=arf title="Checks for new data every 60s and reloads only when there is some"></span><button class=qb id=qb title="Account key">?</button></div></header><div id=keym><div id=keyb></div></div>
 <main><div class=cards id=cards></div><div class=tabs id=tabs></div><div id=view></div></main>
 <aside id=det></aside><div class=tip id=tip></div>
 <script>
@@ -151,7 +151,8 @@ async function drawChart(r,tf){const r0=r;const seq=++PCHSEQ,w=document.querySel
   msg.textContent=`${coin}${sc!==1?" ×"+sc:""} ${tf} · ${bars.length} candles · shaded = entry zone`;
  }catch(e){if(seq===PCHSEQ)msg.textContent="Chart unavailable: "+e.message}}
 // detail
-function detail(r){const L=[];const a=(k,v)=>{if(v!=null&&v!=="")L.push(`<dt>${k}</dt><dd>${v}</dd>`)};
+let CUR=null;
+function detail(r){CUR={key:r.key,pf:r.portfolio||null};const L=[];const a=(k,v)=>{if(v!=null&&v!=="")L.push(`<dt>${k}</dt><dd>${v}</dd>`)};
  a("Asset",esc(r.symbol));a("Timeframe",esc(r.timeframe));a("Direction",dir(r.direction));a("Portfolio",esc(r.portfolio));a("Status",esc(r.status)+(r.live_state&&r.live_state!==r.status?" / "+esc(r.live_state):""));a("Reason",esc(r.reason));
  a("Confluence score",r.confluence!=null?r.confluence+" <span class=mu>"+r.bucket+"</span>":null);a("Entry range",r.entry_low!=null?fp(r.entry_low)+" – "+fp(r.entry_high):null);a("Entry (fill)",fp(r.entry));
  a("TP1",fp(r.tp1));a("TP2",fp(r.tp2));a("TP3",fp(r.tp3));a("Invalid",fp(r.invalid));a("Stop",fp(r.stop));a("Last price",fp(r.last_px));a("Exit price",fp(r.exit_px));
@@ -242,7 +243,22 @@ function go(t){TAB=t;TID=0;CID=0;for(const k in ROWS)delete ROWS[k];for(const k 
  if(ov)h+=table("Resolved signals",SIG.filter(s=>["closed","cancelled","malformed"].includes(s.status)),["sym","tf","dir","cf","st","rs","en","xp","exit","src"],{sort:"first_seen_ts"});
  $("#view").innerHTML=h;collapsibles();wire();drawCharts();document.querySelectorAll("tr[data-p]").forEach(r=>r.onclick=()=>go(r.dataset.p));
  try{history.replaceState(null,"","#"+t)}catch(e){}}
-const h0=decodeURIComponent(location.hash.slice(1));go(PORTS.includes(h0)?h0:"OVERVIEW");
+let RS=null;try{RS=JSON.parse(sessionStorage.getItem("thor.reload")||"null");sessionStorage.removeItem("thor.reload")}catch(e){}
+const h0=decodeURIComponent(location.hash.slice(1)),T0=RS&&RS.tab?RS.tab:h0;go(PORTS.includes(T0)||["JOURNAL","WATCHLIST"].includes(T0)?T0:"OVERVIEW");
+// ---- auto-refresh: poll version.json every 60s, reload only when gen changes; keep tab/scroll/filters/detail across the reload ----
+(function(){const GEN=DATA.gen||DATA.generated,ind=$("#arf"),hm=ms=>{const d=new Date(ms+OFF);return p2(d.getUTCHours())+":"+p2(d.getUTCMinutes())};
+ ind.innerHTML=`Updated <b>${hm(GEN)}</b> MST · <span class=g>auto-refresh on</span>`;
+ if(RS){try{const ids=Object.keys(ROWS);(RS.f||[]).forEach((f,i)=>{const id=ids[i],el=id&&document.getElementById(id);if(!el)return;const P=el.closest(".panel");for(const k in f){ROWS[id].f[k]=f[k];const inp=P.querySelector(`.fb [data-k="${k}"]`);if(inp)inp.value=f[k]}render(id)});
+  if(RS.det){const r=RS.det.pf?TR.find(x=>x.key===RS.det.key&&x.portfolio===RS.det.pf):SK[RS.det.key];if(r){detail(r);if(RS.det.tf){const b=document.querySelector(`#det .cht .tfb button[data-tf="${RS.det.tf}"]`);if(b&&!b.classList.contains("on"))b.click()}const d=$("#det");requestAnimationFrame(()=>d.scrollTop=RS.det.st||0)}}
+  requestAnimationFrame(()=>scrollTo(0,RS.y||0));setTimeout(()=>scrollTo(0,RS.y||0),300)}catch(e){}}
+ const save=()=>{const d=$("#det"),on=d.classList.contains("on")&&CUR,b=document.querySelector("#det .cht .tfb button.on");
+  const f=Object.keys(ROWS).map(id=>{const o={};for(const k in ROWS[id].f)if(ROWS[id].f[k])o[k]=ROWS[id].f[k];return o});
+  try{sessionStorage.setItem("thor.reload",JSON.stringify({tab:TAB,y:scrollY,f,det:on?{...CUR,tf:b?b.dataset.tf:null,st:d.scrollTop}:null}))}catch(e){}};
+ const typing=()=>{const a=document.activeElement;return a&&(a.tagName==="INPUT"||a.tagName==="TEXTAREA"||a.tagName==="SELECT"||a.isContentEditable)};
+ const tick=async()=>{try{const u=new URL("version.json",location.href);if(u.protocol==="file:")return;u.searchParams.set("t",Date.now());
+  const r=await fetch(u,{cache:"no-store"});if(!r.ok)return;const v=await r.json();
+  if(v&&v.gen&&v.gen!==GEN){if(typing()){ind.innerHTML=`Updated <b>${hm(GEN)}</b> MST · <span class=y>new data, reloading when you stop typing</span>`;return}save();location.reload()}}catch(e){}};
+ setInterval(tick,60e3)})();
 
 (function(){const D=DATA,df=D.defaults||{},cap=c=>Object.entries(c||{}).map(([k,v])=>v>=99?`${k}: unlimited`:`${k}: ${v}`).join(", "),
 dl=a=>(a||[]).join(" and "),tl=Object.entries(D.timeouts||{}).map(([k,v])=>`${k}: ${v} day${v>1?"s":""}`).join(", "),f=D.costs||{};

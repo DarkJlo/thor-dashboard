@@ -74,7 +74,7 @@ def ingest(c):
                 for r in items:
                     if r.get('msg_time'): st=ms(r['msg_time'])
                     else:
-                        try: dts=ms(pd.Timestamp(str(r.get('dt'))))
+                        try: _t=pd.Timestamp(str(r.get('dt'))); dts=ms(_t if _t.tzinfo else _t.tz_localize('UTC'))   # Thor Dt stamps are UTC
                         except Exception: dts=ca
                         st=ca if r.get('source')=='all_active' else min(max(dts,ca-CFG['max_backfill_hours']*3600_000),ca)
                     n+=add_signal(c,r,r.get('source','all_active'),st)

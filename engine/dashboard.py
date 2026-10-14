@@ -73,14 +73,16 @@ def payload(c):
                 if k in HA and not HA[k].get('delisted'): hlmax[sym]=HA[k]['max_lev']; hlcoin[sym]=[k,1e-3 if k=='k'+b else 1]; break
     except Exception: pass
     extc=ext_candles(D,[x for x in S.symbol.unique() if x not in hlcoin])
-    return dict(engine=os.environ.get('THOR_ENGINE','box'),hlmax=hlmax,hlcoin=hlcoin,extc=extc,variants=cfg.get('variants',{}),margin=MG,hl_meta=hlm,leverage_cfg=cfg.get('leverage',{}),defaults=pd_,stop_rr=cfg.get('stop_rr'),timeouts=cfg.get('timeouts_days',{}),confluence_weights=cfg.get('confluence_weights',{}),generated=int(time.time()*1000),heartbeat=hb,poll_seconds=cfg.get('poll_seconds',180),costs=cfg.get('costs',{}),
+    return dict(engine=os.environ.get('THOR_ENGINE','box'),hlmax=hlmax,hlcoin=hlcoin,extc=extc,variants=cfg.get('variants',{}),margin=MG,hl_meta=hlm,leverage_cfg=cfg.get('leverage',{}),defaults=pd_,stop_rr=cfg.get('stop_rr'),timeouts=cfg.get('timeouts_days',{}),confluence_weights=cfg.get('confluence_weights',{}),generated=(G:=int(time.time()*1000)),gen=G,heartbeat=hb,poll_seconds=cfg.get('poll_seconds',180),costs=cfg.get('costs',{}),
         buckets=cfg.get('confluence_buckets',[0,2,4,7,100]),portfolios=ports,
         signal_cols=sc,signals=_rows(S,sc),trade_cols=tc,trades=_rows(T,tc),
         equity={p:_rows(g,['ts','equity']) for p,g in E.groupby('portfolio',sort=False)})
 def build(c,out=None):
-    data=json.dumps(payload(c),separators=(',',':')).replace('</','<\\/')
+    P=payload(c); data=json.dumps(P,separators=(',',':')).replace('</','<\\/')
     tpl=open(os.path.join(D,'dashboard_template.html')).read()
     out=out or os.path.join(D,'dashboard.html'); tmp=out+'.tmp'
     open(tmp,'w').write(tpl.replace('/*__DATA__*/null',data,1)); os.replace(tmp,out)
+    # version.json next to the page: the browser polls it and reloads only when gen changes
+    vf=os.path.join(os.path.dirname(os.path.abspath(out)),'version.json'); open(vf+'.tmp','w').write(json.dumps({'gen':P['gen']})); os.replace(vf+'.tmp',vf)
 if __name__=='__main__':
     import sqlite3,sys; c=sqlite3.connect(os.path.join(D,'tracker.db')); build(c,sys.argv[1] if len(sys.argv)>1 else None); c.close()

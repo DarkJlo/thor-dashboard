@@ -40,7 +40,7 @@ jobs:
         run: |
           mkdir -p ../out && cd engine
           if [ "$(date -u +%M)" -lt 6 ] || [ ! -f candles.tgz ]; then tar czf candles.tgz candle_cache; fi   # hourly backup of candle history
-          cp -r candles.tgz tracker.db journal.csv stats hl_meta.json heartbeat ingested.txt last_run.log dashboard.html ../../out/ 2>/dev/null || true
+          cp -r candles.tgz tracker.db journal.csv stats hl_meta.json heartbeat ingested.txt last_run.log dashboard.html version.json ../../out/ 2>/dev/null || true
           cd ../../out && git init -q && git checkout -q -b state && git add -A
           git -c user.name=thor-engine -c user.email=actions@users.noreply.github.com commit -qm "state $(date '+%F %T %Z') run ${{ github.run_id }}"
           for i in 1 2 3; do git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" state && break; sleep 5; done
@@ -49,7 +49,7 @@ jobs:
         uses: actions/cache/save@v4
         with: {path: engine/candle_cache, key: 'candles2-${{ github.run_id }}'}
       - name: Pages artifact
-        run: mkdir -p site && cp engine/dashboard.html site/index.html && touch site/.nojekyll
+        run: mkdir -p site && cp engine/dashboard.html site/index.html && cp engine/version.json site/version.json && touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with: {path: site}
       - uses: actions/deploy-pages@v4

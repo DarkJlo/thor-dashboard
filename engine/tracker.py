@@ -30,6 +30,14 @@ def db():
     if c.execute('pragma user_version').fetchone()[0]<1:   # one-time: re-check every All active catch with the late-catch rule
         c.execute("update signals set status='filled',last_ts=fill_ts,exit_ts=null,exit_px=null,reason=null where source like '%all_active%' and fill_ts is not null")
         c.execute('pragma user_version=1'); c.commit()
+    if c.execute('pragma user_version').fetchone()[0]<2:   # one-time: pre-fix (adc4872) Dt stamps were parsed as local time -> recompute start as UTC and replay
+        FIX=1791947359000   # 2026-10-13 20:09:19 -07:00, commit adc4872
+        for k,dt,fs in c.execute("select key,dt,first_seen_ts from signals where source in ('ask_thor','alert') and dt is not null and first_seen_ts<? and status!='malformed'",(FIX,)).fetchall():
+            try: _t=pd.Timestamp(str(dt)); dts=ms(_t if _t.tzinfo else _t.tz_localize('UTC'))
+            except Exception: continue
+            st=min(max(dts,fs-CFG['max_backfill_hours']*3600_000),fs)   # first_seen_ts ~ check time (same cap as ingest)
+            c.execute("update signals set start_ts=?,last_ts=?,status='pending',fill_ts=null,entry=null,stop=null,exit_ts=null,exit_px=null,reason=null,last_px=null,px_src=null where key=?",(st,st,k))
+        c.execute('pragma user_version=2'); c.commit()
     return c
 # ---------- ingest ----------
 def add_signal(c,r,source,start_ts,fmt='new'):

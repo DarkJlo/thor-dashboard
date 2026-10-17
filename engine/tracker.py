@@ -279,7 +279,8 @@ def btc_trend():
 def path(s,mode):
     """Re-simulate one signal for an execution variant on cached candles (same conservative rules as step()).
     better_entry: limit at range midpoint (or better if a candle opens beyond it); skip_no_fill if the original signal ends/invalidates/times out first.
-    runners: same fill as the signal; 50% off at TP1, stop -> entry; at TP2 stop -> TP1; rest out at TP3 (no TP2/TP3: trail by original stop distance)."""
+    runners: same fill as the signal; 50% off at TP1, stop -> entry; at TP2 stop -> TP1; rest out at TP3 (no TP2/TP3: trail by original stop distance).
+    nostop: same fill as the signal; no stop loss at all: 100% out at TP1, else at market (last close) at the normal timeout."""
     a=cached(s['symbol']); sh=s['direction']=='Short'; sg=-1 if sh else 1; TO=CFG['timeouts_days'][s['timeframe']]*86400e3
     r=dict(fill_ts=s['fill_ts'],entry=s['entry'],stop=s['stop'],status=s['status'],exit_ts=s['exit_ts'],exit_px=s['exit_px'],reason=s['reason'],last_px=s['last_px'],why=None)
     if a is None: return r
@@ -292,16 +293,16 @@ def path(s,mode):
         tgt=[s['tp1']]; part=[1.0]
     else:
         if s['fill_ts'] is None: return r
-        tgt=[s['tp2']] if mode=='tp2' else ([s['entry']+(s['tp1']-s['entry'])*CFG.get('variants',{}).get('half_frac',0.5)] if mode=='half_tp1' else [s['tp1'],s['tp2'],s['tp3']]); part=[0.5,0.5]   # tp2: 100% out at TP2, stop unchanged
+        tgt=[s['tp2']] if mode=='tp2' else ([s['tp1']] if mode=='nostop' else ([s['entry']+(s['tp1']-s['entry'])*CFG.get('variants',{}).get('half_frac',0.5)] if mode=='half_tp1' else [s['tp1'],s['tp2'],s['tp3']])); part=[0.5,0.5]   # tp2: 100% out at TP2, stop unchanged
     f=r['fill_ts']; e=r['entry']; stop=r['stop']; d0=abs(e-stop); b=a[a[:,0]>=f]; rem=1.0; got=0.0; stage=0; best=None; last=None
     beyond=lambda x,lv:(x<=lv) if sh else (x>=lv)
     for k,(ts,o,h,l,c,iv,si) in enumerate(b):
         if ts>f+TO: r.update(status='closed',exit_ts=int(ts),reason='timeout'); got+=rem*(last if last is not None else o); rem=0; break
-        if (h>=stop) if sh else (l<=stop): r.update(status='closed',exit_ts=int(ts),reason='stop' if stage==0 else ('breakeven' if stage==1 else 'trail_stop')); got+=rem*stop; rem=0; break
+        if mode!='nostop' and ((h>=stop) if sh else (l<=stop)): r.update(status='closed',exit_ts=int(ts),reason='stop' if stage==0 else ('breakeven' if stage==1 else 'trail_stop')); got+=rem*stop; rem=0; break
         if k>0:
             x=l if sh else h
-            if mode in('better_entry','tp2','half_tp1'):
-                if beyond(x,tgt[0]): r.update(status='closed',exit_ts=int(ts),reason={'better_entry':'tp1','tp2':'tp2','half_tp1':'half_tp1'}[mode]); got+=tgt[0]; rem=0; break
+            if mode in('better_entry','tp2','half_tp1','nostop'):
+                if beyond(x,tgt[0]): r.update(status='closed',exit_ts=int(ts),reason={'better_entry':'tp1','tp2':'tp2','half_tp1':'half_tp1','nostop':'tp1'}[mode]); got+=tgt[0]; rem=0; break
             else:
                 if stage==0 and beyond(x,tgt[0]): got+=0.5*tgt[0]; rem=0.5; stage=1; stop=e
                 if stage>=1:
@@ -348,7 +349,7 @@ def variants(X,P,now):
             sg=-1 if r.direction=='Short' else 1; edge=r.entry_low if sg<0 else r.entry_high
             return sg*(a[i,4]-edge)/abs(r.tp1-edge)>P['max_stale_frac']
         st=X.apply(stale,axis=1); X.loc[st&X._why.isna(),'_why']='skip_stale'
-    if P.get('execution') in ('better_entry','runners','tp2','half_tp1'):
+    if P.get('execution') in ('better_entry','runners','tp2','half_tp1','nostop'):
         for i,r in X.iterrows():
             if r._why: continue
             p=path(r.to_dict(),P['execution'])
@@ -389,12 +390,15 @@ def portfolios(c):
             elif P.get('max_same_direction') and sum(q['direction']==s.direction for q in opn)>=P['max_same_direction']: why='skip_same_dir'   # generic: max open trades in one direction
             sg=-1 if s.direction=='Short' else 1; sd=abs(s.entry-s.stop)/s.entry
             lv,liq,mx,lsrc=leverage(s.symbol,s.direction,s.entry,s.stop,M)
+            nostop=P.get('execution')=='nostop'; stop_out=None if nostop else s.stop   # nostop: sd = nominal stop distance (sizing + R only), no stop traded
+            if nostop and lv is not None:   # fixed leverage (default 1x): margin = notional/lev; isolated HL liq at that leverage
+                lv=P.get('fixed_leverage',1); mmr=1/(2*mx); liq=s.entry-sg*(s.entry/lv-s.entry*mmr)/(1-sg*mmr)
             if lv is None: why='not_on_hyperliquid'   # rule: only assets tradable on Hyperliquid, in every portfolio
             n=min(P['risk']*eq/(sd+C),P['max_notional_frac']*eq); mg=n/lv if lv else 0
             if not why and sum(q['margin'] for q in opn)+mg>eq: why='insufficient_margin'
-            if why: rows.append(dict(px_src=s.px_src,leverage=None,margin=None,liq_px=None,max_lev=mx,lev_src=lsrc,portfolio=name,confluence=s.confluence,htf_confluent=s.htf,key=s.key,symbol=s.symbol,timeframe=tf,direction=s.direction,fill_ts=s.fill_ts,entry=s.entry,stop=s.stop,status=why,reason=why,notional=0,ret=None,pnl=0,r=None,exit_ts=None,exit_px=None));continue
+            if why: rows.append(dict(px_src=s.px_src,leverage=None,margin=None,liq_px=None,max_lev=mx,lev_src=lsrc,portfolio=name,confluence=s.confluence,htf_confluent=s.htf,key=s.key,symbol=s.symbol,timeframe=tf,direction=s.direction,fill_ts=s.fill_ts,entry=s.entry,stop=stop_out,status=why,reason=why,notional=0,ret=None,pnl=0,r=None,exit_ts=None,exit_px=None));continue
             closed=s.status=='closed'; px=s.exit_px if closed else s.last_px
-            ret=sg*(px-s.entry)/s.entry-C; q=dict(px_src=s.px_src,leverage=lv,margin=mg,liq_px=liq,max_lev=mx,lev_src=lsrc,portfolio=name,confluence=s.confluence,htf_confluent=s.htf,key=s.key,symbol=s.symbol,timeframe=tf,direction=s.direction,fill_ts=int(s.fill_ts),entry=s.entry,stop=s.stop,exit_ts=int(s.exit_ts) if closed else None,exit_px=px,reason=s.reason if closed else 'open (marked)',status='closed' if closed else 'open',notional=n,ret=ret,pnl=n*ret,r=ret/(sd+C))
+            ret=sg*(px-s.entry)/s.entry-C; q=dict(px_src=s.px_src,leverage=lv,margin=mg,liq_px=liq,max_lev=mx,lev_src=lsrc,portfolio=name,confluence=s.confluence,htf_confluent=s.htf,key=s.key,symbol=s.symbol,timeframe=tf,direction=s.direction,fill_ts=int(s.fill_ts),entry=s.entry,stop=stop_out,exit_ts=int(s.exit_ts) if closed else None,exit_px=px,reason=s.reason if closed else 'open (marked)',status='closed' if closed else 'open',notional=n,ret=ret,pnl=n*ret,r=ret/(sd+C))
             rows.append(q); q=dict(q,risk_frac=P['risk'])
             opn.append(q)
         close(float('inf'))

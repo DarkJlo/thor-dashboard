@@ -49,6 +49,17 @@ def hl_mid(sym):
         if k in MARKS: return MARKS[k]*f
     return None
 def base(s): return (s[2:].replace('USDT','') if s.startswith('T:') else s.replace('/USD','')).replace('/','')
+def coin(sym):
+    """Hyperliquid coin for a Thor label (T:ATOMUSDT, ATOM/USD -> ATOM; SHIB -> kSHIB; FART -> FARTCOIN); non-HL labels -> base(sym)"""
+    b=base(sym)
+    if '/' in sym and not sym.endswith('/USD'): return sym   # crosses (SOL/BTC) are not HL perps
+    try: A=hl_meta()['assets']
+    except Exception: A={}
+    return next((k for k in (b,'k'+b,b+'COIN') if k in A),b)
+def dedup_key(r):
+    """same signal = same HL coin + timeframe + direction + levels (label-independent). Dt is NOT part of it: Thor stacks several ladders
+    under one Dt (118 coin/tf/dir/Dt groups with distinct levels in the DB), and an identical re-post with a newer Dt is the same trade."""
+    return '|'.join([coin(r['symbol']),r['timeframe'],r['direction']]+[f"{float(r[k]):.10g}" for k in['entry_low','entry_high','tp1','tp2','tp3']])
 def key(r): return '|'.join([r['symbol'],r['timeframe'],r['direction']]+[f"{float(r[k]):.10g}" for k in['entry_low','entry_high','tp1','tp2','tp3']])
 COLS=['key','symbol','timeframe','direction','entry_low','entry_high','tp1','tp2','tp3','invalid','dt','raw_text','source','format','start_ts','first_seen_ts','status','fill_ts','entry','stop','exit_ts','exit_px','reason','last_ts','last_px','note','px_src']
 def db():
@@ -56,7 +67,7 @@ def db():
     c.execute("create table if not exists trades (px_src,leverage,margin,liq_px,max_lev,lev_src,portfolio,confluence,htf_confluent,key,symbol,timeframe,direction,fill_ts,entry,stop,exit_ts,exit_px,reason,status,notional,ret,pnl,r)")
     c.execute("create table if not exists equity (portfolio,ts,equity)")
     have=[x[1] for x in c.execute('pragma table_info(signals)')]
-    for col in['confluence','live_state','px_src']:
+    for col in['confluence','live_state','px_src','dedup_key']:
         if col not in have: c.execute(f'alter table signals add column {col}')
     if c.execute('pragma user_version').fetchone()[0]<1:   # one-time: re-check every All active catch with the late-catch rule
         c.execute("update signals set status='filled',last_ts=fill_ts,exit_ts=null,exit_px=null,reason=null where source like '%all_active%' and fill_ts is not null")
@@ -69,15 +80,34 @@ def db():
             st=min(max(dts,fs-CFG['max_backfill_hours']*3600_000),fs)   # first_seen_ts ~ check time (same cap as ingest)
             c.execute("update signals set start_ts=?,last_ts=?,status='pending',fill_ts=null,entry=null,stop=null,exit_ts=null,exit_px=null,reason=null,last_px=null,px_src=null where key=?",(st,st,k))
         c.execute('pragma user_version=2'); c.commit()
+    if c.execute('pragma user_version').fetchone()[0]<3:   # one-time: label-independent dedup (T:ATOMUSDT == ATOM/USD). Keep the first-seen row,
+        rows=c.execute("select key,symbol,timeframe,direction,entry_low,entry_high,tp1,tp2,tp3,status,source,first_seen_ts from signals").fetchall()
+        G={}
+        for r in rows:
+            d=dict(zip(['key','symbol','timeframe','direction','entry_low','entry_high','tp1','tp2','tp3','status','source','first_seen_ts'],r))
+            try: dk=dedup_key(d)
+            except Exception: continue
+            c.execute('update signals set dedup_key=? where key=?',(dk,d['key']))
+            if d['status'] not in ('malformed','suspect','duplicate'): G.setdefault(dk,[]).append(d)
+        for dk,g in G.items():   # later sightings become status 'duplicate' (row and its fields kept for history, never traded)
+            g.sort(key=lambda d:(d['first_seen_ts'] or 0,d['key']))
+            for d in g[1:]:
+                log('dedup migration:',d['key'],'duplicate of',g[0]['key'])
+                c.execute("update signals set status='duplicate',reason=?,note=? where key=?",('duplicate of '+g[0]['key'],f"was {d['status']} ({d['source']}) before dedup v3",d['key']))
+        c.execute('pragma user_version=3'); c.commit()
     return c
 # ---------- ingest ----------
-def add_signal(c,r,source,start_ts,fmt='new'):
+def add_signal(c,r,source,start_ts,fmt='new',extra_note=None):
     r=dict(r)
     for k in['entry_low','entry_high','tp1','tp2','tp3','invalid']: r[k]=num(r.get(k))
     if None in [r[k] for k in['entry_low','entry_high','tp1','tp2','tp3','invalid']] or r.get('timeframe') not in CFG['timeouts_days']: return False
     r['entry_low'],r['entry_high']=sorted([r['entry_low'],r['entry_high']]); r['direction']=r['direction'].capitalize()
     k=key(r)   # key from the levels as quoted (before any rescale), so a re-seen signal always maps to the same row
+    dk=dedup_key(r)
     ex=c.execute('select status from signals where key=?',(k,)).fetchone()
+    if not ex:   # same signal under another label (T:ATOMUSDT vs ATOM/USD): use the existing row
+        e2=c.execute("select key,status from signals where dedup_key=? and status not in ('malformed','duplicate') order by first_seen_ts limit 1",(dk,)).fetchone()
+        if e2: log('dedup:',k,'is the same signal as',e2[0]); k=e2[0]; ex=(e2[1],)
     entered=source=='all_active'   # authoritative: All active screen = already hit entry
     sh=r['direction']=='Short'
     if ex:
@@ -101,43 +131,57 @@ def add_signal(c,r,source,start_ts,fmt='new'):
             if abs(dev)>lim: why=f'entry mid {(lo+hi)/2:.6g} is {dev:+.1%} from HL mid {px:.6g} (limit {lim:.0%} for {r["timeframe"]})'
         if not why and px is None and hl_asset(r['symbol'],hl_meta()): note=(note+'; ' if note else '')+'no HL mid at ingest (price check skipped)'
         if why: log('suspect signal',r['symbol'],r['timeframe'],r['direction'],why)
+    if extra_note: note=(note+'; ' if note else '')+extra_note
     row=dict(key=k,symbol=r['symbol'],timeframe=r['timeframe'],direction=r['direction'],entry_low=lo,entry_high=hi,tp1=r['tp1'],tp2=r['tp2'],tp3=r['tp3'],invalid=r['invalid'],dt=str(r.get('dt','')),raw_text=str(r.get('raw_text',''))[:500],
              source=source,format=fmt,start_ts=int(start_ts),first_seen_ts=int(time.time()*1000),status=('suspect' if why else 'pending') if ok else 'malformed',last_ts=int(start_ts),
-             reason=('suspect: '+why) if why else None,note=note)
+             reason=('suspect: '+why) if why else None,note=note,dedup_key=dk)
     if entered and ok and not why:
         e=hi if not sh else lo; d1=abs(r['tp1']-e); sg=-1 if sh else 1   # entry assumed at the edge price reaches first
         row.update(status='filled',fill_ts=int(start_ts),entry=e,stop=e-sg*d1/CFG['stop_rr'],note='entered per All active')
     c.execute(f"insert into signals ({','.join(row)}) values ({','.join('?'*len(row))})",list(row.values())); return True
 def ms(t): return int(pd.Timestamp(t).tz_localize(TZ).timestamp()*1000) if pd.Timestamp(t).tzinfo is None else int(pd.Timestamp(t).timestamp()*1000)
+INBOX_REPORT={}
 def ingest(c):
-    n=0
+    """Validate (inbox_schema.py) then ingest each inbox file in one transaction. A file is recorded in ingested.txt only after it parsed and
+    committed; a file that fails is moved to processed/BAD_<name>, rolled back, NOT recorded (so the engine retries it next run) and its
+    error is written to inbox_report.json + the heartbeat. Rejected items/views are reported but don't fail the file."""
+    n=0; INBOX_REPORT.clear()
     if glob.glob('inbox/*.json'): marks()   # HL mids for the ingest price check
+    sys.path.insert(0,HERE); import inbox_schema as IS
     for f in sorted(glob.glob('inbox/*.json')):
+        b=os.path.basename(f); rep=dict(file=b,ok=False); INBOX_REPORT[b]=rep; m=0
         try:
-            d=json.load(open(f))
-            if isinstance(d,dict) and 'messages' in d:
-                sys.path.insert(0,HERE); from tgparse import parse
-                for _,r in parse(f).iterrows(): n+=add_signal(c,r,'telegram_export',ms(r.msg_time),r.format)
+            d=json.load(open(f)); R=IS.check_file(d)
+            if not R['ok']: raise ValueError('schema: '+R['error'])
+            if R.get('kind')=='telegram_export':
+                from tgparse import parse
+                for _,r in parse(f).iterrows(): m+=add_signal(c,r,'telegram_export',ms(r.msg_time),r.format)
             else:
-                ca=ms(d['checked_at'])
-                items=[dict(r,source=r.get('source') if r.get('source') in ('all_active','ask_thor','alert') else 'all_active') for r in d.get('active',[])]
-                pv=d.get('pair_views') or {}
-                if pv:
-                    sys.path.insert(0,HERE); from tgparse import parse_texts
-                    for _,r in parse_texts(list(pv.values()) if isinstance(pv,dict) else pv,ca/1000).iterrows():
-                        items.append(dict(r.drop(['msg_time','format','msg_id']),source='ask_thor'))
+                ca=R['checked_ms']; items=list(R['items'])
+                for lab,txt,cap in R['views']:
+                    from tgparse import parse_texts
+                    vt=cap or ca
+                    for _,r in parse_texts([txt],vt/1000).iterrows():
+                        items.append(dict(r.drop(['msg_time','format','msg_id']),source='ask_thor',_vt=vt,_note=None if cap else 'view without captured_at'))
                 items.sort(key=lambda r:r.get('source')!='all_active')
                 for r in items:
+                    vt=r.pop('_vt',ca); vn=r.pop('_note',None)
                     if r.get('msg_time'): st=ms(r['msg_time'])
                     else:
                         try: _t=pd.Timestamp(str(r.get('dt'))); dts=ms(_t if _t.tzinfo else _t.tz_localize('UTC'))   # Thor Dt stamps are UTC
-                        except Exception: dts=ca
-                        st=ca if r.get('source')=='all_active' else min(max(dts,ca-CFG['max_backfill_hours']*3600_000),ca)
-                    n+=add_signal(c,r,r.get('source','all_active'),st)
-            shutil.move(f,'inbox/processed/'+os.path.basename(f))
+                        except Exception: dts=vt; log('Dt unparseable, using view/check time',b,r.get('symbol'),r.get('dt'))
+                        st=ca if r.get('source')=='all_active' else min(max(dts,vt-CFG['max_backfill_hours']*3600_000),vt)
+                    m+=add_signal(c,r,r['source'],st,extra_note=vn)
+                rep.update(rejected_items=R['rejected_items'],rejected_views=R['rejected_views'],view_warnings=R['view_warnings'])
+                for x in R['rejected_items']+R['rejected_views']: log('inbox reject',b,x)
+            c.commit(); n+=m; rep.update(ok=True,new_signals=m)
+            shutil.move(f,'inbox/processed/'+b)
+            with open('ingested.txt','a') as fh: fh.write(b+'\n')   # only now: a failed file is retried next run
         except Exception as e:
-            log('inbox error',f,e); shutil.move(f,'inbox/processed/BAD_'+os.path.basename(f))
-    c.commit(); return n
+            c.rollback(); rep['error']=f'{type(e).__name__}: {e}'; log('inbox error (will retry next run)',f,rep['error'])
+            shutil.move(f,'inbox/processed/BAD_'+b)
+    if INBOX_REPORT: json.dump(INBOX_REPORT,open('inbox_report.json','w'),indent=1)
+    return n
 # ---------- prices ----------
 # Candles: Hyperliquid candleSnapshot (configurable interval, default 1m) for the window HL still serves
 # (~5000 candles back); older parts and HL gaps fall back to Binance then OKX (1m, then 5m). Cached per symbol on disk.
@@ -444,7 +488,7 @@ def variants(X,P,now):
             if p['why']: X.at[i,'_why']=p['why']
     return X
 def portfolios(c):
-    S=pd.read_sql("select * from signals where fill_ts is not null",c); C=cost(); now=int(time.time()*1000); M=hl_meta()
+    S=pd.read_sql("select * from signals where fill_ts is not null and status not in ('duplicate','suspect','malformed')",c); C=cost(); now=int(time.time()*1000); M=hl_meta()
     c.execute('create table if not exists margin (portfolio,ts,used,equity)'); c.execute('delete from trades'); c.execute('delete from equity'); c.execute('delete from margin'); D=CFG['portfolio_defaults']
     for name,p in CFG['portfolios'].items():
         P={**D,**p}; A=assets(P.get('assets_file'))
@@ -510,12 +554,13 @@ def cycle():
     import dashboard; dashboard.build(c)
     st=dict(c.execute('select status,count(*) from signals group by status').fetchall())
     en=c.execute("select count(*) from signals where live_state='still_enterable'").fetchone()[0]; c.close()
-    hb=dict(ts=time.strftime('%F %T'),epoch=int(time.time()),new_signals=n,status=st,still_enterable=en,sources=SRC,frozen=dict(FROZEN),mark_rejected=dict(MARK_BAD)); open('heartbeat','w').write(json.dumps(hb)); log('cycle',hb)
+    hb=dict(ts=time.strftime('%F %T'),epoch=int(time.time()),new_signals=n,status=st,still_enterable=en,sources=SRC,frozen=dict(FROZEN),mark_rejected=dict(MARK_BAD),
+            inbox={k:dict(ok=v['ok'],error=v.get('error'),new=v.get('new_signals'),rejected=len(v.get('rejected_items',[]))+len(v.get('rejected_views',[])),warnings=len(v.get('view_warnings',[]))) for k,v in INBOX_REPORT.items()}); open('heartbeat','w').write(json.dumps(hb)); log('cycle',hb)
     if ONCE: return   # one-shot (GitHub Actions engine): never relaunch the box publisher
     try: publisher_watchdog()
     except Exception as e: log('watchdog error',e)
     try:   # box: mirror new check_*.json to the engine repo's inbox branch (no-op if nothing new)
-        import subprocess; subprocess.Popen(['/workspace/thor/serve/push_inbox.sh'],stdout=open('/workspace/thor/serve/push_inbox.log','a'),stderr=subprocess.STDOUT,start_new_session=True)
+        import subprocess; subprocess.Popen(['/workspace/thor/serve/push_inbox.sh'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,start_new_session=True)   # the script logs to push_inbox.log itself
     except Exception as e: log('push_inbox error',e)
 if __name__=='__main__':
     if '--once' in sys.argv: cycle(); sys.exit()

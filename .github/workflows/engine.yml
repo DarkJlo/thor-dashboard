@@ -35,7 +35,8 @@ jobs:
             tar xzf engine/candles.tgz -C engine && echo "candle cache restored from state/candles.tgz"; fi
           echo "candle files: $(ls engine/candle_cache | wc -l)"
           mkdir -p engine/inbox/processed; touch engine/ingested.txt
-          for f in ../inbox/inbox/*.json; do [ -e "$f" ] || continue; b=$(basename "$f"); grep -qxF "$b" engine/ingested.txt || { cp "$f" engine/inbox/; echo "$b" >> engine/ingested.txt; echo "new inbox: $b"; }; done
+          for f in ../inbox/inbox/*.json; do [ -e "$f" ] || continue; b=$(basename "$f"); grep -qxF "$b" engine/ingested.txt || { cp "$f" engine/inbox/; echo "new inbox: $b"; }; done
+          # tracker.py appends a file to ingested.txt only after it parsed + committed; a BAD_ file is retried next run (see inbox_report.json)
       - name: Tracker cycle
         working-directory: engine
         run: |
@@ -57,6 +58,7 @@ jobs:
             test -s "$f" || { echo "::error::state file $f missing; refusing to overwrite state"; exit 1; }
             cp "$f" ../../out/; done
           [ -d stats ] && cp -r stats ../../out/
+          [ -f inbox_report.json ] && cp inbox_report.json ../../out/ || true
           cd ../../out && git init -q && git checkout -q -b state && git add -A
           git -c user.name=thor-engine -c user.email=actions@users.noreply.github.com commit -qm "state $(date '+%F %T %Z') run ${{ github.run_id }}"
           ok=; for i in 1 2 3; do git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" state && { ok=1; break; }; sleep 5; done

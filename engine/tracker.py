@@ -424,7 +424,7 @@ def cycle():
     import dashboard; dashboard.build(c)
     st=dict(c.execute('select status,count(*) from signals group by status').fetchall())
     en=c.execute("select count(*) from signals where live_state='still_enterable'").fetchone()[0]; c.close()
-    hb=dict(ts=time.strftime('%F %T'),new_signals=n,status=st,still_enterable=en,sources=SRC); open('heartbeat','w').write(json.dumps(hb)); log('cycle',hb)
+    hb=dict(ts=time.strftime('%F %T'),epoch=int(time.time()),new_signals=n,status=st,still_enterable=en,sources=SRC); open('heartbeat','w').write(json.dumps(hb)); log('cycle',hb)
     if ONCE: return   # one-shot (GitHub Actions engine): never relaunch the box publisher
     try: publisher_watchdog()
     except Exception as e: log('watchdog error',e)

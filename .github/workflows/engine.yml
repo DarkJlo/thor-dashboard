@@ -11,7 +11,9 @@ jobs:
   cycle:
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    defaults: {run: {shell: bash}}   # = bash -eo pipefail: a crash anywhere in a pipeline fails the step
     steps:
+      - run: echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.13', cache: pip, cache-dependency-path: engine/requirements.txt}
@@ -24,6 +26,7 @@ jobs:
           git fetch -q --depth=1 origin +refs/heads/state:refs/remotes/origin/state +refs/heads/inbox:refs/remotes/origin/inbox
           git worktree add -q ../state origin/state --detach && git worktree add -q ../inbox origin/inbox --detach
           cp -r ../state/. engine/ ; rm -f engine/.git
+          rm -f engine/dashboard.html engine/version.json   # never republish the previous run's page: the tracker must rebuild it
           # candle history is REQUIRED (portfolios replay full 1m history from cache). Cache miss -> use hourly backup in state.
           if [ -z "$(ls engine/candle_cache/*.npy 2>/dev/null)" ]; then
             [ -f engine/candles.tgz ] || { echo "::error::no candle cache and no candles.tgz backup; refusing to publish wrong data"; exit 1; }
@@ -34,8 +37,13 @@ jobs:
       - name: Tracker cycle
         working-directory: engine
         run: |
+          set -o pipefail
           s=$(date +%s); python -u tracker.py --once 2>&1 | tee last_run.log; echo "cycle_seconds=$(( $(date +%s)-s ))" | tee -a last_run.log
-          test -s dashboard.html
+          test -s dashboard.html || { echo "::error::tracker wrote no dashboard.html"; exit 1; }
+          test -s version.json || { echo "::error::tracker wrote no version.json"; exit 1; }
+          hb=$(python -c "import json;print(int(json.load(open('heartbeat')).get('epoch',0)))") || hb=0
+          [ "$hb" -ge "$JOB_START" ] || { echo "::error::heartbeat epoch $hb is not newer than job start $JOB_START: stale state, not saving or publishing"; exit 1; }
+          echo "heartbeat fresh: epoch $hb >= job start $JOB_START"
       - name: Save state (single orphan commit on `state`)
         run: |
           mkdir -p ../out && cd engine

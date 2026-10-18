@@ -14,9 +14,40 @@ HERE=os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE)
 CFG=yaml.safe_load(open('config.yaml')); DB='tracker.db'; IV=300_000
 TZ='-07:00'
 def log(*a): print(time.strftime('%F %T'),*a,flush=True)
+NUMRE=re.compile(r'(?<![\d.])[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?(?![\d.])')
 def num(x):
+    """first number in x: keeps minus signs (incl. unicode minus) and scientific notation (5.07e-6); '1.2.3' -> None"""
     if x is None or (isinstance(x,float) and math.isnan(x)): return None
-    m=re.search(r'[\d.]+',str(x).replace(',','')); return float(m.group()) if m else None
+    if isinstance(x,(int,float,np.integer,np.floating)): return float(x)
+    t=str(x).replace(',','').replace('\u2212','-').replace('\u2013','-').replace('\u00d710^','e').replace('x10^','e').strip()
+    if ':' in t: t=t.rsplit(':',1)[1]   # 'TP1: 0.0123' -> the value, not the label digit
+    m=re.search(r'\d+\.\d+\.\d',t)
+    if m: return None   # e.g. 1.2.3: not a number, don't guess
+    m=NUMRE.search(t); return float(m.group()) if m else None
+SUSPECT_PCT={'15m':0.05,'1h':0.05,'4h':0.15,'1d':0.15}   # max |entry mid / HL mid - 1| at ingest
+def ladder_ok(r):
+    """Thor level ladder (verified on all 528 stored signals: Thor's Invalid sits BEYOND TP3, it cancels a signal that ran away before filling).
+    Long: 0 < entry_low <= entry_high < TP1 < TP2 < TP3 < Invalid; Short mirrored: Invalid < TP3 < TP2 < TP1 < entry_low <= entry_high."""
+    lo,hi,t1,t2,t3,iv=(r[k] for k in ('entry_low','entry_high','tp1','tp2','tp3','invalid'))
+    if min(lo,hi,t1,t2,t3,iv)<=0: return 'non-positive level'
+    if lo>hi: return 'entry_low > entry_high'
+    if r['direction']=='Short': ok=iv<t3<t2<t1<lo; want='Invalid < TP3 < TP2 < TP1 < entry_low'
+    else: ok=hi<t1<t2<t3<iv; want='entry_high < TP1 < TP2 < TP3 < Invalid'
+    return None if ok else 'ladder not '+want
+def rescale_factor(mid,px):
+    """THOR quotes some tiny coins scaled (SHIB 5.07 = 5.07e-6). Returns (factor, None) when levels are a clean power of 10 (>=100x) off
+    the price, (1, None) when no rescale is needed, (None, reason) when the ratio is >=100x but not close to a power of 10 (ambiguous: refuse)."""
+    if not px or px<=0 or not mid or mid<=0: return 1,None
+    ratio=mid/px
+    if 0.01<ratio<100: return 1,None
+    e=math.log10(ratio); k=round(e)
+    if abs(e-k)>math.log10(1.3): return None,f'ambiguous rescale: levels/price ratio {ratio:.4g} is not within 30% of a power of 10'
+    return 10**k,None
+def hl_mid(sym):
+    b=base(sym)
+    for k,f in [(b,1),('k'+b,1e-3),(b+'COIN',1)]:
+        if k in MARKS: return MARKS[k]*f
+    return None
 def base(s): return (s[2:].replace('USDT','') if s.startswith('T:') else s.replace('/USD','')).replace('/','')
 def key(r): return '|'.join([r['symbol'],r['timeframe'],r['direction']]+[f"{float(r[k]):.10g}" for k in['entry_low','entry_high','tp1','tp2','tp3']])
 COLS=['key','symbol','timeframe','direction','entry_low','entry_high','tp1','tp2','tp3','invalid','dt','raw_text','source','format','start_ts','first_seen_ts','status','fill_ts','entry','stop','exit_ts','exit_px','reason','last_ts','last_px','note','px_src']
@@ -32,7 +63,7 @@ def db():
         c.execute('pragma user_version=1'); c.commit()
     if c.execute('pragma user_version').fetchone()[0]<2:   # one-time: pre-fix (adc4872) Dt stamps were parsed as local time -> recompute start as UTC and replay
         FIX=1791947359000   # 2026-10-13 20:09:19 -07:00, commit adc4872
-        for k,dt,fs in c.execute("select key,dt,first_seen_ts from signals where source in ('ask_thor','alert') and dt is not null and first_seen_ts<? and status!='malformed'",(FIX,)).fetchall():
+        for k,dt,fs in c.execute("select key,dt,first_seen_ts from signals where source in ('ask_thor','alert') and dt is not null and first_seen_ts<? and status not in ('malformed','suspect','duplicate')",(FIX,)).fetchall():
             try: _t=pd.Timestamp(str(dt)); dts=ms(_t if _t.tzinfo else _t.tz_localize('UTC'))
             except Exception: continue
             st=min(max(dts,fs-CFG['max_backfill_hours']*3600_000),fs)   # first_seen_ts ~ check time (same cap as ingest)
@@ -45,7 +76,8 @@ def add_signal(c,r,source,start_ts,fmt='new'):
     for k in['entry_low','entry_high','tp1','tp2','tp3','invalid']: r[k]=num(r.get(k))
     if None in [r[k] for k in['entry_low','entry_high','tp1','tp2','tp3','invalid']] or r.get('timeframe') not in CFG['timeouts_days']: return False
     r['entry_low'],r['entry_high']=sorted([r['entry_low'],r['entry_high']]); r['direction']=r['direction'].capitalize()
-    k=key(r); ex=c.execute('select status from signals where key=?',(k,)).fetchone()
+    k=key(r)   # key from the levels as quoted (before any rescale), so a re-seen signal always maps to the same row
+    ex=c.execute('select status from signals where key=?',(k,)).fetchone()
     entered=source=='all_active'   # authoritative: All active screen = already hit entry
     sh=r['direction']=='Short'
     if ex:
@@ -54,16 +86,32 @@ def add_signal(c,r,source,start_ts,fmt='new'):
             c.execute("update signals set status='filled',fill_ts=?,entry=?,stop=?,last_ts=?,source=source||'+all_active',note='entered per All active' where key=?",(int(start_ts),e,e-sg*d1/CFG['stop_rr'],int(start_ts),k))
         return False
     sh=r['direction']=='Short'; lo,hi=r['entry_low'],r['entry_high']
-    ok=(r['tp1']<lo and r['invalid']<r['tp1']) if sh else (r['tp1']>hi and r['invalid']>r['tp1'])
+    ok=(r['tp1']<lo and r['invalid']<r['tp1']) if sh else (r['tp1']>hi and r['invalid']>r['tp1'])   # gross TP1/Invalid side check (malformed)
+    why=None; note=None
+    if ok:   # price sanity: rescale guard, full ladder, entry vs Hyperliquid mid -> 'suspect' (stored, shown, never traded)
+        px=hl_mid(r['symbol']); f,why=rescale_factor((lo+hi)/2,px)
+        if f and f!=1:
+            for kk in ('entry_low','entry_high','tp1','tp2','tp3','invalid'): r[kk]=r[kk]/f
+            lo,hi=r['entry_low'],r['entry_high']; note=f'rescaled /{f:g} at ingest'
+            log(f'rescale {r["symbol"]} {r["timeframe"]} {r["direction"]} levels /{f:g} (entry mid {(lo+hi)/2*f:.6g} vs HL mid {px:.6g})')
+        if why: log('rescale refused',r['symbol'],r['timeframe'],why)
+        why=why or ladder_ok(r)
+        if not why and px:
+            dev=(lo+hi)/2/px-1; lim=SUSPECT_PCT.get(r['timeframe'],0.15)
+            if abs(dev)>lim: why=f'entry mid {(lo+hi)/2:.6g} is {dev:+.1%} from HL mid {px:.6g} (limit {lim:.0%} for {r["timeframe"]})'
+        if not why and px is None and hl_asset(r['symbol'],hl_meta()): note=(note+'; ' if note else '')+'no HL mid at ingest (price check skipped)'
+        if why: log('suspect signal',r['symbol'],r['timeframe'],r['direction'],why)
     row=dict(key=k,symbol=r['symbol'],timeframe=r['timeframe'],direction=r['direction'],entry_low=lo,entry_high=hi,tp1=r['tp1'],tp2=r['tp2'],tp3=r['tp3'],invalid=r['invalid'],dt=str(r.get('dt','')),raw_text=str(r.get('raw_text',''))[:500],
-             source=source,format=fmt,start_ts=int(start_ts),first_seen_ts=int(time.time()*1000),status='pending' if ok else 'malformed',last_ts=int(start_ts))
-    if entered and ok:
+             source=source,format=fmt,start_ts=int(start_ts),first_seen_ts=int(time.time()*1000),status=('suspect' if why else 'pending') if ok else 'malformed',last_ts=int(start_ts),
+             reason=('suspect: '+why) if why else None,note=note)
+    if entered and ok and not why:
         e=hi if not sh else lo; d1=abs(r['tp1']-e); sg=-1 if sh else 1   # entry assumed at the edge price reaches first
         row.update(status='filled',fill_ts=int(start_ts),entry=e,stop=e-sg*d1/CFG['stop_rr'],note='entered per All active')
     c.execute(f"insert into signals ({','.join(row)}) values ({','.join('?'*len(row))})",list(row.values())); return True
 def ms(t): return int(pd.Timestamp(t).tz_localize(TZ).timestamp()*1000) if pd.Timestamp(t).tzinfo is None else int(pd.Timestamp(t).timestamp()*1000)
 def ingest(c):
     n=0
+    if glob.glob('inbox/*.json'): marks()   # HL mids for the ingest price check
     for f in sorted(glob.glob('inbox/*.json')):
         try:
             d=json.load(open(f))
@@ -189,10 +237,13 @@ def mark(sym):
     try: return float(requests.get('https://data-api.binance.vision/api/v3/ticker/price',params=dict(symbol=b+'USDT'),timeout=10).json()['price'])
     except Exception: return None
 def rescale(c,r,px):
-    """THOR quotes some tiny coins scaled (e.g. SHIB 5.07 = 5.07e-6). Rescale pending signals by a power of 10 if levels are >100x off price."""
-    mid=(r.entry_low+r.entry_high)/2; ratio=mid/px
-    if 0.01<ratio<100: return False
-    f=10**round(math.log10(ratio))
+    """Pending signals stored before a price was available: same guarded power-of-10 rescale as ingest. Logs every rescale; an ambiguous ratio is
+    refused and the signal is marked suspect instead of being guessed."""
+    mid=(r.entry_low+r.entry_high)/2; f,why=rescale_factor(mid,px)
+    if why:
+        log('rescale refused',r.key,why); c.execute("update signals set status='suspect',reason=?,note=? where key=?",('suspect: '+why,why,r.key)); return False
+    if f==1: return False
+    log(f'rescale {r.key} levels /{f:g} (entry mid {mid:.6g} vs price {px:.6g})')
     c.execute("update signals set entry_low=entry_low/?,entry_high=entry_high/?,tp1=tp1/?,tp2=tp2/?,tp3=tp3/?,invalid=invalid/?,note=? where key=?",(f,)*6+(f'rescaled /{f:g}',r.key)); return True
 def update_signals(c):
     marks()
@@ -217,7 +268,7 @@ def assets(f):
     return {l.strip().replace('/USD','') for l in open(f) if l.strip() and not l.startswith('#')}
 def confluence(c):
     """score at time t = sum of TF weights of live same-asset same-direction signals (incl. itself). Live = start_ts <= t < (exit_ts or now)."""
-    A=pd.read_sql("select key,symbol,direction,timeframe,start_ts,exit_ts,fill_ts,status,last_px,entry_low,entry_high from signals where status!='malformed'",c)
+    A=pd.read_sql("select key,symbol,direction,timeframe,start_ts,exit_ts,fill_ts,status,last_px,entry_low,entry_high from signals where status not in ('malformed','suspect','duplicate')",c)
     W=CFG['confluence_weights']; now=int(time.time()*1000); A['end']=A.exit_ts.fillna(now+1)
     out={}
     for _,r in A.iterrows():
@@ -327,7 +378,7 @@ def variants(X,P,now):
         ok=(X.confluence.fillna(0)>=P['min_confluence'])&(X.timeframe.isin(['4h','1d'])|(X.htf=='yes'))
         X.loc[~ok,'_why']='skip_confluence'
     if P.get('require_live_tfs'):   # same-asset same-direction signals of ALL these timeframes must be live at fill time (the signal itself counts)
-        G=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status!='malformed'",sqlite3.connect(DB)); G['end']=G.exit_ts.fillna(now+1)
+        G=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate')",sqlite3.connect(DB)); G['end']=G.exit_ts.fillna(now+1)
         def has(r):
             g=G[(G.symbol==r.symbol)&(G.direction==r.direction)&(G.start_ts<=r.fill_ts)&(G.end>r.fill_ts)]; return set(P['require_live_tfs'])<=set(g.timeframe)|{r.timeframe}
         ok=X.apply(has,axis=1); X.loc[~ok&X._why.isna(),'_why']='skip_confluence'
@@ -366,7 +417,7 @@ def portfolios(c):
         X=X[(X.tp1-X.entry).abs()/X.entry>=P['min_tp1_dist']]
         if A is not None: X=X[X.symbol.map(lambda s:s.replace('/USD','')).isin(A)|X.symbol.isin(A)]
         # htf_confluent: a live same-asset same-direction 4h/1d signal exists at fill time
-        H=pd.read_sql("select symbol,direction,start_ts,exit_ts from signals where status!='malformed' and timeframe in ('4h','1d')",c); H['end']=H.exit_ts.fillna(now+1)
+        H=pd.read_sql("select symbol,direction,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate') and timeframe in ('4h','1d')",c); H['end']=H.exit_ts.fillna(now+1)
         X['htf']=[('yes' if ((H.symbol==r.symbol)&(H.direction==r.direction)&(H.start_ts<=r.fill_ts)&(H.end>r.fill_ts)).any() else 'no') for r in X.itertuples()] if len(X) else []
         if P.get('require_htf_confluence'): X=X[X.htf=='yes']
         if P.get('start_after'): X=X[X.fill_ts>=int(pd.Timestamp(P['start_after']).tz_localize(TZ).timestamp()*1000)]   # account reset: fresh from this time

@@ -49,8 +49,8 @@ def payload(c):
     import yaml; cfg=yaml.safe_load(open(os.path.join(D,'config.yaml')))
     S=pd.read_sql('select * from signals',c); T=pd.read_sql('select * from trades',c); E=pd.read_sql('select * from equity order by ts',c)
     for k in ['fill_ts','exit_ts']: T[k]=pd.to_numeric(T[k],errors='coerce')
-    sc=['key','symbol','timeframe','direction','entry_low','entry_high','tp1','tp2','tp3','invalid','stop','entry','status','live_state','confluence','start_ts','dt','first_seen_ts','fill_ts','exit_ts','exit_px','reason','last_ts','last_px','source','note','raw_text']
-    tc=['leverage','margin','liq_px','max_lev','lev_src','portfolio','key','symbol','timeframe','direction','confluence','htf_confluent','status','reason','fill_ts','entry','stop','exit_ts','exit_px','notional','ret','pnl','r']
+    sc=['key','symbol','timeframe','direction','entry_low','entry_high','tp1','tp2','tp3','invalid','stop','entry','status','live_state','confluence','start_ts','dt','first_seen_ts','fill_ts','exit_ts','exit_px','reason','last_ts','last_px','source','note','raw_text','px_src']
+    tc=['leverage','margin','liq_px','max_lev','lev_src','portfolio','key','symbol','timeframe','direction','confluence','htf_confluent','status','reason','fill_ts','entry','stop','exit_ts','exit_px','notional','ret','pnl','r','px_src']
     hb={}
     try: hb=json.load(open(os.path.join(D,'heartbeat')))
     except Exception: pass

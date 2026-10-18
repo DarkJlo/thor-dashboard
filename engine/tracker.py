@@ -194,11 +194,32 @@ def candles(sym,start):
     else: new+=_fallback(sym,have_to,now)
     if new:
         n=np.array(new,dtype=float); n=n[n[:,0]+n[:,5]<=now]   # closed candles only
+        if len(n): n=n[np.argsort(n[:,0],kind='stable')]        # OKX pages arrive newest-first
         cache=np.concatenate([cache[cache[:,0]<n[0,0]] if len(n) else cache,n]) if len(n) else cache
+        if len(cache): cache=cache[np.argsort(cache[:,0],kind='stable')]; cache=cache[np.r_[True,np.diff(cache[:,0])>0]]   # sorted, one row per ts
         np.save(f,cache)
     if not len(cache): return None
     SRC[sym]='+'.join(sorted({SRCN[int(x)] for x in np.unique(cache[cache[:,0]>=start][:,6])}))
     return cache[cache[:,0]>=start]
+# ---------- candle health: no fills/stops/TPs on stale or gapped data ----------
+FROZEN={}
+def candle_health(a,since):
+    """None if the candles step() is about to walk are usable, else (reason, gap_start_ts or None).
+    stale: last closed candle ended more than 2 intervals + grace ago. gap: more than 2 missing intervals between candles from `since` on."""
+    now=int(time.time()*1000); grace=CC.get('stale_grace_min',4)*60_000
+    if a is None or not len(a): return 'no candles',None
+    iv=a[-1,5]; age=now-(a[-1,0]+iv)
+    if age>2*iv+grace: return f'stale: last closed {int(iv/60000)}m candle ended {age/60000:.0f} min ago ({SRCN[int(a[-1,6])]})',None
+    b=a[a[:,0]>=since]
+    if len(b)>1:
+        d=np.diff(b[:,0]); g=np.where(d>3*b[:-1,5])[0]
+        if len(g):
+            i=g[0]; return f'gap: {(d[i]-b[i,5])/60000:.0f} min missing after {time.strftime("%m-%d %H:%M",time.localtime(b[i,0]/1000))} ({len(g)} gap(s))',int(b[i,0])
+    return None
+def drop_after(sym,ts):
+    """discard cached candles after ts so the next fetch re-downloads the gap"""
+    f=os.path.join(CDIR,sym.replace('/','_')+'.npy')
+    if os.path.exists(f): a=np.load(f); np.save(f,a[a[:,0]<=ts])
 # ---------- signal state machine ----------
 def step(s,a):
     sh=s['direction']=='Short'; sg=-1 if sh else 1; TO=CFG['timeouts_days'][s['timeframe']]*86400e3
@@ -230,12 +251,15 @@ def marks():
     MARKS.clear()
     try: MARKS.update({k:float(v) for k,v in requests.post('https://api.hyperliquid.xyz/info',json={'type':'allMids'},timeout=15).json().items() if not k.startswith('@') and not k.startswith('#')})
     except Exception as e: log('allMids failed',e)
-def mark(sym):
+def markx(sym):
+    """(live price, venue): Hyperliquid allMids, else Binance spot ticker"""
     b=base(sym)
     for k,f in [(b,1),('k'+b,1e-3)]:
-        if k in MARKS: return MARKS[k]*f
-    try: return float(requests.get('https://data-api.binance.vision/api/v3/ticker/price',params=dict(symbol=b+'USDT'),timeout=10).json()['price'])
-    except Exception: return None
+        if k in MARKS: return MARKS[k]*f,'hyperliquid'
+    try: return float(requests.get('https://data-api.binance.vision/api/v3/ticker/price',params=dict(symbol=b+'USDT'),timeout=10).json()['price']),'binance'
+    except Exception: return None,None
+def mark(sym): return markx(sym)[0]
+MARK_BAD={}
 def rescale(c,r,px):
     """Pending signals stored before a price was available: same guarded power-of-10 rescale as ingest. Logs every rescale; an ambiguous ratio is
     refused and the signal is marked suspect instead of being guessed."""
@@ -252,12 +276,23 @@ def update_signals(c):
         px=mark(r.symbol)
         if px: rescale(c,r,px)
     S=pd.read_sql("select * from signals where status in ('pending','filled')",c)
+    FROZEN.clear(); MARK_BAD.clear()
     for sym,g in S.groupby('symbol'):
-        a=candles(sym,int(g.last_ts.min())); mk=mark(sym)
+        since=int(g.last_ts.min()); a=candles(sym,since); bad=candle_health(a,since)
+        if bad and bad[1] is not None:   # gap: drop the cached candles after it and re-download once now; still gapped -> freeze, retry next cycle
+            log('candle gap',sym,bad[0],'-> refetching'); drop_after(sym,bad[1]); a=candles(sym,since); bad=candle_health(a,since)
         if a is None:
-            c.execute("update signals set note='no price data' where symbol=? and status in ('pending','filled')",(sym,)); continue
+            c.execute("update signals set note='no price data' where symbol=? and status in ('pending','filled')",(sym,)); FROZEN[sym]='no price data'; continue
+        if bad:   # no fill / stop / TP decisions on bad data this cycle; signals keep last_ts and are replayed when data is good again
+            FROZEN[sym]=bad[0]; log('FROZEN',sym,bad[0])
+            for _,r in g.iterrows():
+                c.execute("update signals set note=? where key=?",(((r.note if isinstance(r.note,str) else '').split(' | ')[0]+' | FROZEN '+bad[0]),r.key))
+            continue
+        mk,msrc=markx(sym); lc=float(a[-1,4])
+        if mk and abs(mk/lc-1)>CFG.get('mark_max_dev',0.03):   # live price must agree with the last closed candle
+            MARK_BAD[sym]=f'{msrc} {mk:.6g} vs last candle {lc:.6g} ({mk/lc-1:+.1%}): mark rejected, using candle close'; log('mark rejected',sym,MARK_BAD[sym]); mk,msrc=lc,'candle'
         for _,r in g.iterrows():
-            s=step(r.to_dict(),a); s['note']=(s.get('note') if isinstance(s.get('note'),str) else '').split(' | ')[0]+' | px:'+str(SRC.get(sym))
+            s=step(r.to_dict(),a); s['note']=(s.get('note') if isinstance(s.get('note'),str) else '').split(' | ')[0]+' | px:'+str(SRC.get(sym))+('' if msrc in (None,'hyperliquid') else ' | mark:'+str(msrc))
             if s['status'] in('pending','filled') and mk: s['last_px']=mk   # live mark for still_enterable / open PnL
             c.execute(f"update signals set {','.join(k+'=?' for k in COLS if k!='key')} where key=?",[s[k] if not (isinstance(s[k],float) and math.isnan(s[k])) else None for k in COLS if k!='key']+[s['key']])
     c.commit()
@@ -475,7 +510,7 @@ def cycle():
     import dashboard; dashboard.build(c)
     st=dict(c.execute('select status,count(*) from signals group by status').fetchall())
     en=c.execute("select count(*) from signals where live_state='still_enterable'").fetchone()[0]; c.close()
-    hb=dict(ts=time.strftime('%F %T'),epoch=int(time.time()),new_signals=n,status=st,still_enterable=en,sources=SRC); open('heartbeat','w').write(json.dumps(hb)); log('cycle',hb)
+    hb=dict(ts=time.strftime('%F %T'),epoch=int(time.time()),new_signals=n,status=st,still_enterable=en,sources=SRC,frozen=dict(FROZEN),mark_rejected=dict(MARK_BAD)); open('heartbeat','w').write(json.dumps(hb)); log('cycle',hb)
     if ONCE: return   # one-shot (GitHub Actions engine): never relaunch the box publisher
     try: publisher_watchdog()
     except Exception as e: log('watchdog error',e)

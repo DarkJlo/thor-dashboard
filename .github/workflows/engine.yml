@@ -4,6 +4,8 @@ name: thor-engine
 on:
   schedule: [{cron: '2-57/5 * * * *'}]
   workflow_dispatch:
+    inputs:
+      allow_shrink: {description: 'Allow saving a state whose signal/closed-trade counts are lower than the previous state (dedup, rollback)', type: boolean, default: false}
 permissions: {contents: write, pages: write, id-token: write, actions: write}
 concurrency: {group: thor-engine, cancel-in-progress: false}
 env: {TZ: America/Phoenix, THOR_ENGINE: actions}
@@ -45,13 +47,20 @@ jobs:
           [ "$hb" -ge "$JOB_START" ] || { echo "::error::heartbeat epoch $hb is not newer than job start $JOB_START: stale state, not saving or publishing"; exit 1; }
           echo "heartbeat fresh: epoch $hb >= job start $JOB_START"
       - name: Save state (single orphan commit on `state`)
+        env: {ALLOW_SHRINK: "${{ inputs.allow_shrink }}"}
         run: |
           mkdir -p ../out && cd engine
           if [ "$(date -u +%M)" -lt 6 ] || [ ! -f candles.tgz ]; then tar czf candles.tgz candle_cache; fi   # hourly backup of candle history
-          cp -r candles.tgz tracker.db journal.csv stats hl_meta.json heartbeat ingested.txt last_run.log dashboard.html version.json ../../out/ 2>/dev/null || true
+          # gate: db present, opens, integrity ok, signal + closed-trade counts not lower than the previous state (override: allow_shrink)
+          python check_state.py tracker.db ../../state/tracker.db
+          for f in candles.tgz tracker.db journal.csv hl_meta.json heartbeat ingested.txt last_run.log dashboard.html version.json; do
+            test -s "$f" || { echo "::error::state file $f missing; refusing to overwrite state"; exit 1; }
+            cp "$f" ../../out/; done
+          [ -d stats ] && cp -r stats ../../out/
           cd ../../out && git init -q && git checkout -q -b state && git add -A
           git -c user.name=thor-engine -c user.email=actions@users.noreply.github.com commit -qm "state $(date '+%F %T %Z') run ${{ github.run_id }}"
-          for i in 1 2 3; do git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" state && break; sleep 5; done
+          ok=; for i in 1 2 3; do git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" state && { ok=1; break; }; sleep 5; done
+          [ -n "$ok" ] || { echo "::error::state push failed 3x"; exit 1; }
       - name: Save candle cache
         if: always()
         uses: actions/cache/save@v4
@@ -63,6 +72,21 @@ jobs:
       - uses: actions/deploy-pages@v4
         continue-on-error: true   # GitHub Pages sometimes times out; tracker state is already saved and the next run republishes
         with: {timeout: 180000}
+      - name: Dated state backup (branch state-backups, hourly, 14-day retention)
+        # backups/YYYY-MM-DD/ = latest validated state of that day (tracker.db.gz, ingested.txt, heartbeat, journal.csv.gz; no candles).
+        # Refreshed in the first run of each hour or when today's folder is missing. Rollback steps: STATE.md section 2b.
+        run: |
+          d=$(date +%F); R="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          mkdir -p ../bk && cd ../bk && git init -q && git checkout -q -b state-backups
+          git fetch -q --depth=1 "$R" state-backups 2>/dev/null && git checkout -q FETCH_HEAD -- . 2>/dev/null || true   # first run: branch doesn't exist yet
+          if [ -d "backups/$d" ] && [ "$(date -u +%M)" -ge 6 ]; then echo "backup for $d already taken this hour"; exit 0; fi
+          mkdir -p "backups/$d" && E=$GITHUB_WORKSPACE/engine
+          gzip -9c $E/tracker.db > "backups/$d/tracker.db.gz"; gzip -9c $E/journal.csv > "backups/$d/journal.csv.gz"
+          cp $E/ingested.txt $E/heartbeat "backups/$d/"; echo "run ${{ github.run_id }} $(date '+%F %T %Z')" > "backups/$d/RUN"
+          ls -d backups/*/ | sort | head -n -14 | xargs -r rm -rf   # keep the newest 14 days
+          git add -A backups && git -c user.name=thor-engine -c user.email=actions@users.noreply.github.com commit -qm "state backups $(date '+%F %T %Z') run ${{ github.run_id }}"
+          for i in 1 2 3; do git push -qf "$R" HEAD:state-backups && { echo "backup saved: backups/$d ($(du -sh backups | cut -f1) total)"; exit 0; }; sleep 5; done
+          echo "::error::state-backups push failed"; exit 1
   keepalive:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest

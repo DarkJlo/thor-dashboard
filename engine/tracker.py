@@ -64,7 +64,7 @@ def key(r): return '|'.join([r['symbol'],r['timeframe'],r['direction']]+[f"{floa
 COLS=['key','symbol','timeframe','direction','entry_low','entry_high','tp1','tp2','tp3','invalid','dt','raw_text','source','format','start_ts','first_seen_ts','status','fill_ts','entry','stop','exit_ts','exit_px','reason','last_ts','last_px','note','px_src']
 def db():
     c=sqlite3.connect(DB); c.execute('drop table if exists trades'); c.execute(f"create table if not exists signals ({','.join(k+(' primary key' if k=='key' else '') for k in COLS)})")
-    c.execute("create table if not exists trades (px_src,leverage,margin,liq_px,max_lev,lev_src,portfolio,confluence,htf_confluent,key,symbol,timeframe,direction,fill_ts,entry,stop,exit_ts,exit_px,reason,status,notional,ret,pnl,r)")
+    c.execute("create table if not exists trades (px_src,leverage,margin,liq_px,max_lev,lev_src,portfolio,confluence,htf_confluent,key,symbol,timeframe,direction,fill_ts,entry,stop,exit_ts,exit_px,reason,status,notional,ret,pnl,r,risk,boosted)")
     c.execute("create table if not exists equity (portfolio,ts,equity)")
     have=[x[1] for x in c.execute('pragma table_info(signals)')]
     for col in['confluence','live_state','px_src','dedup_key']:
@@ -461,6 +461,23 @@ def variants(X,P,now):
         def has(r):
             g=G[(G.symbol==r.symbol)&(G.direction==r.direction)&(G.start_ts<=r.fill_ts)&(G.end>r.fill_ts)]; return set(P['require_live_tfs'])<=set(g.timeframe)|{r.timeframe}
         ok=X.apply(has,axis=1); X.loc[~ok&X._why.isna(),'_why']='skip_confluence'
+    if P.get('boost_risk'):   # generic: risk = boost_risk.risk when same-asset same-dir signals of ALL when_live_tfs are live at fill (same test as require_live_tfs)
+        B=P['boost_risk']; G2=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate')",sqlite3.connect(DB)); G2['end']=G2.exit_ts.fillna(now+1)
+        def bst(r):
+            g=G2[(G2.symbol==r.symbol)&(G2.direction==r.direction)&(G2.start_ts<=r.fill_ts)&(G2.end>r.fill_ts)]; return set(B['when_live_tfs'])<=set(g.timeframe)|{r.timeframe}
+        X['_boost']=X.apply(bst,axis=1)
+    if P.get('max_hold_hours'):   # generic time stop: if not closed within max_hold_hours of fill, exit at market (last 1m close before the deadline), reason time_stop
+        H=P['max_hold_hours']*3600e3
+        for i,r in X.iterrows():
+            if r._why or r.fill_ts is None or r.fill_ts!=r.fill_ts: continue
+            dl=r.fill_ts+H
+            if r.status=='closed' and r.exit_ts is not None and r.exit_ts==r.exit_ts and r.exit_ts<=dl: continue
+            if now<=dl: continue   # still inside the hold window: unchanged (open or closed later can't happen before dl)
+            a=cached(r.symbol)
+            if a is None: continue
+            b=a[(a[:,0]>=r.fill_ts)&(a[:,0]<=dl)]
+            if not len(b): continue
+            X.at[i,'status']='closed'; X.at[i,'exit_ts']=int(dl); X.at[i,'exit_px']=float(b[-1,4]); X.at[i,'reason']='time_stop'
     if P.get('btc_trend_filter'):
         bt=btc_trend()
         if bt is None: X['_why']=X['_why'].fillna('skip_btc_trend_nodata')
@@ -516,7 +533,9 @@ def portfolios(c):
             if why: pass
             elif pause.get(tf,0)>s.fill_ts: why='skip_paused'
             elif sum(q['timeframe']==tf for q in opn)>=((P.get('caps_confluent') or {}).get(tf,P['caps'].get(tf,99)) if s.htf=='yes' else P['caps'].get(tf,99)): why='skip_cap'   # caps_confluent: higher total-open cap for HTF-confluent trades
-            elif P.get('max_open_risk') and sum(q['risk_frac'] for q in opn)+P['risk']>P['max_open_risk']+1e-9: why='skip_risk_cap'   # generic: total open risk cap (each trade = risk at entry)
+            boosted=bool(P.get('boost_risk')) and bool(s.get('_boost')); rk=P['boost_risk']['risk'] if boosted else P['risk']
+            if why: pass
+            elif P.get('max_open_risk') and sum(q['risk_frac'] for q in opn)+rk>P['max_open_risk']+1e-9: why='skip_risk_cap'   # generic: total open risk cap (each trade = risk at entry)
             elif P.get('max_same_direction') and sum(q['direction']==s.direction for q in opn)>=P['max_same_direction']: why='skip_same_dir'   # generic: max open trades in one direction
             sg=-1 if s.direction=='Short' else 1; sd=abs(s.entry-s.stop)/s.entry
             lv,liq,mx,lsrc=leverage(s.symbol,s.direction,s.entry,s.stop,M)
@@ -524,12 +543,12 @@ def portfolios(c):
             if nostop and lv is not None:   # fixed leverage (default 1x): margin = notional/lev; isolated HL liq at that leverage
                 lv=P.get('fixed_leverage',1); mmr=1/(2*mx); liq=s.entry-sg*(s.entry/lv-s.entry*mmr)/(1-sg*mmr)
             if lv is None: why='not_on_hyperliquid'   # rule: only assets tradable on Hyperliquid, in every portfolio
-            n=min(P['risk']*eq/(sd+C),P['max_notional_frac']*eq); mg=n/lv if lv else 0
+            n=min(rk*eq/(sd+C),P['max_notional_frac']*eq); mg=n/lv if lv else 0
             if not why and sum(q['margin'] for q in opn)+mg>eq: why='insufficient_margin'
             if why: rows.append(dict(px_src=s.px_src,leverage=None,margin=None,liq_px=None,max_lev=mx,lev_src=lsrc,portfolio=name,confluence=s.confluence,htf_confluent=s.htf,key=s.key,symbol=s.symbol,timeframe=tf,direction=s.direction,fill_ts=s.fill_ts,entry=s.entry,stop=stop_out,status=why,reason=why,notional=0,ret=None,pnl=0,r=None,exit_ts=None,exit_px=None));continue
             closed=s.status=='closed'; px=s.exit_px if closed else s.last_px
-            ret=sg*(px-s.entry)/s.entry-C; q=dict(px_src=s.px_src,leverage=lv,margin=mg,liq_px=liq,max_lev=mx,lev_src=lsrc,portfolio=name,confluence=s.confluence,htf_confluent=s.htf,key=s.key,symbol=s.symbol,timeframe=tf,direction=s.direction,fill_ts=int(s.fill_ts),entry=s.entry,stop=stop_out,exit_ts=int(s.exit_ts) if closed else None,exit_px=px,reason=s.reason if closed else 'open (marked)',status='closed' if closed else 'open',notional=n,ret=ret,pnl=n*ret,r=ret/(sd+C))
-            rows.append(q); q=dict(q,risk_frac=P['risk'])
+            ret=sg*(px-s.entry)/s.entry-C; q=dict(px_src=s.px_src,leverage=lv,margin=mg,liq_px=liq,max_lev=mx,lev_src=lsrc,portfolio=name,confluence=s.confluence,htf_confluent=s.htf,key=s.key,symbol=s.symbol,timeframe=tf,direction=s.direction,fill_ts=int(s.fill_ts),entry=s.entry,stop=stop_out,exit_ts=int(s.exit_ts) if closed else None,exit_px=px,reason=s.reason if closed else 'open (marked)',status='closed' if closed else 'open',notional=n,ret=ret,pnl=n*ret,r=ret/(sd+C),risk=rk,boosted='yes' if boosted else ('no' if P.get('boost_risk') else None))
+            rows.append(q); q=dict(q,risk_frac=rk)
             opn.append(q)
         close(float('inf'))
         unreal=sum(r['pnl'] for r in rows if r['status']=='open'); curve.append((now,eq+unreal))

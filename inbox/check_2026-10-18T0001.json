@@ -1,0 +1,277 @@
+{
+ "checked_at": "2026-10-18T00:01:00-07:00",
+ "source": "Telegram Web, CyberFrogsThor bot chat (web.telegram.org/k/#@cf_thor_bot)",
+ "native_assets": [
+  "W/USD (4)",
+  "FART/USD (8)",
+  "ADA/USD (3)",
+  "ARB/USD (3)",
+  "AVAX/USD (6)",
+  "BNB/USD (6)",
+  "BONK/USD (8)",
+  "BTC/USD (5)",
+  "DOGE/USD (7)",
+  "DOT/USD (5)",
+  "ETH/USD (13)",
+  "HBAR/USD (9)",
+  "HYPE/USD (6)",
+  "INJ/USD (7)",
+  "JTO/USD (4)",
+  "JUP/USD (5)",
+  "LTC/USD (5)",
+  "SAND/USD (2)",
+  "SEI/USD (5)",
+  "SHIB/USD (11)",
+  "SOL/BTC (0)",
+  "SOL/USD (5)",
+  "SUI/USD (6)",
+  "WIF/USD (12)",
+  "XRP/USD (10)",
+  "T:ATOMUSDT (1)"
+ ],
+ "menu_captured_at": "2026-10-18 00:02:15",
+ "active": [
+  {
+   "symbol": "SEI/USD",
+   "timeframe": "15m",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 0.0615,
+   "entry_high": 0.0616,
+   "tp1": 0.0623,
+   "tp2": 0.0624,
+   "tp3": 0.0626,
+   "invalid": 0.0633,
+   "dt": "2026-10-18 04:16:12",
+   "raw_text": "Long 0.0616 - 0.0615 | TPs: 0.0623, 0.0624, 0.0626 | Invalid: 0.0633 | Dt: 2026-10-18 04:16:12"
+  },
+  {
+   "symbol": "ATOM/USD",
+   "timeframe": "1h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 1.691,
+   "entry_high": 1.7237,
+   "tp1": 1.8495,
+   "tp2": 1.8884,
+   "tp3": 1.9272,
+   "invalid": 2.053,
+   "dt": "2026-10-11 14:26:08",
+   "raw_text": "Long 1.7237 - 1.691 | TPs: 1.8495, 1.8884, 1.9272 | Invalid: 2.053 | Dt: 2026-10-11 14:26:08"
+  },
+  {
+   "symbol": "JUP/USD",
+   "timeframe": "1h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 0.29294,
+   "entry_high": 0.29671,
+   "tp1": 0.33051,
+   "tp2": 0.34096,
+   "tp3": 0.3514,
+   "invalid": 0.3852,
+   "dt": "2026-10-11 16:28:08",
+   "raw_text": "Long 0.29671 - 0.29294 | TPs: 0.33051, 0.34096, 0.3514 | Invalid: 0.3852 | Dt: 2026-10-11 16:28:08"
+  },
+  {
+   "symbol": "SOL/USD",
+   "timeframe": "4h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 104.328,
+   "entry_high": 104.8,
+   "tp1": 112.05,
+   "tp2": 114.29,
+   "tp3": 116.53,
+   "invalid": 123.78,
+   "dt": "2026-10-02 08:01:06",
+   "raw_text": "Long 104.8 - 104.328 | TPs: 112.05, 114.29, 116.53 | Invalid: 123.78 | Dt: 2026-10-02 08:01:06"
+  },
+  {
+   "symbol": "HYPE/USD",
+   "timeframe": "4h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 77.755,
+   "entry_high": 78.227,
+   "tp1": 84.764,
+   "tp2": 86.783,
+   "tp3": 88.802,
+   "invalid": 95.339,
+   "dt": "2026-10-06 04:13:05",
+   "raw_text": "Long 78.227 - 77.755 | TPs: 84.764, 86.783, 88.802 | Invalid: 95.339 | Dt: 2026-10-06 04:13:05"
+  },
+  {
+   "symbol": "ATOM/USD",
+   "timeframe": "4h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 1.691,
+   "entry_high": 1.7237,
+   "tp1": 1.8495,
+   "tp2": 1.8884,
+   "tp3": 1.9272,
+   "invalid": 2.053,
+   "dt": "2026-10-11 16:35:06",
+   "raw_text": "Long 1.7237 - 1.691 | TPs: 1.8495, 1.8884, 1.9272 | Invalid: 2.053 | Dt: 2026-10-11 16:35:06"
+  },
+  {
+   "symbol": "XRP/USD",
+   "timeframe": "4h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 1.274,
+   "entry_high": 1.2956,
+   "tp1": 1.4233,
+   "tp2": 1.4628,
+   "tp3": 1.5022,
+   "invalid": 1.63,
+   "dt": "2026-09-25 16:00:06",
+   "raw_text": "Long 1.2956 - 1.274 | TPs: 1.4233, 1.4628, 1.5022 | Invalid: 1.63 | Dt: 2026-09-25 16:00:06"
+  },
+  {
+   "symbol": "JUP/USD",
+   "timeframe": "4h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 0.28922,
+   "entry_high": 0.29294,
+   "tp1": 0.3286,
+   "tp2": 0.33962,
+   "tp3": 0.35064,
+   "invalid": 0.3863,
+   "dt": "2026-10-09 20:02:06",
+   "raw_text": "Long 0.29294 - 0.28922 | TPs: 0.3286, 0.33962, 0.35064 | Invalid: 0.3863 | Dt: 2026-10-09 20:02:06"
+  },
+  {
+   "symbol": "SHIB/USD",
+   "timeframe": "4h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 4.88e-06,
+   "entry_high": 4.92e-06,
+   "tp1": 5.36e-06,
+   "tp2": 5.49e-06,
+   "tp3": 5.63e-06,
+   "invalid": 6.07e-06,
+   "dt": "2026-09-26 20:33:06",
+   "raw_text": "Long 0.00000492 - 0.00000488 | TPs: 0.00000536, 0.00000549, 0.00000563 | Invalid: 0.00000607 | Dt: 2026-09-26 20:33:06"
+  },
+  {
+   "symbol": "HYPE/USD",
+   "timeframe": "1d",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 77.755,
+   "entry_high": 78.227,
+   "tp1": 84.764,
+   "tp2": 86.783,
+   "tp3": 88.802,
+   "invalid": 95.339,
+   "dt": "2026-10-07 00:17:03",
+   "raw_text": "Long 78.227 - 77.755 | TPs: 84.764, 86.783, 88.802 | Invalid: 95.339 | Dt: 2026-10-07 00:17:03"
+  },
+  {
+   "symbol": "SHIB/USD",
+   "timeframe": "1d",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 4.92e-06,
+   "entry_high": 4.96e-06,
+   "tp1": 5.37e-06,
+   "tp2": 5.5e-06,
+   "tp3": 5.62e-06,
+   "invalid": 6.04e-06,
+   "dt": "2026-10-05 00:13:04",
+   "raw_text": "Long 0.00000496 - 0.00000492 | TPs: 0.00000537, 0.0000055, 0.00000562 | Invalid: 0.00000604 | Dt: 2026-10-05 00:13:04"
+  }
+ ],
+ "all_active_message_summary": "11 signals: 15m SEI/USD Long, 1h ATOM/USD Long, 1h JUP/USD Long, 4h SOL/USD Long, 4h HYPE/USD Long, 4h ATOM/USD Long, 4h XRP/USD Long, 4h JUP/USD Long, 4h SHIB/USD Long, 1d HYPE/USD Long, 1d SHIB/USD Long.",
+ "all_active_raw": "15m\nSEI/USD | Price: 0.062\nHitrate: 67.5%\nLong 0.0616 - 0.0615\nTPs: 0.0623, 0.0624, 0.0626\nInvalid: 0.0633\nDt: 2026-10-18 04:16:12\n\n1h\nATOM/USD | Price: 1.713\nHitrate: 59%\nLong 1.7237 - 1.691\nTPs: 1.8495, 1.8884, 1.9272\nInvalid: 2.053\nDt: 2026-10-11 14:26:08\n\nJUP/USD | Price: 0.2899\nHitrate: 55.9%\nLong 0.29671 - 0.29294\nTPs: 0.33051, 0.34096, 0.3514\nInvalid: 0.3852\nDt: 2026-10-11 16:28:08\n\n4h\nSOL/USD | Price: 103.64\nHitrate: 56.4%\nLong 104.8 - 104.328\nTPs: 112.05, 114.29, 116.53\nInvalid: 123.78\nDt: 2026-10-02 08:01:06\n\nHYPE/USD | Price: 78.399\nHitrate: 62.7%\nLong 78.227 - 77.755\nTPs: 84.764, 86.783, 88.802\nInvalid: 95.339\nDt: 2026-10-06 04:13:05\n\nATOM/USD | Price: 1.713\nHitrate: 59.1%\nLong 1.7237 - 1.691\nTPs: 1.8495, 1.8884, 1.9272\nInvalid: 2.053\nDt: 2026-10-11 16:35:06\n\nXRP/USD | Price: 1.2993\nHitrate: 65.1%\nLong 1.2956 - 1.274\nTPs: 1.4233, 1.4628, 1.5022\nInvalid: 1.63\nDt: 2026-09-25 16:00:06\n\nJUP/USD | Price: 0.2899\nHitrate: 64.7%\nLong 0.29294 - 0.28922\nTPs: 0.3286, 0.33962, 0.35064\nInvalid: 0.3863\nDt: 2026-10-09 20:02:06\n\nSHIB/USD | Price: 0.00000497\nHitrate: 64%\nLong 0.00000492 - 0.00000488\nTPs: 0.00000536, 0.00000549, 0.00000563\nInvalid: 0.00000607\nDt: 2026-09-26 20:33:06\n\n1d\nHYPE/USD | Price: 78.399\nHitrate: 25%\nLong 78.227 - 77.755\nTPs: 84.764, 86.783, 88.802\nInvalid: 95.339\nDt: 2026-10-07 00:17:03\n\nSHIB/USD | Price: 0.00000497\nHitrate: 91.4%\nLong 0.00000496 - 0.00000492\nTPs: 0.00000537, 0.0000055, 0.00000562\nInvalid: 0.00000604\nDt: 2026-10-05 00:13:04",
+ "pair_views": {
+  "T:ATOMUSDT (1)": {
+   "text": "T:ATOMUSDT 15m | Price: 1.713\nHitrate: 65.7%\n\nLong 1.671 - 1.666\nTPs: 1.6897, 1.6955, 1.7013\nInvalid: 1.72\nDt: 2026-10-18 06:59:10\n\nShort 1.744 - 1.737\nTPs: 1.7202, 1.715, 1.7098\nInvalid: 1.693\nDt: 2026-10-18 06:16:11\n\nT:ATOMUSDT 1h | Price: 1.713\nHitrate: 59%\n\nLong 1.7237 - 1.691\nTPs: 1.8495, 1.8884, 1.9272\nInvalid: 2.053\nDt: 2026-10-11 14:26:08\n\nLong 1.5914 - 1.5791\nTPs: 1.7677, 1.8222, 1.8767\nInvalid: 2.053\nDt: 2026-10-11 14:26:08\n\nShort 1.894 - 1.8723\nTPs: 1.7927, 1.7681, 1.7436\nInvalid: 1.664\nDt: 2026-10-17 22:23:09\n\nShort 1.9695 - 1.9627\nTPs: 1.8429, 1.8058, 1.7688\nInvalid: 1.649\nDt: 2026-10-15 14:29:08\n\nT:ATOMUSDT 4h | Price: 1.713\nHitrate: 59.1%\n\nLong 1.7237 - 1.691\nTPs: 1.8495, 1.8884, 1.9272\nInvalid: 2.053\nDt: 2026-10-11 16:35:06\n\nLong 1.5914 - 1.5791\nTPs: 1.7677, 1.8222, 1.8767\nInvalid: 2.053\nDt: 2026-10-11 16:35:06\n\nShort 1.894 - 1.8723\nTPs: 1.7927, 1.7681, 1.7436\nInvalid: 1.664\nDt: 2026-10-18 00:32:06\n\nShort 2.0053 - 1.9931\nTPs: 1.8616, 1.821, 1.7804\nInvalid: 1.649\nDt: 2026-10-15 16:38:06\n\nT:ATOMUSDT 1d | Price: 1.713\nHitrate: 58.8%\n\nShort 2.243 - 2.1856\nTPs: 1.9653, 1.8973, 1.8292\nInvalid: 1.609\nDt: 2026-10-03 00:02:04",
+   "captured_at": "2026-10-18 00:03:00"
+  },
+  "W/USD (4)": {
+   "text": "W/USD 15m | Price: 0.0133846052\nHitrate: 65.4%\n\nLong 0.0132404487 - 0.0131947302\nTPs: 0.0134775647, 0.01355081, 0.0136240553\nInvalid: 0.0138611714\nDt: 2026-10-18 04:03:10\n\nShort 0.0141669434 - 0.0141044353\nTPs: 0.0138140019, 0.0137242869, 0.0136345719\nInvalid: 0.0133441386\nDt: 2026-10-18 06:12:10\n\nShort 0.014507936 - 0.0144295407\nTPs: 0.0140149171, 0.0138868396, 0.0137587622\nInvalid: 0.0133441386\nDt: 2026-10-18 06:12:10\n\nShort 0.0151018209 - 0.0149263854\nTPs: 0.0143219671, 0.014135262, 0.0139485569\nInvalid: 0.0133441386\nDt: 2026-10-18 06:12:10",
+   "captured_at": "2026-10-18 00:03:50"
+  },
+  "SUI/USD (6)": {
+   "text": "SUI/USD 4h | Price: 0.983\nHitrate: 62.3%\n\nShort 1.202 - 1.194\nTPs: 1.102, 1.074, 1.045\nInvalid: 0.953\nDt: 2026-10-18 00:12:07\n\nShort 1.332 - 1.287\nTPs: 1.159, 1.12, 1.081\nInvalid: 0.953\nDt: 2026-10-18 00:12:07\n\nSUI/USD 1d | Price: 0.983\nHitrate: 76.1%\n\nShort 1.202 - 1.194\nTPs: 1.102, 1.074, 1.045\nInvalid: 0.953\nDt: 2026-10-18 00:12:05\n\nShort 1.325 - 1.304\nTPs: 1.063, 0.988, 0.914\nInvalid: 0.672\nDt: 2026-09-16 00:36:05\n\nShort 1.332 - 1.287\nTPs: 1.159, 1.12, 1.081\nInvalid: 0.953\nDt: 2026-10-18 00:12:05\n\nShort 1.557 - 1.507\nTPs: 1.188, 1.09, 0.991\nInvalid: 0.672\nDt: 2026-09-16 00:36:05",
+   "captured_at": "2026-10-18 00:03:58"
+  },
+  "WIF/USD (12)": {
+   "text": "WIF/USD 15m | Price: 0.1976\nHitrate: 66.1%\n\nLong 0.19017 - 0.18958\nTPs: 0.19427, 0.19553, 0.1968\nInvalid: 0.2009\nDt: 2026-10-17 20:51:11\n\nShort 0.20316 - 0.2026\nTPs: 0.19878, 0.1976, 0.19642\nInvalid: 0.1926\nDt: 2026-10-17 22:17:11\n\nShort 0.20651 - 0.20597\nTPs: 0.20227, 0.20113, 0.19999\nInvalid: 0.1963\nDt: 2026-10-18 06:10:11\n\nWIF/USD 1h | Price: 0.1976\nHitrate: 65.2%\n\nLong 0.19017 - 0.18958\nTPs: 0.19427, 0.19553, 0.1968\nInvalid: 0.2009\nDt: 2026-10-17 21:34:09\n\nLong 0.18984 - 0.18952\nTPs: 0.1959, 0.19777, 0.19964\nInvalid: 0.2057\nDt: 2026-10-17 05:05:08\n\nShort 0.21889 - 0.21685\nTPs: 0.20568, 0.20223, 0.19877\nInvalid: 0.1876\nDt: 2026-10-15 03:38:08\n\nShort 0.22239 - 0.22221\nTPs: 0.2109, 0.2074, 0.20391\nInvalid: 0.1926\nDt: 2026-10-17 22:17:09\n\nShort 0.23081 - 0.2274\nTPs: 0.2122, 0.2075, 0.2028\nInvalid: 0.1876\nDt: 2026-10-15 03:38:08\n\nShort 0.23436 - 0.23178\nTPs: 0.21682, 0.21219, 0.20757\nInvalid: 0.1926\nDt: 2026-10-17 22:17:09\n\nWIF/USD 4h | Price: 0.1976\nHitrate: 67.1%\n\nShort 0.22239 - 0.22221\nTPs: 0.2109, 0.2074, 0.20391\nInvalid: 0.1926\nDt: 2026-10-18 00:26:07\n\nShort 0.23436 - 0.23178\nTPs: 0.21682, 0.21219, 0.20757\nInvalid: 0.1926\nDt: 2026-10-18 00:26:07\n\nShort 0.25857 - 0.25086\nTPs: 0.2267, 0.21923, 0.21177\nInvalid: 0.1876\nDt: 2026-10-15 04:21:06",
+   "captured_at": "2026-10-18 00:04:02"
+  },
+  "XRP/USD (10)": {
+   "text": "XRP/USD 1h | Price: 1.2993\nHitrate: 67.7%\n\nShort 1.405 - 1.3965\nTPs: 1.3482, 1.3333, 1.3184\nInvalid: 1.2701\nDt: 2026-10-17 22:40:09\n\nXRP/USD 4h | Price: 1.2993\nHitrate: 65.1%\n\nLong 1.2956 - 1.274\nTPs: 1.4233, 1.4628, 1.5022\nInvalid: 1.63\nDt: 2026-09-25 16:00:06\n\nLong 0.9931 - 0.981\nTPs: 1.2364, 1.3115, 1.3867\nInvalid: 1.63\nDt: 2026-09-25 16:00:06\n\nShort 1.4987 - 1.4912\nTPs: 1.4068, 1.3807, 1.3546\nInvalid: 1.2701\nDt: 2026-10-18 00:06:07\n\nShort 1.5344 - 1.5232\nTPs: 1.4265, 1.3966, 1.3668\nInvalid: 1.2701\nDt: 2026-10-18 00:06:07\n\nShort 1.5829 - 1.5586\nTPs: 1.4484, 1.4144, 1.3803\nInvalid: 1.2701\nDt: 2026-10-18 00:06:07\n\nXRP/USD 1d | Price: 1.2993\nHitrate: 72.4%\n\nLong 1.1476 - 1.1354\nTPs: 1.3428, 1.4032, 1.4635\nInvalid: 1.6587\nDt: 2026-09-24 00:34:04\n\nLong 0.3908 - 0.3413\nTPs: 1.1647, 1.4037, 1.6428\nInvalid: 2.4167\nDt: 2026-01-07 00:14:04\n\nShort 1.4987 - 1.4912\nTPs: 1.4068, 1.3807, 1.3546\nInvalid: 1.2701\nDt: 2026-10-18 00:06:05\n\nShort 1.5344 - 1.5232\nTPs: 1.4265, 1.3966, 1.3668\nInvalid: 1.2701\nDt: 2026-10-18 00:06:05",
+   "captured_at": "2026-10-18 00:04:06"
+  },
+  "BONK/USD (8)": {
+   "text": "BONK/USD 1h | Price: 0.000002961\nHitrate: 65.2%\n\nLong 0.000002765 - 0.0000027549\nTPs: 0.0000028827, 0.000002919, 0.0000029553\nInvalid: 0.000003073\nDt: 2026-10-17 05:26:09\n\nBONK/USD 4h | Price: 0.000002961\nHitrate: 64.5%\n\nLong 0.000002765 - 0.0000027549\nTPs: 0.0000028827, 0.000002919, 0.0000029553\nInvalid: 0.000003073\nDt: 2026-10-17 08:18:07\n\nShort 0.0000039719 - 0.0000039234\nTPs: 0.000003526, 0.0000034032, 0.0000032804\nInvalid: 0.000002883\nDt: 2026-10-18 00:04:07\n\nBONK/USD 1d | Price: 0.000002961\nHitrate: 60.9%\n\nLong 0.0000027067 - 0.000002618\nTPs: 0.0000032321, 0.0000033944, 0.0000035566\nInvalid: 0.000004082\nDt: 2026-10-06 00:40:04\n\nLong 0.0000022383 - 0.0000021656\nTPs: 0.0000029426, 0.0000031602, 0.0000033777\nInvalid: 0.000004082\nDt: 2026-10-06 00:40:04\n\nLong 0.0000014336 - 0.0000013912\nTPs: 0.0000024453, 0.0000027578, 0.0000030703\nInvalid: 0.000004082\nDt: 2026-10-06 00:40:04\n\nShort 0.0000039719 - 0.0000039234\nTPs: 0.000003526, 0.0000034032, 0.0000032804\nInvalid: 0.000002883\nDt: 2026-10-18 00:04:05\n\nShort 0.000004882 - 0.0000048214\nTPs: 0.0000039209, 0.0000036427, 0.0000033645\nInvalid: 0.000002464\nDt: 2026-09-17 00:07:04",
+   "captured_at": "2026-10-18 00:04:10"
+  },
+  "BTC/USD (5)": {
+   "text": "BTC/USD 1h | Price: 81705.9\nHitrate: 72.9%\n\nLong 78069.59 - 77829.8\nTPs: 79601.57, 80074.8, 80548.02\nInvalid: 82080\nDt: 2026-10-18 04:19:09\n\nBTC/USD 4h | Price: 81705.9\nHitrate: 61.5%\n\nLong 76689.77 - 76363.63\nTPs: 80726.19, 81973.04, 83219.89\nInvalid: 87256.3\nDt: 2026-10-02 16:21:06\n\nShort 88914.6 - 88148.41\nTPs: 84958.17, 83972.71, 82987.24\nInvalid: 79797\nDt: 2026-10-15 16:07:06\n\nBTC/USD 1d | Price: 81705.9\nHitrate: 62.9%\n\nLong 76689.77 - 76363.63\nTPs: 80726.19, 81973.04, 83219.89\nInvalid: 87256.3\nDt: 2026-10-03 00:14:04\n\nShort 88914.6 - 88148.41\nTPs: 84958.17, 83972.71, 82987.24\nInvalid: 79797\nDt: 2026-10-16 00:00:04",
+   "captured_at": "2026-10-18 00:04:14"
+  },
+  "DOGE/USD (7)": {
+   "text": "DOGE/USD 4h | Price: 0.07937\nHitrate: 62.4%\n\nLong 0.07239 - 0.07019\nTPs: 0.08287, 0.08611, 0.08935\nInvalid: 0.09983\nDt: 2026-09-26 00:38:07\n\nShort 0.09318 - 0.09249\nTPs: 0.08659, 0.08477, 0.08295\nInvalid: 0.07706\nDt: 2026-10-18 00:08:12\n\nShort 0.09687 - 0.09497\nTPs: 0.08813, 0.08602, 0.0839\nInvalid: 0.07706\nDt: 2026-10-18 00:08:12\n\nDOGE/USD 1d | Price: 0.07937\nHitrate: 76.6%\n\nLong 0.06438 - 0.06125\nTPs: 0.08024, 0.08515, 0.09005\nInvalid: 0.10591\nDt: 2026-09-23 00:14:04\n\nShort 0.09687 - 0.09497\nTPs: 0.08813, 0.08602, 0.0839\nInvalid: 0.07706\nDt: 2026-10-18 00:08:10\n\nShort 0.13972 - 0.13461\nTPs: 0.10903, 0.10113, 0.09323\nInvalid: 0.06766\nDt: 2026-08-02 00:20:05\n\nShort 0.16958 - 0.16651\nTPs: 0.12875, 0.11708, 0.10542\nInvalid: 0.06766\nDt: 2026-08-02 00:20:05",
+   "captured_at": "2026-10-18 00:04:18"
+  },
+  "DOT/USD (5)": {
+   "text": "DOT/USD 1h | Price: 1.106\nHitrate: 68.1%\n\nLong 1.033 - 1.02\nTPs: 1.1, 1.12, 1.141\nInvalid: 1.207\nDt: 2026-10-17 06:40:08\n\nShort 1.429 - 1.414\nTPs: 1.29, 1.252, 1.214\nInvalid: 1.09\nDt: 2026-10-18 06:19:09\n\nDOT/USD 4h | Price: 1.106\nHitrate: 62.8%\n\nLong 0.937 - 0.883\nTPs: 1.078, 1.122, 1.165\nInvalid: 1.307\nDt: 2026-09-26 20:26:06\n\nDOT/USD 1d | Price: 1.106\nHitrate: 83.9%\n\nLong 0.702 - 0.668\nTPs: 0.983, 1.07, 1.157\nInvalid: 1.438\nDt: 2026-05-14 00:42:03\n\nShort 1.631 - 1.593\nTPs: 1.371, 1.302, 1.233\nInvalid: 1.01\nDt: 2026-10-09 00:08:04",
+   "captured_at": "2026-10-18 00:04:22"
+  },
+  "ETH/USD (13)": {
+   "text": "ETH/USD 1h | Price: 2412.62\nHitrate: 68.9%\n\nLong 2338.1 - 2336.54\nTPs: 2376.6, 2388.49, 2400.39\nInvalid: 2438.89\nDt: 2026-10-17 08:11:08\n\nShort 2465.14 - 2462.26\nTPs: 2422.09, 2409.68, 2397.27\nInvalid: 2357.1\nDt: 2026-10-17 22:31:08\n\nShort 2587.95 - 2578.59\nTPs: 2493.98, 2467.84, 2441.71\nInvalid: 2357.1\nDt: 2026-10-17 22:31:08\n\nETH/USD 4h | Price: 2412.62\nHitrate: 70.1%\n\nLong 2307.64 - 2299.09\nTPs: 2487.39, 2542.92, 2598.45\nInvalid: 2778.2\nDt: 2026-10-02 12:42:07\n\nShort 2533.09 - 2523.54\nTPs: 2459.96, 2440.32, 2420.68\nInvalid: 2357.1\nDt: 2026-10-18 00:40:07\n\nShort 2587.95 - 2578.59\nTPs: 2493.98, 2467.84, 2441.71\nInvalid: 2357.1\nDt: 2026-10-18 00:40:07\n\nShort 2687.76 - 2679.72\nTPs: 2541.54, 2498.86, 2456.18\nInvalid: 2318\nDt: 2026-10-15 04:35:07\n\nShort 2751.32 - 2715.48\nTPs: 2578.58, 2536.29, 2494\nInvalid: 2357.1\nDt: 2026-10-18 00:40:07\n\nShort 2752.11 - 2735.87\nTPs: 2576.24, 2526.94, 2477.63\nInvalid: 2318\nDt: 2026-10-15 04:35:07\n\nShort 2793.54 - 2741.11\nTPs: 2579.48, 2529.55, 2479.63\nInvalid: 2318\nDt: 2026-10-15 04:35:07\n\nETH/USD 1d | Price: 2412.62\nHitrate: 69.2%\n\nShort 2687.76 - 2679.72\nTPs: 2541.54, 2498.86, 2456.18\nInvalid: 2318\nDt: 2026-10-16 00:39:05\n\nShort 2752.11 - 2735.87\nTPs: 2576.24, 2526.94, 2477.63\nInvalid: 2318\nDt: 2026-10-16 00:39:05\n\nShort 3424.65 - 3186.72\nTPs: 2544.44, 2346.03, 2147.63\nInvalid: 1505.35\nDt: 2026-06-07 00:34:04",
+   "captured_at": "2026-10-18 00:04:26"
+  },
+  "HBAR/USD (9)": {
+   "text": "HBAR/USD 15m | Price: 0.08741\nHitrate: 67%\n\nLong 0.08375 - 0.08361\nTPs: 0.08522, 0.08568, 0.08614\nInvalid: 0.08761\nDt: 2026-10-18 06:45:11\n\nLong 0.08283 - 0.08215\nTPs: 0.08466, 0.08522, 0.08578\nInvalid: 0.08761\nDt: 2026-10-18 06:45:11\n\nHBAR/USD 1h | Price: 0.08741\nHitrate: 58.5%\n\nShort 0.09229 - 0.09109\nTPs: 0.08766, 0.0866, 0.08554\nInvalid: 0.08211\nDt: 2026-10-17 18:34:09\n\nShort 0.0926 - 0.09189\nTPs: 0.0874, 0.08602, 0.08463\nInvalid: 0.08014\nDt: 2026-10-15 03:30:09\n\nShort 0.09353 - 0.09351\nTPs: 0.08916, 0.08781, 0.08647\nInvalid: 0.08211\nDt: 2026-10-17 18:34:09\n\nHBAR/USD 4h | Price: 0.08741\nHitrate: 62.9%\n\nShort 0.09229 - 0.09109\nTPs: 0.08766, 0.0866, 0.08554\nInvalid: 0.08211\nDt: 2026-10-17 21:26:08\n\nShort 0.09353 - 0.09351\nTPs: 0.08916, 0.08781, 0.08647\nInvalid: 0.08211\nDt: 2026-10-17 20:00:06\n\nShort 0.10001 - 0.09935\nTPs: 0.09201, 0.08974, 0.08748\nInvalid: 0.08014\nDt: 2026-10-15 04:13:06\n\nHBAR/USD 1d | Price: 0.08741\nHitrate: 64%\n\nLong 0.06236 - 0.05437\nTPs: 0.11444, 0.13053, 0.14661\nInvalid: 0.19869\nDt: 2025-11-11 00:06:04",
+   "captured_at": "2026-10-18 00:04:30"
+  }
+ },
+ "notes": [
+  "Scheduled 00:00 America/Phoenix run (fired ~00:00). /start once at ~00:01, THOR -> pairs menu posted 00:01 (read ~00:01:30; menu_captured_at 00:02:15 is when pair_rotation.py was run), All active read 00:01, pair views 00:03-00:04:30 all tapped from the same 00:01 menu.",
+  "open_always: T:ATOMUSDT (read time ~00:03, seconds approximate). open_rotation (10): W/USD, SUI/USD, WIF/USD, XRP/USD, BONK/USD, BTC/USD, DOGE/USD, DOT/USD, ETH/USD, HBAR/USD. skipped: SOL/BTC (0).",
+  "All active: 11 signals. Vs 18:01 yesterday: added 15m SEI/USD Long; dropped none.",
+  "Menu vs 18:01: W/USD 0->4, AVAX/USD 5->6, BNB/USD 5->6, BTC/USD 4->5, DOT/USD 7->5, HBAR/USD 7->9, HYPE/USD 5->6, SAND/USD 4->2, SEI/USD 3->5, WIF/USD 11->12.",
+  "No Ask Thor used (not the 12 PM check). Hyperliquid/Trade@Hyperliquid, ALERT ON, Mute/Unmute and Cancel buttons untouched."
+ ],
+ "taps": {
+  "text_messages_sent": [
+   "/start"
+  ],
+  "button_taps": [
+   "THOR",
+   "All active",
+   "pair T:ATOMUSDT (1)",
+   "pair W/USD (4)",
+   "pair SUI/USD (6)",
+   "pair WIF/USD (12)",
+   "pair XRP/USD (10)",
+   "pair BONK/USD (8)",
+   "pair BTC/USD (5)",
+   "pair DOGE/USD (7)",
+   "pair DOT/USD (5)",
+   "pair ETH/USD (13)",
+   "pair HBAR/USD (9)"
+  ],
+  "button_tap_count": 13,
+  "cancel_tapped": false
+ }
+}

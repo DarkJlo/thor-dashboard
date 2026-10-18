@@ -406,11 +406,13 @@ def btc_trend():
         v=(a[n:,0],a[n:,1]>ema[n:]); BTCT.update(t=time.time(),v=v)
     except Exception as e: log('btc trend fetch failed',e); v=BTCT.get('v')
     return v
-def path(s,mode):
+def path(s,mode,hold_h=None):
     """Re-simulate one signal for an execution variant on cached candles (same conservative rules as step()).
     better_entry: limit at range midpoint (or better if a candle opens beyond it); skip_no_fill if the original signal ends/invalidates/times out first.
     runners: same fill as the signal; 50% off at TP1, stop -> entry; at TP2 stop -> TP1; rest out at TP3 (no TP2/TP3: trail by original stop distance).
-    nostop: same fill as the signal; no stop loss at all: 100% out at TP1, else at market (last close) at the normal timeout."""
+    nostop: same fill as the signal; no stop loss at all: 100% out at TP1, else at market (last close) at the normal timeout.
+    ladder: same fill/stop; 100% position; TP1 hit -> stop to entry, TP2 hit -> stop to TP1 (moves effective next candle; stop checked first); all out at TP3.
+    hold_h: time stop, exit at market (last close at/before fill+hold_h) with reason time_stop."""
     a=cached(s['symbol']); sh=s['direction']=='Short'; sg=-1 if sh else 1; TO=CFG['timeouts_days'][s['timeframe']]*86400e3
     r=dict(fill_ts=s['fill_ts'],entry=s['entry'],stop=s['stop'],status=s['status'],exit_ts=s['exit_ts'],exit_px=s['exit_px'],reason=s['reason'],last_px=s['last_px'],why=None)
     if a is None: return r
@@ -421,18 +423,26 @@ def path(s,mode):
         i=hit[0]; o=b[i,1]; e=max(o,mid) if sh else min(o,mid); d1=abs(s['tp1']-e)
         r.update(fill_ts=int(b[i,0]),entry=e,stop=e-sg*d1/CFG['stop_rr'],status='filled',exit_ts=None,exit_px=None,reason=None)
         tgt=[s['tp1']]; part=[1.0]
+    elif mode=='ladder':
+        if s['fill_ts'] is None: return r
+        tgt=[s['tp1'],s['tp2'],s['tp3']]; part=[1.0]
     else:
         if s['fill_ts'] is None: return r
         tgt=[s['tp2']] if mode=='tp2' else ([s['tp1']] if mode=='nostop' else ([s['entry']+(s['tp1']-s['entry'])*CFG.get('variants',{}).get('half_frac',0.5)] if mode=='half_tp1' else [s['tp1'],s['tp2'],s['tp3']])); part=[0.5,0.5]   # tp2: 100% out at TP2, stop unchanged
     f=r['fill_ts']; e=r['entry']; stop=r['stop']; d0=abs(e-stop); b=a[a[:,0]>=f]; rem=1.0; got=0.0; stage=0; best=None; last=None
     beyond=lambda x,lv:(x<=lv) if sh else (x>=lv)
     for k,(ts,o,h,l,c,iv,si) in enumerate(b):
+        if hold_h and ts>f+hold_h*3600e3: r.update(status='closed',exit_ts=int(f+hold_h*3600e3),reason='time_stop'); got+=rem*(last if last is not None else o); rem=0; break
         if ts>f+TO: r.update(status='closed',exit_ts=int(ts),reason='timeout'); got+=rem*(last if last is not None else o); rem=0; break
         if mode!='nostop' and ((h>=stop) if sh else (l<=stop)): r.update(status='closed',exit_ts=int(ts),reason='stop' if stage==0 else ('breakeven' if stage==1 else 'trail_stop')); got+=rem*stop; rem=0; break
         if k>0:
             x=l if sh else h
             if mode in('better_entry','tp2','half_tp1','nostop'):
                 if beyond(x,tgt[0]): r.update(status='closed',exit_ts=int(ts),reason={'better_entry':'tp1','tp2':'tp2','half_tp1':'half_tp1','nostop':'tp1'}[mode]); got+=tgt[0]; rem=0; break
+            elif mode=='ladder':
+                if beyond(x,tgt[2]): r.update(status='closed',exit_ts=int(ts),reason='tp3'); got+=rem*tgt[2]; rem=0; break
+                if beyond(x,tgt[1]): stage=2; stop=tgt[0] if beyond(tgt[0],stop) else stop
+                elif beyond(x,tgt[0]) and stage==0: stage=1; stop=e if beyond(e,stop) else stop
             else:
                 if stage==0 and beyond(x,tgt[0]): got+=0.5*tgt[0]; rem=0.5; stage=1; stop=e
                 if stage>=1:
@@ -496,10 +506,10 @@ def variants(X,P,now):
             sg=-1 if r.direction=='Short' else 1; edge=r.entry_low if sg<0 else r.entry_high
             return sg*(a[i,4]-edge)/abs(r.tp1-edge)>P['max_stale_frac']
         st=X.apply(stale,axis=1); X.loc[st&X._why.isna(),'_why']='skip_stale'
-    if P.get('execution') in ('better_entry','runners','tp2','half_tp1','nostop'):
+    if P.get('execution') in ('better_entry','runners','tp2','half_tp1','nostop','ladder'):
         for i,r in X.iterrows():
             if r._why: continue
-            p=path(r.to_dict(),P['execution'])
+            p=path(r.to_dict(),P['execution'],P.get('max_hold_hours') if P['execution']=='ladder' else None)
             for k in ('fill_ts','entry','stop','exit_ts','exit_px','reason','last_px'): X.at[i,k]=p[k]
             X.at[i,'status']='closed' if p['status']=='closed' else 'filled'
             if p['why']: X.at[i,'_why']=p['why']

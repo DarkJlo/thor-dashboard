@@ -552,6 +552,8 @@ def portfolios(c):
             nostop=P.get('execution')=='nostop'; stop_out=None if nostop else s.stop   # nostop: sd = nominal stop distance (sizing + R only), no stop traded
             if nostop and lv is not None:   # fixed leverage (default 1x): margin = notional/lev; isolated HL liq at that leverage
                 lv=P.get('fixed_leverage',1); mmr=1/(2*mx); liq=s.entry-sg*(s.entry/lv-s.entry*mmr)/(1-sg*mmr)
+            if lv is not None and P.get('max_leverage') and lv>P['max_leverage']:   # generic: leverage cap (lower lev = liq farther away, more margin used)
+                lv=P['max_leverage']; mmr=1/(2*mx); liq=s.entry-sg*(s.entry/lv-s.entry*mmr)/(1-sg*mmr)
             if lv is None: why='not_on_hyperliquid'   # rule: only assets tradable on Hyperliquid, in every portfolio
             n=min(rk*eq/(sd+C),P['max_notional_frac']*eq); mg=n/lv if lv else 0
             if not why and sum(q['margin'] for q in opn)+mg>eq: why='insufficient_margin'

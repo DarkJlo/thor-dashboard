@@ -495,6 +495,11 @@ def path(s,mode,hold_h=None):
         r.update(status='filled',exit_ts=None,last_px=(got+rem*px) if px is not None else None,reason=('runner open' if stage else None))
     else: r['exit_px']=got   # blended exit price (linear in return)
     return r
+def in_utc_hours(ts_ms,hours):
+    """signal_utc_hours: [start, end) in whole UTC hours (0-24) on the signal's start_ts (Thor message / ladder's own Dt, UTC). start > end wraps midnight."""
+    if ts_ms is None or ts_ms!=ts_ms: return False
+    a,b=int(hours[0]),int(hours[1]); h=time.gmtime(int(ts_ms)/1000).tm_hour
+    return a<=h<b if a<=b else (h>=a or h<b)
 def variants(X,P,now):
     """per-portfolio filters / execution variants; sets _why (skip reason) and may change fill/exit fields"""
     X=X.copy(); X['_why']=None
@@ -558,6 +563,7 @@ def portfolios(c):
         P={**D,**p}; A=assets(P.get('assets_file'))
         X=S[S.timeframe.isin(P['timeframes'])&S.direction.isin(P['directions'])].copy()
         X=X[(X.tp1-X.entry).abs()/X.entry>=P['min_tp1_dist']]
+        if P.get('signal_utc_hours'): X=X[[in_utc_hours(t,P['signal_utc_hours']) for t in X.start_ts]] if len(X) else X   # generic: Thor message/ladder time (start_ts = own Dt) in [start, end) UTC hours
         if A is not None: X=X[X.symbol.map(lambda s:s.replace('/USD','')).isin(A)|X.symbol.isin(A)]
         # htf_confluent: a live same-asset same-direction 4h/1d signal exists at fill time
         H=pd.read_sql("select symbol,direction,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate') and not (status='stale_history' and exit_ts is null) and timeframe in ('4h','1d')",c); H['end']=H.exit_ts.fillna(now+1)

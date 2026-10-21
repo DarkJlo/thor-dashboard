@@ -50,7 +50,7 @@ const bucket=v=>{if(v==null)return"n/a";for(let i=1;i<B.length;i++)if(v<=B[i])re
 TR.forEach(t=>{const s=SK[t.key]||{};Object.assign(t,{entry_low:s.entry_low,entry_high:s.entry_high,tp1:s.tp1,tp2:s.tp2,tp3:s.tp3,invalid:s.invalid,last_px:s.last_px,raw_text:s.raw_text,source:s.source,
  fees:t.notional?t.notional*FEE*(t.status==="closed"?2:1):null,bucket:bucket(t.confluence),kind:"trade"})});
 SIG.forEach(s=>{s.bucket=bucket(s.confluence);s.kind="signal";const m=(s.entry_low+s.entry_high)/2;s.tp1_dist=m?100*Math.abs(s.tp1-m)/m:null;s.tp1_from_last=s.last_px?100*Math.abs(s.tp1-s.last_px)/s.last_px:null});
-const EQ=DATA.equity||{},COL={MAIN:"#19f28c",CONTROL:"#22d3ee",TOP_ASSETS:"#ffc94d",ALL:"#b18cff",FAST:"#ff5d8f",MAIN_LOOSE:"#7dffb8",CONFLUENCE_ONLY:"#ff9f43",RUNNERS:"#4dd0ff",BETTER_ENTRY:"#e0e0e0",BTC_TREND:"#f7c948",FRESH_ONLY:"#c56cff",FAST_RUNNERS:"#ff77c8",MAIN_TP2:"#00e5a0",FAST_HALF:"#ffb3d9",MAIN_1D:"#a3ff3d",MAIN_NOSTOP:"#ff6b6b",MAIN_LADDER72:"#ffd166"},col=(p,i)=>COL[p]||["#ff8a4d","#4dd0ff"][i%2];
+const EQ=DATA.equity||{},COL={MAIN:"#19f28c",CONTROL:"#22d3ee",TOP_ASSETS:"#ffc94d",ALL:"#b18cff",FAST:"#ff5d8f",MAIN_LOOSE:"#7dffb8",CONFLUENCE_ONLY:"#ff9f43",RUNNERS:"#4dd0ff",BETTER_ENTRY:"#e0e0e0",BTC_TREND:"#f7c948",FRESH_ONLY:"#c56cff",FAST_RUNNERS:"#ff77c8",MAIN_TP2:"#00e5a0",FAST_HALF:"#ffb3d9",MAIN_1D:"#a3ff3d",MAIN_NOSTOP:"#ff6b6b",MAIN_LADDER72:"#ffd166",FAST_DAY_BIG:"#ff9ecf"},col=(p,i)=>COL[p]||["#ff8a4d","#4dd0ff"][i%2];
 function pstats(p){const st=DATA.portfolios[p].start||1000,e=EQ[p]||[],last=e.length?e[e.length-1][1]:st;let pk=-1e18,dd=0;e.forEach(([,v])=>{pk=Math.max(pk,v);dd=Math.max(dd,1-v/pk)});return{start:st,last,chg:100*(last/st-1),dd:100*dd}}
 // header
 const hb=DATA.heartbeat||{},now=Date.now(),hbts=hb.ts?Date.parse(hb.ts.replace(" ","T")+"-07:00"):null,age=hbts?(now-hbts)/1e3:null,lim=(DATA.poll_seconds||180)*2.5;
@@ -297,6 +297,7 @@ let h=`<button class=qb style="float:right" id=keyx>×</button><h2>Account key</
 for(const[p,v]of Object.entries(D.portfolios)){const P={...df,...v};let r=[];
  r.push(`Takes <b>${esc(dl(P.timeframes))}</b> signals, <b>${esc(dl(P.directions))}</b>.`);
  r.push(P.min_tp1_dist>0?`Only if the first target (TP1) is at least ${(P.min_tp1_dist*100).toFixed(0)}% away from entry.`:`No minimum distance to TP1.`);
+ if(P.signal_utc_hours)r.push(`Only signals whose Thor message (the ladder's own Dt) is between ${String(P.signal_utc_hours[0]).padStart(2,"0")}:00 and ${String(P.signal_utc_hours[1]).padStart(2,"0")}:00 UTC (start included, end excluded).`);
  if(P.assets_file)r.push(`Only these assets (from ${esc(P.assets_file)}): ${(P.assets||[]).length?esc(P.assets.join(", ")):"<i>list is empty, so no trades</i>"}.`);
  if(P.require_htf_confluence)r.push(`Only takes a trade when the same asset has a live 4h or 1d signal in the same direction (higher-timeframe confluence).`);
  else if("require_htf_confluence"in P)r.push(`Takes trades with or without a matching 4h/1d signal; each trade is tagged HTF yes/no so both groups can be compared.`);

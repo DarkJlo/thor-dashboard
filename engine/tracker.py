@@ -105,6 +105,22 @@ def db():
             c.execute("update signals set status='stale_history',reason=?,note=? where key=?",('stale_history: '+why.replace(' at view time',' when first seen')+'; old ladder from the pair view, not a new signal',f'was suspect before v4 ({rs})',k)); nm+=1
         log(f'stale_history migration v4: {nm} suspect signal(s) re-marked')
         c.execute('pragma user_version=4'); c.commit()
+    if c.execute('pragma user_version').fetchone()[0]<5:   # one-time (jlo 2026-10-20): pending/filled signals that were old pair-view ladders, ingested
+        # before the ladder age filter with a made-up start (view - max_backfill_hours) -> 'stale_history' so they never fill or trade. Old status
+        # kept in note. Filled rows simply drop out of the portfolio replay like suspects (no fake close); closed/cancelled rows are not touched.
+        # Scope: pending from pair views (ask_thor) or the 2026-10-12 seed; filled only ask_thor (All active fills = entered per the bot: kept).
+        sys.path.insert(0,HERE); import inbox_schema as IS
+        MX=CFG.get('max_ladder_age_hours') or IS.MAX_LADDER_AGE_H; nm=0; now=int(time.time()*1000)
+        # exit_ts = retire time (no exit price, no trade close): confluence/live lookups see the row live only up to now, so history and every
+        # closed trade replay exactly as before, and it has no influence from now on. Filled rows are dropped from the portfolio replay after
+        # sorting (same order for all other trades), so their open paper positions disappear without a close.
+        for k,tf,dt,fs,stt,src,fl in c.execute("select key,timeframe,dt,first_seen_ts,status,source,fill_ts from signals where (status='pending' and source in ('ask_thor','seed')) or (status='filled' and source='ask_thor')").fetchall():
+            why=IS.stale_reason(dt,tf,fs,max_age_h=MX) if fs else None
+            if not why: continue
+            c.execute("update signals set status='stale_history',reason=?,note=?,live_state='stale_history',exit_ts=? where key=?",('stale_history: '+why.replace(' at view time',' when first seen')+'; old ladder ingested before the age filter, not a new signal',
+                      f'was {stt} ({src}{", fill_ts "+str(int(fl)) if fl else ""}) before v5; retired {now}',now,k)); nm+=1
+        log(f'stale_history migration v5: {nm} pending/filled old-ladder signal(s) re-marked')
+        c.execute('pragma user_version=5'); c.commit()
     return c
 # ---------- ingest ----------
 def add_signal(c,r,source,start_ts,fmt='new',extra_note=None):
@@ -368,7 +384,7 @@ def assets(f):
     return {l.strip().replace('/USD','') for l in open(f) if l.strip() and not l.startswith('#')}
 def confluence(c):
     """score at time t = sum of TF weights of live same-asset same-direction signals (incl. itself). Live = start_ts <= t < (exit_ts or now)."""
-    A=pd.read_sql("select key,symbol,direction,timeframe,start_ts,exit_ts,fill_ts,status,last_px,entry_low,entry_high from signals where status not in ('malformed','suspect','duplicate','stale_history')",c)
+    A=pd.read_sql("select key,symbol,direction,timeframe,start_ts,exit_ts,fill_ts,status,last_px,entry_low,entry_high from signals where status not in ('malformed','suspect','duplicate') and not (status='stale_history' and exit_ts is null)",c)
     W=CFG['confluence_weights']; now=int(time.time()*1000); A['end']=A.exit_ts.fillna(now+1)
     out={}
     for _,r in A.iterrows():
@@ -488,12 +504,12 @@ def variants(X,P,now):
         ok=(X.confluence.fillna(0)>=P['min_confluence'])&(X.timeframe.isin(['4h','1d'])|(X.htf=='yes'))
         X.loc[~ok,'_why']='skip_confluence'
     if P.get('require_live_tfs'):   # same-asset same-direction signals of ALL these timeframes must be live at fill time (the signal itself counts)
-        G=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate','stale_history')",sqlite3.connect(DB)); G['end']=G.exit_ts.fillna(now+1)
+        G=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate') and not (status='stale_history' and exit_ts is null)",sqlite3.connect(DB)); G['end']=G.exit_ts.fillna(now+1)
         def has(r):
             g=G[(G.symbol==r.symbol)&(G.direction==r.direction)&(G.start_ts<=r.fill_ts)&(G.end>r.fill_ts)]; return set(P['require_live_tfs'])<=set(g.timeframe)|{r.timeframe}
         ok=X.apply(has,axis=1); X.loc[~ok&X._why.isna(),'_why']='skip_confluence'
     if P.get('boost_risk'):   # generic: risk = boost_risk.risk when same-asset same-dir signals of ALL when_live_tfs are live at fill (same test as require_live_tfs)
-        B=P['boost_risk']; G2=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate','stale_history')",sqlite3.connect(DB)); G2['end']=G2.exit_ts.fillna(now+1)
+        B=P['boost_risk']; G2=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate') and not (status='stale_history' and exit_ts is null)",sqlite3.connect(DB)); G2['end']=G2.exit_ts.fillna(now+1)
         def bst(r):
             g=G2[(G2.symbol==r.symbol)&(G2.direction==r.direction)&(G2.start_ts<=r.fill_ts)&(G2.end>r.fill_ts)]; return set(B['when_live_tfs'])<=set(g.timeframe)|{r.timeframe}
         X['_boost']=X.apply(bst,axis=1)
@@ -536,7 +552,7 @@ def variants(X,P,now):
             if p['why']: X.at[i,'_why']=p['why']
     return X
 def portfolios(c):
-    S=pd.read_sql("select * from signals where fill_ts is not null and status not in ('duplicate','suspect','malformed','stale_history')",c); C=cost(); now=int(time.time()*1000); M=hl_meta()
+    S=pd.read_sql("select * from signals where fill_ts is not null and status not in ('duplicate','suspect','malformed')",c); C=cost(); now=int(time.time()*1000); M=hl_meta()   # incl. v5 stale_history (fill_ts set): dropped after sorting below
     c.execute('create table if not exists margin (portfolio,ts,used,equity)'); c.execute('delete from trades'); c.execute('delete from equity'); c.execute('delete from margin'); D=CFG['portfolio_defaults']
     for name,p in CFG['portfolios'].items():
         P={**D,**p}; A=assets(P.get('assets_file'))
@@ -544,13 +560,15 @@ def portfolios(c):
         X=X[(X.tp1-X.entry).abs()/X.entry>=P['min_tp1_dist']]
         if A is not None: X=X[X.symbol.map(lambda s:s.replace('/USD','')).isin(A)|X.symbol.isin(A)]
         # htf_confluent: a live same-asset same-direction 4h/1d signal exists at fill time
-        H=pd.read_sql("select symbol,direction,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate','stale_history') and timeframe in ('4h','1d')",c); H['end']=H.exit_ts.fillna(now+1)
+        H=pd.read_sql("select symbol,direction,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate') and not (status='stale_history' and exit_ts is null) and timeframe in ('4h','1d')",c); H['end']=H.exit_ts.fillna(now+1)
         X['htf']=[('yes' if ((H.symbol==r.symbol)&(H.direction==r.direction)&(H.start_ts<=r.fill_ts)&(H.end>r.fill_ts)).any() else 'no') for r in X.itertuples()] if len(X) else []
         if P.get('require_htf_confluence'): X=X[X.htf=='yes']
         if P.get('start_after'): X=X[X.fill_ts>=int(pd.Timestamp(P['start_after']).tz_localize(TZ).timestamp()*1000)]   # account reset: fresh from this time
         X=variants(X,P,now)
         # prioritize_confluence: signals filling at the same time compete for cap slots -> HTF-confluent first, then highest confluence score
-        X=X.assign(_h=(X.htf=='yes').astype(int),_c=X.confluence.fillna(0)).sort_values(['fill_ts','_h','_c'],ascending=[True,False,False]) if P.get('prioritize_confluence') else X.sort_values('fill_ts'); eq=P['start']; opn=[]; pause={}; L={}; curve=[(int(X.fill_ts.min()) if len(X) else now,eq)]; rows=[]
+        X=X.assign(_h=(X.htf=='yes').astype(int),_c=X.confluence.fillna(0)).sort_values(['fill_ts','_h','_c'],ascending=[True,False,False]) if P.get('prioritize_confluence') else X.sort_values('fill_ts')
+        X=X[X.status!='stale_history']   # retired old ladders (v5): never trade; dropped after the sort so every other trade keeps its replay order
+        eq=P['start']; opn=[]; pause={}; L={}; curve=[(int(X.fill_ts.min()) if len(X) else now,eq)]; rows=[]
         def close(t):
             nonlocal eq
             for q in sorted([q for q in opn if q['status']=='closed' and q['exit_ts']<=t],key=lambda q:q['exit_ts']):

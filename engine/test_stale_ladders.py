@@ -66,9 +66,28 @@ def main():
         assert r.returncode==0,r.stderr[-1500:]
         out=json.loads(r.stdout.strip().splitlines()[-1]); a,b,uv=out
         assert a[1]=='stale_history' and a[2].startswith('stale_history: Dt 2026-09-27 08:31:06 UTC') and 'when first seen' in a[2] and a[3].startswith('was suspect before v4 (suspect: entry mid'),a
-        assert b[1]=='suspect' and uv==4,(b,uv); ok+=1
+        assert b[1]=='suspect' and uv==5,(b,uv); ok+=1
     finally: shutil.rmtree(e,ignore_errors=True)
-    print(f'{ok}/4 OK')
+    # 5) migration v5: old-ladder pending (ask_thor / seed) and filled ask_thor -> stale_history with retire time in exit_ts, old status in note;
+    #    fresh pending, All active fills, seed fills and closed rows untouched
+    e=engine_copy()
+    try:
+        r=subprocess.run([sys.executable,'-c','import sys;sys.argv=["x"];import tracker as T;T.db().close()'],cwd=e,capture_output=True,text=True,timeout=60); assert r.returncode==0,r.stderr[-1500:]
+        c=sqlite3.connect(os.path.join(e,'tracker.db')); fs=ms('2026-10-12 19:00:00')
+        cols='key,symbol,timeframe,direction,dt,source,start_ts,first_seen_ts,status,fill_ts,exit_ts'
+        R=[('p_old','HBAR/USD','1d','Long','2025-11-11','ask_thor',fs,fs,'pending',None,None),('p_seed','XRP/USD','1d','Long','2026-09-24','seed',fs,fs,'pending',None,None),
+           ('f_old','HYPE/USD','1d','Long','2026-10-07','ask_thor',fs,fs,'filled',fs+1000,None),('f_aa','UNI/USD','4h','Long','2026-09-27 08:31:06','all_active',fs,fs,'filled',fs,None),
+           ('f_seed','XRP/USD','4h','Long','2026-09-25','seed',fs,fs,'filled',fs,None),('p_new','SUI/USD','4h','Short','2026-10-12 20:00:00','ask_thor',fs,fs,'pending',None,None),
+           ('c_old','SOL/USD','4h','Long','2026-10-02','ask_thor',fs,fs,'closed',fs,fs+5000)]
+        c.executemany(f'insert into signals ({cols}) values ({",".join("?"*11)})',R); c.execute('pragma user_version=4'); c.commit(); c.close()
+        r=subprocess.run([sys.executable,'-c','import sys,json;sys.argv=["x"];import tracker as T;c=T.db();print(json.dumps({k:[s,n,x] for k,s,n,x in c.execute("select key,status,note,exit_ts from signals")}|{"uv":c.execute("pragma user_version").fetchone()[0]}))'],cwd=e,capture_output=True,text=True,timeout=60)
+        assert r.returncode==0,r.stderr[-1500:]
+        o=json.loads(r.stdout.strip().splitlines()[-1]); assert o.pop('uv')==5
+        assert {k for k,v in o.items() if v[0]=='stale_history'}=={'p_old','p_seed','f_old'},o
+        assert o['f_old'][1].startswith('was filled (ask_thor, fill_ts ') and o['p_seed'][1].startswith('was pending (seed) before v5') and all(o[k][2] for k in ('p_old','p_seed','f_old')),o
+        assert [o[k][0] for k in ('f_aa','f_seed','p_new','c_old')]==['filled','filled','pending','closed'] and o['c_old'][2]==fs+5000 and o['p_new'][2] is None,o; ok+=1
+    finally: shutil.rmtree(e,ignore_errors=True)
+    print(f'{ok}/5 OK')
 if __name__=='__main__':
     if len(sys.argv)>2 and sys.argv[1]=='--check': print(json.dumps(ingest(sys.argv[2]),default=str))
     else: main()

@@ -95,6 +95,16 @@ def db():
                 log('dedup migration:',d['key'],'duplicate of',g[0]['key'])
                 c.execute("update signals set status='duplicate',reason=?,note=? where key=?",('duplicate of '+g[0]['key'],f"was {d['status']} ({d['source']}) before dedup v3",d['key']))
         c.execute('pragma user_version=3'); c.commit()
+    if c.execute('pragma user_version').fetchone()[0]<4:   # one-time: suspects that were old ladders from pair-view history -> 'stale_history'
+        # (row kept, never traded, not in the Suspect table). Same age rule as ingest, measured at first sighting (first_seen_ts).
+        sys.path.insert(0,HERE); import inbox_schema as IS
+        MX=CFG.get('max_ladder_age_hours') or IS.MAX_LADDER_AGE_H; nm=0
+        for k,tf,dt,fs,rs in c.execute("select key,timeframe,dt,first_seen_ts,reason from signals where status='suspect' and source in ('ask_thor','alert')").fetchall():
+            why=IS.stale_reason(dt,tf,fs,max_age_h=MX) if fs else None
+            if not why: continue
+            c.execute("update signals set status='stale_history',reason=?,note=? where key=?",('stale_history: '+why.replace(' at view time',' when first seen')+'; old ladder from the pair view, not a new signal',f'was suspect before v4 ({rs})',k)); nm+=1
+        log(f'stale_history migration v4: {nm} suspect signal(s) re-marked')
+        c.execute('pragma user_version=4'); c.commit()
     return c
 # ---------- ingest ----------
 def add_signal(c,r,source,start_ts,fmt='new',extra_note=None):
@@ -157,15 +167,26 @@ def ingest(c):
                 from tgparse import parse
                 for _,r in parse(f).iterrows(): m+=add_signal(c,r,'telegram_export',ms(r.msg_time),r.format)
             else:
-                ca=R['checked_ms']; items=list(R['items'])
+                ca=R['checked_ms']; items=list(R['items']); pvd=d.get('pair_views') if isinstance(d.get('pair_views'),dict) else {}
+                MX=CFG.get('max_ladder_age_hours') or IS.MAX_LADDER_AGE_H; stale=[]
                 for lab,txt,cap in R['views']:
                     from tgparse import parse_texts
-                    vt=cap or ca
+                    vt=cap or ca; pv=pvd.get(lab); prev=None
+                    if isinstance(pv,dict) and pv.get('prev_captured_at'):   # box builder: when this pair view was last read (earlier check)
+                        try: prev=IS.ts_ms(pv['prev_captured_at'])
+                        except Exception: prev=None
                     for _,r in parse_texts([txt],vt/1000).iterrows():
-                        items.append(dict(r.drop(['msg_time','format','msg_id']),source='ask_thor',_vt=vt,_note=None if cap else 'view without captured_at'))
+                        items.append(dict(r.drop(['msg_time','format','msg_id']),source='ask_thor',_vt=vt,_prev=prev,_lab=lab,_note=None if cap else 'view without captured_at'))
                 items.sort(key=lambda r:r.get('source')!='all_active')
+                keep=[]
+                for r in items:   # old ladders Thor still lists are history, not new signals (All active = entered now: never dropped)
+                    why=None if r.get('source')=='all_active' or r.get('msg_time') else IS.stale_reason(r.get('dt'),r.get('timeframe'),r.get('_vt',ca),r.get('_prev'),MX)
+                    if why: stale.append(f"{r.pop('_lab',r.get('symbol'))} {r.get('timeframe')} {r.get('direction')} {r.get('entry_low')}-{r.get('entry_high')}: {why}")
+                    else: keep.append(r)
+                if stale: log(f'{b}: {len(stale)} old ladder(s) skipped (stale_history), e.g.',stale[0])
+                rep['stale_ladders']=stale; items=keep
                 for r in items:
-                    vt=r.pop('_vt',ca); vn=r.pop('_note',None)
+                    vt=r.pop('_vt',ca); vn=r.pop('_note',None); r.pop('_prev',None); r.pop('_lab',None)
                     if r.get('msg_time'): st=ms(r['msg_time'])
                     else:
                         try: _t=pd.Timestamp(str(r.get('dt'))); dts=ms(_t if _t.tzinfo else _t.tz_localize('UTC'))   # Thor Dt stamps are UTC
@@ -347,7 +368,7 @@ def assets(f):
     return {l.strip().replace('/USD','') for l in open(f) if l.strip() and not l.startswith('#')}
 def confluence(c):
     """score at time t = sum of TF weights of live same-asset same-direction signals (incl. itself). Live = start_ts <= t < (exit_ts or now)."""
-    A=pd.read_sql("select key,symbol,direction,timeframe,start_ts,exit_ts,fill_ts,status,last_px,entry_low,entry_high from signals where status not in ('malformed','suspect','duplicate')",c)
+    A=pd.read_sql("select key,symbol,direction,timeframe,start_ts,exit_ts,fill_ts,status,last_px,entry_low,entry_high from signals where status not in ('malformed','suspect','duplicate','stale_history')",c)
     W=CFG['confluence_weights']; now=int(time.time()*1000); A['end']=A.exit_ts.fillna(now+1)
     out={}
     for _,r in A.iterrows():
@@ -467,12 +488,12 @@ def variants(X,P,now):
         ok=(X.confluence.fillna(0)>=P['min_confluence'])&(X.timeframe.isin(['4h','1d'])|(X.htf=='yes'))
         X.loc[~ok,'_why']='skip_confluence'
     if P.get('require_live_tfs'):   # same-asset same-direction signals of ALL these timeframes must be live at fill time (the signal itself counts)
-        G=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate')",sqlite3.connect(DB)); G['end']=G.exit_ts.fillna(now+1)
+        G=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate','stale_history')",sqlite3.connect(DB)); G['end']=G.exit_ts.fillna(now+1)
         def has(r):
             g=G[(G.symbol==r.symbol)&(G.direction==r.direction)&(G.start_ts<=r.fill_ts)&(G.end>r.fill_ts)]; return set(P['require_live_tfs'])<=set(g.timeframe)|{r.timeframe}
         ok=X.apply(has,axis=1); X.loc[~ok&X._why.isna(),'_why']='skip_confluence'
     if P.get('boost_risk'):   # generic: risk = boost_risk.risk when same-asset same-dir signals of ALL when_live_tfs are live at fill (same test as require_live_tfs)
-        B=P['boost_risk']; G2=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate')",sqlite3.connect(DB)); G2['end']=G2.exit_ts.fillna(now+1)
+        B=P['boost_risk']; G2=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate','stale_history')",sqlite3.connect(DB)); G2['end']=G2.exit_ts.fillna(now+1)
         def bst(r):
             g=G2[(G2.symbol==r.symbol)&(G2.direction==r.direction)&(G2.start_ts<=r.fill_ts)&(G2.end>r.fill_ts)]; return set(B['when_live_tfs'])<=set(g.timeframe)|{r.timeframe}
         X['_boost']=X.apply(bst,axis=1)
@@ -515,7 +536,7 @@ def variants(X,P,now):
             if p['why']: X.at[i,'_why']=p['why']
     return X
 def portfolios(c):
-    S=pd.read_sql("select * from signals where fill_ts is not null and status not in ('duplicate','suspect','malformed')",c); C=cost(); now=int(time.time()*1000); M=hl_meta()
+    S=pd.read_sql("select * from signals where fill_ts is not null and status not in ('duplicate','suspect','malformed','stale_history')",c); C=cost(); now=int(time.time()*1000); M=hl_meta()
     c.execute('create table if not exists margin (portfolio,ts,used,equity)'); c.execute('delete from trades'); c.execute('delete from equity'); c.execute('delete from margin'); D=CFG['portfolio_defaults']
     for name,p in CFG['portfolios'].items():
         P={**D,**p}; A=assets(P.get('assets_file'))
@@ -523,7 +544,7 @@ def portfolios(c):
         X=X[(X.tp1-X.entry).abs()/X.entry>=P['min_tp1_dist']]
         if A is not None: X=X[X.symbol.map(lambda s:s.replace('/USD','')).isin(A)|X.symbol.isin(A)]
         # htf_confluent: a live same-asset same-direction 4h/1d signal exists at fill time
-        H=pd.read_sql("select symbol,direction,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate') and timeframe in ('4h','1d')",c); H['end']=H.exit_ts.fillna(now+1)
+        H=pd.read_sql("select symbol,direction,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate','stale_history') and timeframe in ('4h','1d')",c); H['end']=H.exit_ts.fillna(now+1)
         X['htf']=[('yes' if ((H.symbol==r.symbol)&(H.direction==r.direction)&(H.start_ts<=r.fill_ts)&(H.end>r.fill_ts)).any() else 'no') for r in X.itertuples()] if len(X) else []
         if P.get('require_htf_confluence'): X=X[X.htf=='yes']
         if P.get('start_after'): X=X[X.fill_ts>=int(pd.Timestamp(P['start_after']).tz_localize(TZ).timestamp()*1000)]   # account reset: fresh from this time
@@ -586,7 +607,7 @@ def cycle():
     st=dict(c.execute('select status,count(*) from signals group by status').fetchall())
     en=c.execute("select count(*) from signals where live_state='still_enterable'").fetchone()[0]; c.close()
     hb=dict(ts=time.strftime('%F %T'),epoch=int(time.time()),new_signals=n,status=st,still_enterable=en,sources=SRC,frozen=dict(FROZEN),mark_rejected=dict(MARK_BAD),
-            inbox={k:dict(ok=v['ok'],error=v.get('error'),new=v.get('new_signals'),rejected=len(v.get('rejected_items',[]))+len(v.get('rejected_views',[])),warnings=len(v.get('view_warnings',[]))) for k,v in INBOX_REPORT.items()}); open('heartbeat','w').write(json.dumps(hb)); log('cycle',hb)
+            inbox={k:dict(ok=v['ok'],error=v.get('error'),new=v.get('new_signals'),rejected=len(v.get('rejected_items',[]))+len(v.get('rejected_views',[])),warnings=len(v.get('view_warnings',[])),stale=len(v.get('stale_ladders',[]))) for k,v in INBOX_REPORT.items()}); open('heartbeat','w').write(json.dumps(hb)); log('cycle',hb)
     if ONCE: return   # one-shot (GitHub Actions engine): never relaunch the box publisher
     try: publisher_watchdog()
     except Exception as e: log('watchdog error',e)

@@ -5,6 +5,7 @@ costs: {taker_fee: 0.00045, slippage: 0.0002}   # per side
 stop_rr: 1.5            # stop distance = TP1 distance / stop_rr
 timeouts_days: {15m: 1, 1h: 3, 4h: 7, 1d: 21}   # max wait for fill, and max hold after fill
 max_backfill_hours: 48  # inbox items without msg time start at max(dt, checked_at - this)
+max_ladder_age_hours: {15m: 12, 1h: 24, 4h: 48, 1d: 48}   # pair-view ladders whose own Dt is older than this at view time (or before the previous read of that pair) are old history: skipped at ingest (stale_history)
 portfolio_defaults: {start: 1000, risk: 0.01, caps: {15m: 3, 1h: 2, 4h: 1, 1d: 99}, pause_loss_frac: 0.02, pause_hours: 24, max_notional_frac: 1.0}
 portfolios:
   MAIN:      {timeframes: [4h], directions: [Long], min_tp1_dist: 0.02, purpose: "Best backtest setup: 4h longs with TP1 at least 2% away."}

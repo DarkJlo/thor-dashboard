@@ -61,6 +61,28 @@ def check_views(pv,checked_ms):
         if n is not None and n!=k: warn.append(f'{lab}: menu count {n} vs {k} parsed Dt line(s)')
         out.append((lab,txt,cap))
     return out,warn,rej
+# ---------- ladder age filter (2026-10-20) ----------
+# A pair view lists every ladder Thor still shows for that pair, including ones posted days or months ago (each block has its own
+# 'Dt:' stamp, UTC). Only ladders that are new since this pair was last read, and young enough for their timeframe, are new signals.
+# Shared by the engine ingest (tracker.py), the box inbox builder (tg/build_check.py) and backtest/append_signals.py.
+MAX_LADDER_AGE_H={'15m':12,'1h':24,'4h':48,'1d':48}   # <= engine max_backfill_hours, so a kept ladder starts at its own Dt
+PREV_VIEW_GRACE_MIN=60   # Dt within this many minutes before the previous read still counts as new (bot posting lag / clock skew)
+def dt_ms(dt):
+    """Thor 'Dt:' stamp (UTC unless it carries an offset) -> epoch ms; None if missing or unparseable."""
+    if dt is None or str(dt).strip() in ('','None','nan','NaT'): return None
+    try: x=pd.Timestamp(str(dt)); return int((x if x.tzinfo else x.tz_localize('UTC')).timestamp()*1000)
+    except Exception: return None
+def stale_reason(dt,tf,view_ms,prev_view_ms=None,max_age_h=None):
+    """None if a pair-view ladder can be a new signal, else why it is old history:
+    its Dt is before the previous read of the same pair view (it was already on screen then), or older than MAX_LADDER_AGE_H[tf] at view time.
+    A ladder without a parseable Dt is never dropped here (the caller falls back to the view time)."""
+    t=dt_ms(dt)
+    if t is None or view_ms is None: return None
+    age=(view_ms-t)/3.6e6; lim=(max_age_h or MAX_LADDER_AGE_H).get(tf)
+    if prev_view_ms and t<prev_view_ms-PREV_VIEW_GRACE_MIN*60_000:
+        return f'Dt {dt} UTC is before the previous read of this pair view ({(view_ms-prev_view_ms)/3.6e6:.1f}h earlier); age {age:.1f}h'
+    if lim is not None and age>lim: return f'Dt {dt} UTC is {age:.1f}h old at view time (max {lim}h for {tf})'
+    return None
 def check_file(d):
     """-> dict(ok, error, checked_ms, items, rejected_items, views, view_warnings, rejected_views)"""
     R=dict(ok=False,error=None,items=[],rejected_items=[],views=[],view_warnings=[],rejected_views=[])

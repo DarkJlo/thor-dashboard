@@ -234,7 +234,7 @@ function go(t){TAB=t;TID=0;CID=0;for(const k in ROWS)delete ROWS[k];for(const k 
     for(const[k,n]of[["tp3",3],["tp2",2],["tp1",1]])if(n>hit&&s[k]!=null&&(sh?l<=s[k]:h>=s[k])){hit=n;break}
     if(hit===3)return{status:"closed",reason:"TP3",fill_ts:f,exit_ts:t}}
    return f==null?null:{status:hit?"TP"+hit+" hit":"filled",fill_ts:f}};
-  const wl=SIG.filter(s=>!(DATA.hlcoin||{})[s.symbol]&&!["malformed","suspect","duplicate"].includes(s.status)).map(s=>{const lp=lpx(s),r=(DATA.extc||{})[s.symbol]?sim(s):null;s={...s,...(r||{})};return{...s,last_px:lp,dist:lp==null?null:(lp>=s.entry_low&&lp<=s.entry_high?0:100*Math.min(Math.abs(lp-s.entry_low),Math.abs(lp-s.entry_high))/lp)}});
+  const wl=SIG.filter(s=>!(DATA.hlcoin||{})[s.symbol]&&!["malformed","suspect","duplicate","stale_history"].includes(s.status)).map(s=>{const lp=lpx(s),r=(DATA.extc||{})[s.symbol]?sim(s):null;s={...s,...(r||{})};return{...s,last_px:lp,dist:lp==null?null:(lp>=s.entry_low&&lp<=s.entry_high?0:100*Math.min(Math.abs(lp-s.entry_low),Math.abs(lp-s.entry_high))/lp)}});
   const act=wl.filter(s=>!["closed","cancelled"].includes(s.status)),old=wl.filter(s=>["closed","cancelled"].includes(s.status));
   let h=`<div class=panel><h2>Watchlist (view only)</h2><div class=mu style="font-size:12px">Stocks and other signals that aren't tradable on Hyperliquid. They never go into any account. Click a row for its chart (Yahoo Finance candles). Status (entry, TPs, stop) is worked out from those candles with our normal rules: entry at the edge of the zone, stop at 1:1.5, ride to TP3.</div></div>`;
   h+=table("Active watchlist signals",act,["sym","tf","dir","st","rs","dz","el","eh","t1","iv","lp","start","src"],{sort:"dist",dirn:1});

@@ -1,0 +1,1735 @@
+{
+ "fetched": 1792808123.084675,
+ "fetched_at": "2026-10-23 19:15:23",
+ "source": "POST https://api.hyperliquid.xyz/info {\"type\":\"meta\"}",
+ "assets": {
+  "BTC": {
+   "max_lev": 40,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 40
+    },
+    {
+     "lowerBound": "150000000.0",
+     "maxLeverage": 20
+    }
+   ],
+   "mmr": 0.0125
+  },
+  "ETH": {
+   "max_lev": 25,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 25
+    },
+    {
+     "lowerBound": "100000000.0",
+     "maxLeverage": 15
+    }
+   ],
+   "mmr": 0.02
+  },
+  "ATOM": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "MATIC": {
+   "max_lev": 20,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.025
+  },
+  "DYDX": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "SOL": {
+   "max_lev": 20,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 20
+    },
+    {
+     "lowerBound": "70000000.0",
+     "maxLeverage": 10
+    }
+   ],
+   "mmr": 0.025
+  },
+  "AVAX": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "BNB": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "APE": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "OP": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "LTC": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "ARB": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "DOGE": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "INJ": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "SUI": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "kPEPE": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "CRV": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "LDO": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "LINK": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "STX": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "RNDR": {
+   "max_lev": 20,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.025
+  },
+  "CFX": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "FTM": {
+   "max_lev": 10,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.05
+  },
+  "GMX": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SNX": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "XRP": {
+   "max_lev": 20,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 20
+    },
+    {
+     "lowerBound": "40000000.0",
+     "maxLeverage": 10
+    }
+   ],
+   "mmr": 0.025
+  },
+  "BCH": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "APT": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "AAVE": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "COMP": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "MKR": {
+   "max_lev": 10,
+   "delisted": true,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "WLD": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "FXS": {
+   "max_lev": 5,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "HPOS": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "RLB": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "UNIBOT": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "YGG": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "TRX": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "kSHIB": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "UNI": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "SEI": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "RUNE": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "OX": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "FRIEND": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SHIA": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "CYBER": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ZRO": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "BLZ": {
+   "max_lev": 5,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "DOT": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "BANANA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "TRB": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "FTT": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "LOOM": {
+   "max_lev": 10,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.05
+  },
+  "OGN": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "RDNT": {
+   "max_lev": 5,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "ARK": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "BNT": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "CANTO": {
+   "max_lev": 5,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "REQ": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "BIGTIME": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "KAS": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ORBS": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "BLUR": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "TIA": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "BSV": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ADA": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "TON": {
+   "max_lev": 10,
+   "delisted": true,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "MINA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "POLYX": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "GAS": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "PENDLE": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "STG": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "FET": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "STRAX": {
+   "max_lev": 10,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.05
+  },
+  "NEAR": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "MEME": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ORDI": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "BADGER": {
+   "max_lev": 5,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "NEO": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "ZEN": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "FIL": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "PYTH": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "SUSHI": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ILV": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "IMX": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "kBONK": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "GMT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SUPER": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "USTC": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "NFTI": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "JUP": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "kLUNC": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "RSR": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "GALA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "JTO": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "NTRN": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ACE": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "MAV": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "WIF": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "CAKE": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "PEOPLE": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ENS": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "ETC": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "XAI": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "MANTA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "UMA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ONDO": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "ALT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ZETA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "DYM": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "MAVIA": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "W": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "PANDORA": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "STRK": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "PIXEL": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "AI": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "TAO": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "AR": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "MYRO": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "kFLOKI": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "BOME": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ETHFI": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "ENA": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "MNT": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "TNSR": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SAGA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "MERL": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "HBAR": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "POPCAT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "OMNI": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "EIGEN": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "REZ": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "NOT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "TURBO": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "BRETT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "IO": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ZK": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "BLAST": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "LISTA": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "MEW": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "RENDER": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "kDOGS": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "POL": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "CATI": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "CELO": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "HMSTR": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SCR": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "NEIROETH": {
+   "max_lev": 5,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "kNEIRO": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "GOAT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "MOODENG": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "GRASS": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "PURR": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "PNUT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "XLM": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "CHILLGUY": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SAND": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "IOTA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ALGO": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "HYPE": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "ME": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "MOVE": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "VIRTUAL": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "PENGU": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "USUAL": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "FARTCOIN": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "AI16Z": {
+   "max_lev": 5,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "AIXBT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ZEREBRO": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "BIO": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "GRIFFAIN": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SPX": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "S": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "MORPHO": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "TRUMP": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "MELANIA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ANIME": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "VINE": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "VVV": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "JELLY": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "BERA": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "TST": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "LAYER": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "IP": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "OM": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "KAITO": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "NIL": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "PAXG": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "PROMPT": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "BABY": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "WCT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "HYPER": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ZORA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "INIT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "DOOD": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "LAUNCHCOIN": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "NXPC": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SOPH": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "RESOLV": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SYRUP": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "PUMP": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "PROVE": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "YZY": {
+   "max_lev": 3,
+   "delisted": true,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "XPL": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "3000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "WLFI": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "LINEA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "SKY": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ASTER": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "AVNT": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "STBL": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "0G": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "HEMI": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "APEX": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "2Z": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ZEC": {
+   "max_lev": 10,
+   "delisted": false,
+   "tiers": [
+    {
+     "lowerBound": "0.0",
+     "maxLeverage": 10
+    },
+    {
+     "lowerBound": "20000000.0",
+     "maxLeverage": 5
+    }
+   ],
+   "mmr": 0.05
+  },
+  "MON": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "MET": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "MEGA": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "CC": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "ICP": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "AERO": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "STABLE": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "FOGO": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "LIT": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "XMR": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "AXS": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "DASH": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "SKR": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "AZTEC": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "CHIP": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "GRAM": {
+   "max_lev": 5,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.1
+  },
+  "CASHCAT": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "PONS": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  },
+  "USELESS": {
+   "max_lev": 3,
+   "delisted": false,
+   "tiers": [],
+   "mmr": 0.16666666666666666
+  }
+ }
+}

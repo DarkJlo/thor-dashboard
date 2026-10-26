@@ -1,0 +1,2 @@
+# SHIB_ONLY paper account (added 2026-10-26 at jlo request). One symbol per line.
+SHIB/USD

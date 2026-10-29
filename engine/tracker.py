@@ -565,6 +565,7 @@ def portfolios(c):
         X=X[(X.tp1-X.entry).abs()/X.entry>=P['min_tp1_dist']]
         if P.get('signal_utc_hours'): X=X[[in_utc_hours(t,P['signal_utc_hours']) for t in X.start_ts]] if len(X) else X   # generic: Thor message/ladder time (start_ts = own Dt) in [start, end) UTC hours
         if A is not None: X=X[X.symbol.map(lambda s:s.replace('/USD','')).isin(A)|X.symbol.isin(A)]
+        if P.get('exclude_assets'): XA={a.replace('/USD','') for a in P['exclude_assets']}; X=X[~X.symbol.map(lambda s:s.replace('/USD','')).isin(XA)]   # generic: drop these base assets (e.g. SKIP_BIGCAPS)
         # htf_confluent: a live same-asset same-direction 4h/1d signal exists at fill time
         H=pd.read_sql("select symbol,direction,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate') and not (status='stale_history' and exit_ts is null) and timeframe in ('4h','1d')",c); H['end']=H.exit_ts.fillna(now+1)
         X['htf']=[('yes' if ((H.symbol==r.symbol)&(H.direction==r.direction)&(H.start_ts<=r.fill_ts)&(H.end>r.fill_ts)).any() else 'no') for r in X.itertuples()] if len(X) else []

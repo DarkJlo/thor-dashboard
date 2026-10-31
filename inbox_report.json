@@ -1,0 +1,52 @@
+{
+ "check_2026-10-31T1218.json": {
+  "file": "check_2026-10-31T1218.json",
+  "ok": true,
+  "stale_ladders": [
+   "T:ATOMUSDT (1) 1h Long 1.444-1.4583: Dt 2026-10-31 01:28:08 UTC is before the previous read of this pair view (6.1h earlier); age 17.8h",
+   "T:ATOMUSDT (1) 1h Short 1.61-1.6174: Dt 2026-10-30 18:18:08 UTC is before the previous read of this pair view (6.1h earlier); age 25.0h",
+   "T:ATOMUSDT (1) 1d Long 1.2948-1.3136: Dt 2026-10-24 00:15:05 UTC is before the previous read of this pair view (6.1h earlier); age 187.1h",
+   "T:ATOMUSDT (1) 1d Short 1.9379-1.977: Dt 2026-10-31 00:02:05 UTC is before the previous read of this pair view (6.1h earlier); age 19.3h",
+   "T:ATOMUSDT (1) 1d Short 2.4906-2.59: Dt 2026-10-31 00:02:05 UTC is before the previous read of this pair view (6.1h earlier); age 19.3h",
+   "T:PYTHUSDT (1) 1d Long 0.059094-0.0621: Dt 2026-10-16 00:10:05 UTC is before the previous read of this pair view (6.1h earlier); age 379.2h",
+   "SEI/USD (6) 15m Long 0.0476-0.0477: Dt 2026-10-31 06:38:11 UTC is 12.7h old at view time (max 12h for 15m)",
+   "SEI/USD (6) 15m Short 0.0505-0.0507: Dt 2026-10-30 00:32:11 UTC is before the previous read of this pair view (18.0h earlier); age 42.8h",
+   "SHIB/USD (4) 4h Long 4.54e-06-4.67e-06: Dt 2026-09-26 20:33:06 UTC is before the previous read of this pair view (18.0h earlier); age 838.8h",
+   "SHIB/USD (4) 1d Short 8.2e-06-8.33e-06: Dt 2026-08-13 00:38:04 UTC is before the previous read of this pair view (18.0h earlier); age 1914.7h",
+   "SOL/USD (7) 15m Short 97.81-98.07: Dt 2026-10-30 18:46:11 UTC is before the previous read of this pair view (18.0h earlier); age 24.6h",
+   "SOL/USD (7) 15m Short 109.908-110.661: Dt 2026-10-30 15:11:11 UTC is before the previous read of this pair view (18.0h earlier); age 28.1h",
+   "SOL/USD (7) 1h Short 109.197-109.908: Dt 2026-10-30 19:29:09 UTC is before the previous read of this pair view (18.0h earlier); age 23.8h",
+   "SOL/USD (7) 4h Short 105.285-105.588: Dt 2026-10-30 04:26:06 UTC is before the previous read of this pair view (18.0h earlier); age 38.9h",
+   "W/USD (5) 15m Long 0.0103683204-0.0104915602: Dt 2026-10-30 23:58:10 UTC is before the previous read of this pair view (12.0h earlier); age 19.4h",
+   "W/USD (5) 1h Long 0.0103683204-0.0104915602: Dt 2026-10-31 00:41:08 UTC is before the previous read of this pair view (12.0h earlier); age 18.6h",
+   "FART/USD (6) 15m Short 0.12432-0.12475: Dt 2026-10-30 21:24:10 UTC is before the previous read of this pair view (12.0h earlier); age 21.9h",
+   "FART/USD (6) 4h Short 0.14745-0.14944: Dt 2026-10-30 04:12:06 UTC is before the previous read of this pair view (12.0h earlier); age 39.1h",
+   "ARB/USD (5) 1d Long 0.0931-0.0986: Dt 2026-10-21 00:18:05 UTC is before the previous read of this pair view (12.0h earlier); age 259.0h",
+   "ARB/USD (5) 1d Short 0.2274-0.2324: Dt 2026-10-31 00:00:04 UTC is before the previous read of this pair view (12.0h earlier); age 19.3h",
+   "ARB/USD (5) 1d Short 0.2389-0.2463: Dt 2026-10-31 00:00:04 UTC is before the previous read of this pair view (12.0h earlier); age 19.3h",
+   "BONK/USD (6) 1d Long 2.618e-06-2.7067e-06: Dt 2026-10-06 00:40:04 UTC is before the previous read of this pair view (12.0h earlier); age 618.7h",
+   "BONK/USD (6) 1d Long 2.1656e-06-2.2383e-06: Dt 2026-10-06 00:40:04 UTC is before the previous read of this pair view (12.0h earlier); age 618.7h",
+   "BONK/USD (6) 1d Long 1.8973e-06-1.9953e-06: Dt 2026-10-24 00:30:04 UTC is before the previous read of this pair view (12.0h earlier); age 186.8h",
+   "BONK/USD (6) 1d Long 1.3912e-06-1.4336e-06: Dt 2026-10-06 00:40:04 UTC is before the previous read of this pair view (12.0h earlier); age 618.7h",
+   "BONK/USD (6) 1d Short 4.041e-06-4.101e-06: Dt 2026-10-31 00:17:05 UTC is before the previous read of this pair view (12.0h earlier); age 19.0h",
+   "BONK/USD (6) 1d Short 4.8214e-06-4.882e-06: Dt 2026-09-17 00:07:04 UTC is before the previous read of this pair view (12.0h earlier); age 1075.2h",
+   "BTC/USD (6) 15m Short 78297.6-78377.86: Dt 2026-10-30 21:22:11 UTC is before the previous read of this pair view (12.0h earlier); age 22.0h",
+   "BTC/USD (6) 15m Short 79004.94-79207.4: Dt 2026-10-30 19:13:11 UTC is before the previous read of this pair view (12.0h earlier); age 24.1h",
+   "BTC/USD (6) 4h Long 76363.63-76689.77: Dt 2026-10-02 16:21:06 UTC is before the previous read of this pair view (12.0h earlier); age 699.0h",
+   "BTC/USD (6) 4h Short 83059.07-83528.3: Dt 2026-10-30 20:39:07 UTC is before the previous read of this pair view (12.0h earlier); age 22.7h",
+   "BTC/USD (6) 1d Long 76363.63-76689.77: Dt 2026-10-03 00:14:04 UTC is before the previous read of this pair view (12.0h earlier); age 691.1h",
+   "BTC/USD (6) 1d Long 66421.38-67871.12: Dt 2026-10-22 00:26:05 UTC is before the previous read of this pair view (12.0h earlier); age 234.9h",
+   "ETH/USD (3) 4h Short 2450.89-2459.1: Dt 2026-10-30 04:06:07 UTC is before the previous read of this pair view (12.0h earlier); age 39.2h",
+   "ETH/USD (3) 1d Short 2655.77-2672.66: Dt 2026-10-31 00:10:04 UTC is before the previous read of this pair view (12.0h earlier); age 19.2h",
+   "ETH/USD (3) 1d Short 3186.72-3424.65: Dt 2026-06-07 00:34:04 UTC is before the previous read of this pair view (12.0h earlier); age 3522.8h",
+   "HBAR/USD (4) 1d Long 0.05437-0.06236: Dt 2025-11-11 00:06:04 UTC is before the previous read of this pair view (12.0h earlier); age 8515.2h"
+  ],
+  "rejected_items": [],
+  "rejected_views": [],
+  "view_warnings": [
+   "T:ATOMUSDT (1): menu count 1 vs 5 parsed Dt line(s)",
+   "T:PYTHUSDT (1): menu count 1 vs 3 parsed Dt line(s)"
+  ],
+  "new_signals": 23
+ }
+}

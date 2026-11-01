@@ -500,6 +500,36 @@ def in_utc_hours(ts_ms,hours):
     if ts_ms is None or ts_ms!=ts_ms: return False
     a,b=int(hours[0]),int(hours[1]); h=time.gmtime(int(ts_ms)/1000).tm_hour
     return a<=h<b if a<=b else (h>=a or h<b)
+DAYMS=86_400_000; DAILY={}
+def daily_candles(sym):
+    """completed UTC-day candles {day_index (ts//DAYMS): (high, low, close)} from Hyperliquid 1d candleSnapshot (same public API as candles()),
+    one request per symbol, cached per run (refetched once a new UTC day completes). None if not on Hyperliquid or the fetch fails."""
+    now=int(time.time()*1000); today=now//DAYMS
+    if sym in DAILY and DAILY[sym][0]==today: return DAILY[sym][1]
+    M=hl_meta()
+    if hl_asset(sym,M) is None: return None
+    cn=next((k for k in (base(sym),'k'+base(sym),base(sym)+'COIN') if k in M['assets']),None)
+    try:
+        r=requests.post('https://api.hyperliquid.xyz/info',json={'type':'candleSnapshot','req':{'coin':cn,'interval':'1d','startTime':now-4000*DAYMS,'endTime':now}},timeout=20).json(); _pause()
+        if not isinstance(r,list): raise RuntimeError(str(r)[:100])
+        d={int(x['t'])//DAYMS:(float(x['h']),float(x['l']),float(x['c'])) for x in r if int(x['t'])+DAYMS<=now}   # closed days only
+    except Exception as e: log('daily candles failed',sym,e); d=None
+    DAILY[sym]=(today,d); return d
+def donchian_trend(D,t_ms,n=55,slope_days=5):
+    """Donchian-55 regime + slope at signal time t_ms (= backtest variant b, scratch/bt_idea1_trend.py). D: {UTC day index: (h, l, c)}.
+    k = last fully completed UTC day before t_ms (no lookahead); mid_j = (max high + min low)/2 over days j-n..j-1 (all n days required).
+    Returns +1 (close_k > mid_k and mid_k > mid_{k-slope_days}: longs allowed), -1 (close < mid and mid falling: shorts allowed),
+    0 (neither) or None (unknown: missing day / fewer than n+slope_days+1 completed days of history / no data) -> caller skips (fail closed)."""
+    if not D or t_ms is None or t_ms!=t_ms: return None
+    k=int(t_ms)//DAYMS-1
+    def mid(j):
+        w=[D.get(i) for i in range(j-n,j)]
+        return None if any(x is None for x in w) else (max(x[0] for x in w)+min(x[1] for x in w))/2
+    if k not in D: return None
+    m,m0=mid(k),mid(k-slope_days)
+    if m is None or m0 is None: return None
+    c=D[k][2]; s=m-m0
+    return 1 if (c>m and s>0) else (-1 if (c<m and s<0) else 0)
 def variants(X,P,now):
     """per-portfolio filters / execution variants; sets _why (skip reason) and may change fill/exit fields"""
     X=X.copy(); X['_why']=None
@@ -538,6 +568,12 @@ def variants(X,P,now):
                 i=np.searchsorted(bt[0],t,side='right')-1; return None if i<0 else bool(bt[1][i])
             up=X.fill_ts.map(tr); bad=((X.direction=='Long')&(up!=True))|((X.direction=='Short')&(up!=False))
             X.loc[bad&X._why.isna(),'_why']='skip_btc_trend'
+    if P.get('trend_filter'):   # opt-in: donchian55_slope = longs only above a rising 55d midpoint, shorts only below a falling one (at signal start_ts)
+        if P['trend_filter']!='donchian55_slope': raise ValueError(f"unknown trend_filter {P['trend_filter']!r}")
+        tr=[donchian_trend(daily_candles(r.symbol),r.start_ts) for r in X.itertuples()]
+        X['_trend']=tr; want=np.where(X.direction=='Short',-1,1)
+        nod=X._trend.isna(); bad=~nod&(X._trend.fillna(0).astype(int)!=want)
+        X.loc[nod&X._why.isna(),'_why']='skip_trend_nodata'; X.loc[bad&X._why.isna(),'_why']='skip_trend'
     if P.get('max_stale_frac') is not None:
         def stale(r):
             if 'all_active' not in str(r.source): return False   # pending signals fill later at the range itself: fresh by construction
@@ -575,6 +611,7 @@ def portfolios(c):
         # prioritize_confluence: signals filling at the same time compete for cap slots -> HTF-confluent first, then highest confluence score
         X=X.assign(_h=(X.htf=='yes').astype(int),_c=X.confluence.fillna(0)).sort_values(['fill_ts','_h','_c'],ascending=[True,False,False]) if P.get('prioritize_confluence') else X.sort_values('fill_ts')
         X=X[X.status!='stale_history']   # retired old ladders (v5): never trade; dropped after the sort so every other trade keeps its replay order
+        RA=int(pd.Timestamp(P['retired_after']).tz_localize(TZ).timestamp()*1000) if P.get('retired_after') else None   # retired: no NEW entries filled at/after this time; earlier trades (incl. open ones) replay and close normally
         eq=P['start']; opn=[]; pause={}; L={}; curve=[(int(X.fill_ts.min()) if len(X) else now,eq)]; rows=[]
         def close(t):
             nonlocal eq
@@ -586,6 +623,7 @@ def portfolios(c):
         for _,s in X.iterrows():
             close(s.fill_ts); tf=s.timeframe; why=s['_why'] if isinstance(s['_why'],str) else None
             if not why and not hl_asset(s.symbol,M): why='not_on_hyperliquid'
+            if not why and RA is not None and s.fill_ts>=RA: why='skip_retired'
             if why: pass
             elif pause.get(tf,0)>s.fill_ts: why='skip_paused'
             elif sum(q['timeframe']==tf for q in opn)>=((P.get('caps_confluent') or {}).get(tf,P['caps'].get(tf,99)) if s.htf=='yes' else P['caps'].get(tf,99)): why='skip_cap'   # caps_confluent: higher total-open cap for HTF-confluent trades

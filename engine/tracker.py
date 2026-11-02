@@ -625,7 +625,9 @@ def portfolios(c):
         if P.get('start_after'): X=X[X.fill_ts>=int(pd.Timestamp(P['start_after']).tz_localize(TZ).timestamp()*1000)]   # account reset: fresh from this time
         X=variants(X,P,now)
         # prioritize_confluence: signals filling at the same time compete for cap slots -> HTF-confluent first, then highest confluence score
-        X=X.assign(_h=(X.htf=='yes').astype(int),_c=X.confluence.fillna(0)).sort_values(['fill_ts','_h','_c'],ascending=[True,False,False]) if P.get('prioritize_confluence') else X.sort_values('fill_ts')
+        # stable + full tie-break (key is unique): equal fill_ts used to be ordered by numpy's default quicksort, whose tie order depends on the
+        # runner CPU's SIMD level (AVX-512 vs AVX2), so cap/pause cascades and closed_trades flapped between GitHub runners (815/816, 2026-11-02)
+        X=X.assign(_h=(X.htf=='yes').astype(int),_c=X.confluence.fillna(0)).sort_values(['fill_ts','_h','_c','key'],ascending=[True,False,False,True],kind='stable') if P.get('prioritize_confluence') else X.sort_values(['fill_ts','key'],kind='stable')
         X=X[X.status!='stale_history']   # retired old ladders (v5): never trade; dropped after the sort so every other trade keeps its replay order
         RA=int(pd.Timestamp(P['retired_after']).tz_localize(TZ).timestamp()*1000) if P.get('retired_after') else None   # retired: no NEW entries filled at/after this time; earlier trades (incl. open ones) replay and close normally
         eq=P['start']; opn=[]; pause={}; L={}; curve=[(int(X.fill_ts.min()) if len(X) else now,eq)]; rows=[]

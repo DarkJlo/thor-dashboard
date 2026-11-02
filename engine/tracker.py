@@ -66,6 +66,7 @@ def db():
     c=sqlite3.connect(DB); c.execute('drop table if exists trades'); c.execute(f"create table if not exists signals ({','.join(k+(' primary key' if k=='key' else '') for k in COLS)})")
     c.execute("create table if not exists trades (px_src,leverage,margin,liq_px,max_lev,lev_src,portfolio,confluence,htf_confluent,key,symbol,timeframe,direction,fill_ts,entry,stop,exit_ts,exit_px,reason,status,notional,ret,pnl,r,risk,boosted)")
     c.execute("create table if not exists equity (portfolio,ts,equity)")
+    c.execute('create table if not exists trend_memo (symbol, start_ts integer, trend integer, primary key (symbol, start_ts))')
     have=[x[1] for x in c.execute('pragma table_info(signals)')]
     for col in['confluence','live_state','px_src','dedup_key']:
         if col not in have: c.execute(f'alter table signals add column {col}')
@@ -509,12 +510,26 @@ def daily_candles(sym):
     M=hl_meta()
     if hl_asset(sym,M) is None: return None
     cn=next((k for k in (base(sym),'k'+base(sym),base(sym)+'COIN') if k in M['assets']),None)
-    try:
-        r=requests.post('https://api.hyperliquid.xyz/info',json={'type':'candleSnapshot','req':{'coin':cn,'interval':'1d','startTime':now-4000*DAYMS,'endTime':now}},timeout=20).json(); _pause()
-        if not isinstance(r,list): raise RuntimeError(str(r)[:100])
-        d={int(x['t'])//DAYMS:(float(x['h']),float(x['l']),float(x['c'])) for x in r if int(x['t'])+DAYMS<=now}   # closed days only
-    except Exception as e: log('daily candles failed',sym,e); d=None
+    d=None
+    for att in (1,2):   # an empty / truncated (non-error) snapshot used to flip past TREND55 decisions to skip_trend_nodata silently
+        try:
+            r=requests.post('https://api.hyperliquid.xyz/info',json={'type':'candleSnapshot','req':{'coin':cn,'interval':'1d','startTime':now-4000*DAYMS,'endTime':now}},timeout=20).json(); _pause()
+            if not isinstance(r,list): raise RuntimeError(str(r)[:100])
+            d={int(x['t'])//DAYMS:(float(x['h']),float(x['l']),float(x['c'])) for x in r if int(x['t'])+DAYMS<=now}   # closed days only
+            if today-1 in d: break
+            log('daily candles incomplete',sym,f'attempt {att}: {len(d)} days, last {max(d) if d else None}')
+        except Exception as e: log('daily candles failed',sym,f'attempt {att}:',e); d=None
     DAILY[sym]=(today,d); return d
+TREND_MEMO={}; TREND_NEW=[]   # loaded / flushed by portfolios(c) (table trend_memo, created in db())
+def trend_at(sym,t_ms):
+    """donchian_trend(daily_candles(sym),t_ms), memoised in tracker.db once known: it only uses days completed before t_ms, so a known
+    value never changes and a later empty/partial daily fetch can no longer flip a past decision (closed_trades flap). Unknown is not stored."""
+    if t_ms is None or t_ms!=t_ms: return None
+    k=(sym,int(t_ms))
+    if k in TREND_MEMO: return TREND_MEMO[k]
+    v=donchian_trend(daily_candles(sym),t_ms)
+    if v is not None: TREND_MEMO[k]=v; TREND_NEW.append((sym,int(t_ms),int(v)))
+    return v
 def donchian_trend(D,t_ms,n=55,slope_days=5):
     """Donchian-55 regime + slope at signal time t_ms (= backtest variant b, scratch/bt_idea1_trend.py). D: {UTC day index: (h, l, c)}.
     k = last fully completed UTC day before t_ms (no lookahead); mid_j = (max high + min low)/2 over days j-n..j-1 (all n days required).
@@ -570,7 +585,7 @@ def variants(X,P,now):
             X.loc[bad&X._why.isna(),'_why']='skip_btc_trend'
     if P.get('trend_filter'):   # opt-in: donchian55_slope = longs only above a rising 55d midpoint, shorts only below a falling one (at signal start_ts)
         if P['trend_filter']!='donchian55_slope': raise ValueError(f"unknown trend_filter {P['trend_filter']!r}")
-        tr=[donchian_trend(daily_candles(r.symbol),r.start_ts) for r in X.itertuples()]
+        tr=[trend_at(r.symbol,r.start_ts) for r in X.itertuples()]
         X['_trend']=tr; want=np.where(X.direction=='Short',-1,1)
         nod=X._trend.isna(); bad=~nod&(X._trend.fillna(0).astype(int)!=want)
         X.loc[nod&X._why.isna(),'_why']='skip_trend_nodata'; X.loc[bad&X._why.isna(),'_why']='skip_trend'
@@ -593,6 +608,7 @@ def variants(X,P,now):
             if p['why']: X.at[i,'_why']=p['why']
     return X
 def portfolios(c):
+    TREND_MEMO.clear(); TREND_MEMO.update({(r[0],int(r[1])):r[2] for r in c.execute('select symbol,start_ts,trend from trend_memo')}); TREND_NEW.clear()
     S=pd.read_sql("select * from signals where fill_ts is not null and status not in ('duplicate','suspect','malformed')",c); C=cost(); now=int(time.time()*1000); M=hl_meta()   # incl. v5 stale_history (fill_ts set): dropped after sorting below
     c.execute('create table if not exists margin (portfolio,ts,used,equity)'); c.execute('delete from trades'); c.execute('delete from equity'); c.execute('delete from margin'); D=CFG['portfolio_defaults']
     for name,p in CFG['portfolios'].items():
@@ -651,6 +667,7 @@ def portfolios(c):
         for r in rows: c.execute(f"insert into trades ({','.join(r)}) values ({','.join('?'*len(r))})",list(r.values()))
         c.execute('insert into margin values (?,?,?,?)',(name,now,sum(r['margin'] for r in rows if r['status']=='open'),eq+unreal))
         c.executemany('insert into equity values (?,?,?)',[(name,int(t),e) for t,e in curve])
+    c.executemany('insert or replace into trend_memo values (?,?,?)',TREND_NEW); TREND_NEW.clear()
     c.commit()
 def journal(c):
     T=pd.read_sql("select t.*,s.raw_text,s.source,s.tp1 from trades t join signals s using(key) where t.status in ('open','closed') order by t.fill_ts",c)

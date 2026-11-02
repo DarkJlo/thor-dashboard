@@ -9,7 +9,7 @@ import sys,json; sys.argv=['x']
 import numpy as np, pandas as pd, tracker as T
 DAY=T.DAYMS; ms=lambda s:int(pd.Timestamp(s,tz='UTC').timestamp()*1000)
 T.hl_meta=lambda: json.load(open('hl_meta.json')); T.btc_trend=lambda: None
-T.requests=None   # any network use would crash the test
+DC0=T.daily_candles; T.requests=None   # any network use would crash the test
 def series(n_days,last_day,f):   # {day: (h,l,c)} for days last_day-n_days+1..last_day, close = f(i)
     return {d:(f(i)*1.01,f(i)*0.99,f(i)) for i,d in enumerate(range(last_day-n_days+1,last_day+1))}
 t=ms('2026-10-20 12:00:00'); k=t//DAY-1
@@ -61,6 +61,21 @@ st=dict(c.execute("select key,status from trades where portfolio='TREND55'").fet
 assert st=={'btcL':'closed','ethS':'skip_trend','solS':'closed','dogeL':'skip_trend','avaxL':'skip_trend_nodata','linkL':'skip_trend_nodata'},st   # 15m never considered
 al=dict(c.execute("select key,status from trades where portfolio='ALL'").fetchall()); assert all(v=='closed' for v in al.values()) and len(al)==7,al
 n+=1
+# 13: regression (closed_trades flap 815<816): a known decision is memoised; a later run whose daily fetch is empty/None keeps it
+D['BTC/USD']=None; D['ETH/USD']={}; T.portfolios(c)
+st2=dict(c.execute("select key,status from trades where portfolio='TREND55'").fetchall()); assert st2==st,st2
+assert c.execute("select count(*) from trend_memo").fetchone()[0]==4   # unknown (avax, link) never memoised -> retried next run
+n+=1
+# 14: daily_candles retries an empty (non-error) snapshot once and logs it
+class Rq:
+    def __init__(s,seq): s.seq=list(seq); s.calls=0
+    def post(s,*a,**k):
+        s.calls+=1; v=s.seq.pop(0); return type('R',(),{'json':lambda self:v})()
+now=T.time.time()*1000; today=int(now)//DAY; good=[dict(t=(today-i)*DAY,h='2',l='1',c='1.5') for i in range(1,80)]
+T._pause=lambda:None; T.DAILY.clear(); T.requests=Rq([[],good]); dd=DC0('BTC/USD')
+assert T.requests.calls==2 and today-1 in dd and len(dd)==79,(T.requests.calls,len(dd or {}))
+T.DAILY.clear(); T.requests=Rq([[],[]]); assert DC0('BTC/USD')=={} and T.requests.calls==2
+n+=1
 print('OK',n)
 '''
 def main():
@@ -70,6 +85,6 @@ def main():
             if f.endswith(('.py','.yaml','.json','.html','.txt')) and f not in ('tracker.db','heartbeat','ingested.txt','inbox_report.json'): shutil.copy(os.path.join(HERE,f),d)
         r=subprocess.run([sys.executable,'-c',HARNESS],cwd=d,capture_output=True,text=True,timeout=120,env={**os.environ,'TZ':'America/Phoenix'})
         if r.returncode or 'OK' not in r.stdout: print(r.stdout[-2000:],r.stderr[-3000:]); print('FAIL test_trend_filter'); sys.exit(1)
-        print(f'test_trend_filter: {r.stdout.split()[-1]}/12 OK (long/short allowed+blocked, <61d/missing/no data -> skip, no lookahead, backtest parity, TREND55-only)')
+        print(f'test_trend_filter: {r.stdout.split()[-1]}/14 OK (long/short allowed+blocked, <61d/missing/no data -> skip, no lookahead, backtest parity, TREND55-only)')
     finally: shutil.rmtree(d,ignore_errors=True)
 if __name__=='__main__': main()

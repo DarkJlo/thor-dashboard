@@ -558,6 +558,12 @@ def variants(X,P,now):
         def has(r):
             g=G[(G.symbol==r.symbol)&(G.direction==r.direction)&(G.start_ts<=r.fill_ts)&(G.end>r.fill_ts)]; return set(P['require_live_tfs'])<=set(g.timeframe)|{r.timeframe}
         ok=X.apply(has,axis=1); X.loc[~ok&X._why.isna(),'_why']='skip_confluence'
+    if P.get('veto_opposite_live_tfs'):   # skip when a same-asset OPPOSITE-direction signal of ANY of these timeframes is live at fill time (default off)
+        G3=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate') and not (status='stale_history' and exit_ts is null)",sqlite3.connect(DB)); G3['end']=G3.exit_ts.fillna(now+1)
+        VT=set(P['veto_opposite_live_tfs'])
+        def vetoed(r):
+            g=G3[(G3.symbol==r.symbol)&(G3.direction!=r.direction)&(G3.start_ts<=r.fill_ts)&(G3.end>r.fill_ts)]; return bool(VT&set(g.timeframe))
+        bad=X.apply(vetoed,axis=1); X.loc[bad&X._why.isna(),'_why']='skip_confluence'
     if P.get('boost_risk'):   # generic: risk = boost_risk.risk when same-asset same-dir signals of ALL when_live_tfs are live at fill (same test as require_live_tfs)
         B=P['boost_risk']; G2=pd.read_sql("select symbol,direction,timeframe,start_ts,exit_ts from signals where status not in ('malformed','suspect','duplicate') and not (status='stale_history' and exit_ts is null)",sqlite3.connect(DB)); G2['end']=G2.exit_ts.fillna(now+1)
         def bst(r):

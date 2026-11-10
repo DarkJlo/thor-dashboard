@@ -433,23 +433,29 @@ def leverage(sym,direction,entry,stop,M):
 def cached(sym):
     f=os.path.join(CDIR,sym.replace('/','_')+'.npy'); return np.load(f) if os.path.exists(f) else None
 BTCT={}
-def btc_trend():
-    """BTC 4h close vs EMA(n) from Hyperliquid 4h candles (1 request/cycle). Returns (close_times, above_flags)."""
-    if BTCT.get('t',0)>time.time()-120: return BTCT['v']
-    n=CFG.get('variants',{}).get('btc_ema',50); now=int(time.time()*1000)
+def btc_trend(n=None):
+    """BTC 4h close vs EMA(n) from Hyperliquid 4h candles (1 request/cycle). Returns (close_times, above_flags).
+    n defaults to variants.btc_ema (50). Cached per period for ~120s."""
+    n=int(n if n is not None else CFG.get('variants',{}).get('btc_ema',50))
+    cache=BTCT.get(n)
+    if cache and cache.get('t',0)>time.time()-120: return cache['v']
+    now=int(time.time()*1000); v=None
     try:
         r=requests.post('https://api.hyperliquid.xyz/info',json={'type':'candleSnapshot','req':{'coin':'BTC','interval':'4h','startTime':now-400*14400_000,'endTime':now}},timeout=20).json()
         a=np.array([[x['t']+14400_000,float(x['c'])] for x in r if x['t']+14400_000<=now])
         ema=pd.Series(a[:,1]).ewm(span=n,adjust=False).mean().values
-        v=(a[n:,0],a[n:,1]>ema[n:]); BTCT.update(t=time.time(),v=v)
-    except Exception as e: log('btc trend fetch failed',e); v=BTCT.get('v')
+        v=(a[n:,0],a[n:,1]>ema[n:]); BTCT[n]=dict(t=time.time(),v=v)
+        # keep legacy BTCT['t']/['v'] in sync when n is the default so old callers/tests still work
+        if n==int(CFG.get('variants',{}).get('btc_ema',50)): BTCT.update(t=time.time(),v=v)
+    except Exception as e: log('btc trend fetch failed',e); v=(cache or {}).get('v') or BTCT.get('v')
     return v
-def path(s,mode,hold_h=None):
+def path(s,mode,hold_h=None,partial_frac=None):
     """Re-simulate one signal for an execution variant on cached candles (same conservative rules as step()).
     better_entry: limit at range midpoint (or better if a candle opens beyond it); skip_no_fill if the original signal ends/invalidates/times out first.
     runners: same fill as the signal; 50% off at TP1, stop -> entry; at TP2 stop -> TP1; rest out at TP3 (no TP2/TP3: trail by original stop distance).
     nostop: same fill as the signal; no stop loss at all: 100% out at TP1, else at market (last close) at the normal timeout.
     ladder: same fill/stop; 100% position; TP1 hit -> stop to entry, TP2 hit -> stop to TP1 (moves effective next candle; stop checked first); all out at TP3.
+    partial_tp1: same fill; close partial_frac (default 0.5) at TP1 and move stop to entry; rest out at TP2 or at hold_h (runner_max_hours) market exit, whichever first. Full stop if hit before TP1.
     hold_h: time stop, exit at market (last close at/before fill+hold_h) with reason time_stop."""
     a=cached(s['symbol']); sh=s['direction']=='Short'; sg=-1 if sh else 1; TO=CFG['timeouts_days'][s['timeframe']]*86400e3
     r=dict(fill_ts=s['fill_ts'],entry=s['entry'],stop=s['stop'],status=s['status'],exit_ts=s['exit_ts'],exit_px=s['exit_px'],reason=s['reason'],last_px=s['last_px'],why=None)
@@ -464,6 +470,11 @@ def path(s,mode,hold_h=None):
     elif mode=='ladder':
         if s['fill_ts'] is None: return r
         tgt=[s['tp1'],s['tp2'],s['tp3']]; part=[1.0]
+    elif mode=='partial_tp1':
+        if s['fill_ts'] is None: return r
+        frac=float(partial_frac if partial_frac is not None else 0.5)
+        if not (0<frac<1): raise ValueError(f'partial_tp1 frac must be in (0,1), got {frac}')
+        tgt=[s['tp1'],s['tp2']]; part=[frac,1.0-frac]
     else:
         if s['fill_ts'] is None: return r
         tgt=[s['tp2']] if mode=='tp2' else ([s['tp1']] if mode=='nostop' else ([s['entry']+(s['tp1']-s['entry'])*CFG.get('variants',{}).get('half_frac',0.5)] if mode=='half_tp1' else [s['tp1'],s['tp2'],s['tp3']])); part=[0.5,0.5]   # tp2: 100% out at TP2, stop unchanged
@@ -481,6 +492,11 @@ def path(s,mode,hold_h=None):
                 if beyond(x,tgt[2]): r.update(status='closed',exit_ts=int(ts),reason='tp3'); got+=rem*tgt[2]; rem=0; break
                 if beyond(x,tgt[1]): stage=2; stop=tgt[0] if beyond(tgt[0],stop) else stop
                 elif beyond(x,tgt[0]) and stage==0: stage=1; stop=e if beyond(e,stop) else stop
+            elif mode=='partial_tp1':
+                # half (or partial_frac) at TP1 -> BE; remainder at TP2; hold_h time_stop covers the rest (incl. never-hit-TP1)
+                if stage==0 and beyond(x,tgt[0]): got+=part[0]*tgt[0]; rem=part[1]; stage=1; stop=e
+                elif stage==1 and tgt[1]==tgt[1] and tgt[1] is not None and beyond(x,tgt[1]):
+                    r.update(status='closed',exit_ts=int(ts),reason='tp2'); got+=rem*tgt[1]; rem=0; break
             else:
                 if stage==0 and beyond(x,tgt[0]): got+=0.5*tgt[0]; rem=0.5; stage=1; stop=e
                 if stage>=1:
@@ -589,6 +605,14 @@ def variants(X,P,now):
                 i=np.searchsorted(bt[0],t,side='right')-1; return None if i<0 else bool(bt[1][i])
             up=X.fill_ts.map(tr); bad=((X.direction=='Long')&(up!=True))|((X.direction=='Short')&(up!=False))
             X.loc[bad&X._why.isna(),'_why']='skip_btc_trend'
+    if P.get('btc_ema_gate'):   # default-off: Long only while BTC 4h close > EMA(n), Short only while below (n = int gate). Same HL 4h source as btc_trend_filter.
+        bt=btc_trend(int(P['btc_ema_gate']))
+        if bt is None: X.loc[X._why.isna(),'_why']='skip_btc_trend_nodata'
+        else:
+            def tr2(t):
+                i=np.searchsorted(bt[0],t,side='right')-1; return None if i<0 else bool(bt[1][i])
+            up=X.fill_ts.map(tr2); bad=((X.direction=='Long')&(up!=True))|((X.direction=='Short')&(up!=False))
+            X.loc[bad&X._why.isna(),'_why']='skip_btc_trend'
     if P.get('trend_filter'):   # opt-in: donchian55_slope = longs only above a rising 55d midpoint, shorts only below a falling one (at signal start_ts)
         if P['trend_filter']!='donchian55_slope': raise ValueError(f"unknown trend_filter {P['trend_filter']!r}")
         tr=[trend_at(r.symbol,r.start_ts) for r in X.itertuples()]
@@ -609,6 +633,14 @@ def variants(X,P,now):
         for i,r in X.iterrows():
             if r._why: continue
             p=path(r.to_dict(),P['execution'],P.get('max_hold_hours') if P['execution']=='ladder' else None)
+            for k in ('fill_ts','entry','stop','exit_ts','exit_px','reason','last_px'): X.at[i,k]=p[k]
+            X.at[i,'status']='closed' if p['status']=='closed' else 'filled'
+            if p['why']: X.at[i,'_why']=p['why']
+    if P.get('partial_tp1'):   # default-off: fraction off at TP1 -> BE; rest at TP2 or runner_max_hours market exit
+        frac=float(P['partial_tp1']); hold=P.get('runner_max_hours')
+        for i,r in X.iterrows():
+            if r._why: continue
+            p=path(r.to_dict(),'partial_tp1',hold,frac)
             for k in ('fill_ts','entry','stop','exit_ts','exit_px','reason','last_px'): X.at[i,k]=p[k]
             X.at[i,'status']='closed' if p['status']=='closed' else 'filled'
             if p['why']: X.at[i,'_why']=p['why']

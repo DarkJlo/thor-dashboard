@@ -1,0 +1,27 @@
+2026-11-14 10:19:58 check_2026-11-14T0616.json: 27 old ladder(s) skipped (stale_history), e.g. T:LITUSDT (1) 15m Long 2.9955-3.0124: Dt 2026-11-14 01:33:11 UTC is before the previous read of this pair view (6.0h earlier); age 11.7h
+2026-11-14 10:19:58 dedup: AAVE/USD|15m|Long|105.17|105.9|108.94|109.88|110.82 is the same signal as T:AAVEUSDT|15m|Long|105.17|105.9|108.94|109.88|110.82
+2026-11-14 10:19:58 dedup: AAVE/USD|1h|Long|105.17|105.9|108.94|109.88|110.82 is the same signal as T:AAVEUSDT|1h|Long|105.17|105.9|108.94|109.88|110.82
+2026-11-14 10:19:58 suspect signal T:LITUSDT 15m Short entry mid 3.2033 is +11.5% from HL mid 2.87325 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal T:LITUSDT 15m Short entry mid 3.32645 is +15.8% from HL mid 2.87325 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal T:LITUSDT 1h Short entry mid 3.32645 is +15.8% from HL mid 2.87325 (limit 5% for 1h)
+2026-11-14 10:19:58 suspect signal T:LITUSDT 1h Short entry mid 3.439 is +19.7% from HL mid 2.87325 (limit 5% for 1h)
+2026-11-14 10:19:58 suspect signal T:LITUSDT 4h Short entry mid 3.439 is +19.7% from HL mid 2.87325 (limit 15% for 4h)
+2026-11-14 10:19:58 suspect signal SAND/USD 15m Short entry mid 0.03885 is +7.6% from HL mid 0.036119 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal SHIB/USD 1h Short entry mid 4.43e-06 is +11.8% from HL mid 3.964e-06 (limit 5% for 1h)
+2026-11-14 10:19:58 suspect signal SHIB/USD 4h Short entry mid 4.685e-06 is +18.2% from HL mid 3.964e-06 (limit 15% for 4h)
+2026-11-14 10:19:58 suspect signal BNB/USD 15m Short entry mid 635.25 is +8.4% from HL mid 586.07 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal BNB/USD 1h Short entry mid 684.165 is +16.7% from HL mid 586.07 (limit 5% for 1h)
+2026-11-14 10:19:58 suspect signal DOGE/USD 15m Short entry mid 0.06402 is +6.8% from HL mid 0.059949 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal DOGE/USD 1h Short entry mid 0.067785 is +13.1% from HL mid 0.059949 (limit 5% for 1h)
+2026-11-14 10:19:58 suspect signal DOGE/USD 1h Short entry mid 0.070715 is +18.0% from HL mid 0.059949 (limit 5% for 1h)
+2026-11-14 10:19:58 suspect signal DOT/USD 15m Short entry mid 0.8035 is +7.0% from HL mid 0.75072 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal ETH/USD 15m Short entry mid 1966.9 is +8.0% from HL mid 1820.85 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal ETH/USD 15m Short entry mid 2090.47 is +14.8% from HL mid 1820.85 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal ETH/USD 1h Short entry mid 2090.47 is +14.8% from HL mid 1820.85 (limit 5% for 1h)
+2026-11-14 10:19:58 suspect signal ETH/USD 1h Short entry mid 2166.18 is +19.0% from HL mid 1820.85 (limit 5% for 1h)
+2026-11-14 10:19:58 suspect signal SEI/USD 15m Short entry mid 0.04195 is +7.2% from HL mid 0.039142 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal SEI/USD 15m Short entry mid 0.04225 is +7.9% from HL mid 0.039142 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal SEI/USD 15m Short entry mid 0.04245 is +8.5% from HL mid 0.039142 (limit 5% for 15m)
+2026-11-14 10:19:58 suspect signal SEI/USD 15m Short entry mid 0.043 is +9.9% from HL mid 0.039142 (limit 5% for 15m)
+2026-11-14 10:20:18 cycle {'ts': '2026-11-14 10:20:18', 'epoch': 1794676818, 'new_signals': 22, 'status': {'cancelled': 1281, 'closed': 514, 'duplicate': 5, 'filled': 5, 'pending': 1, 'stale_history': 43, 'suspect': 838}, 'still_enterable': 0, 'sources': {'AVAX/USD': 'hyperliquid', 'BONK/USD': 'hyperliquid', 'DOGE/USD': 'hyperliquid', 'HYPE/USD': 'hyperliquid', 'LTC/USD': 'hyperliquid', 'PYTH/USD': 'hyperliquid', 'SHIB/USD': 'hyperliquid', 'T:AAVEUSDT': 'hyperliquid', 'T:ICPUSDT': 'hyperliquid', 'T:LITUSDT': 'hyperliquid'}, 'frozen': {}, 'mark_rejected': {}, 'inbox': {'check_2026-11-14T0616.json': {'ok': True, 'error': None, 'new': 22, 'rejected': 0, 'warnings': 2, 'stale': 27}}}
+cycle_seconds=20

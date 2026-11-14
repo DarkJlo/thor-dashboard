@@ -1,0 +1,42 @@
+{
+ "check_2026-11-14T0616.json": {
+  "file": "check_2026-11-14T0616.json",
+  "ok": true,
+  "stale_ladders": [
+   "T:LITUSDT (1) 15m Long 2.9955-3.0124: Dt 2026-11-14 01:33:11 UTC is before the previous read of this pair view (6.0h earlier); age 11.7h",
+   "T:LITUSDT (1) 1h Long 2.9955-3.0124: Dt 2026-11-14 01:33:09 UTC is before the previous read of this pair view (6.0h earlier); age 11.7h",
+   "T:LITUSDT (1) 1h Long 2.7735-2.8033: Dt 2026-11-04 16:29:10 UTC is before the previous read of this pair view (6.0h earlier); age 236.8h",
+   "T:LITUSDT (1) 4h Long 2.7735-2.8033: Dt 2026-11-04 16:29:07 UTC is before the previous read of this pair view (6.0h earlier); age 236.8h",
+   "T:LITUSDT (1) 1d Long 2.3454-2.439: Dt 2026-09-25 00:27:04 UTC is before the previous read of this pair view (6.0h earlier); age 1212.8h",
+   "T:LITUSDT (1) 1d Short 5.1496-5.3885: Dt 2026-10-31 00:33:05 UTC is before the previous read of this pair view (6.0h earlier); age 348.7h",
+   "T:PYTHUSDT (1) 1d Long 0.059094-0.0621: Dt 2026-10-16 00:10:05 UTC is before the previous read of this pair view (6.0h earlier); age 709.1h",
+   "T:AAVEUSDT (1) 15m Long 105.17-105.9: Dt 2026-11-13 20:43:22 UTC is before the previous read of this pair view (6.0h earlier); age 16.6h",
+   "T:AAVEUSDT (1) 1h Long 105.17-105.9: Dt 2026-11-13 21:26:09 UTC is before the previous read of this pair view (6.0h earlier); age 15.8h",
+   "T:AAVEUSDT (1) 1h Long 97.47-101.03: Dt 2026-11-04 16:40:14 UTC is before the previous read of this pair view (6.0h earlier); age 236.6h",
+   "T:AAVEUSDT (1) 4h Long 97.47-101.03: Dt 2026-11-04 16:40:12 UTC is before the previous read of this pair view (6.0h earlier); age 236.6h",
+   "LTC/USD (6) 15m Long 45.89-46.28: Dt 2026-11-13 20:12:11 UTC is 17.1h old at view time (max 12h for 15m)",
+   "LTC/USD (6) 15m Short 50.88-51.14: Dt 2026-11-13 05:52:10 UTC is before the previous read of this pair view (18.1h earlier); age 31.4h",
+   "LTC/USD (6) 1h Short 50.93-51.14: Dt 2026-11-13 06:35:08 UTC is before the previous read of this pair view (18.1h earlier); age 30.7h",
+   "LTC/USD (6) 1h Short 52.08-52.43: Dt 2026-11-13 06:35:08 UTC is before the previous read of this pair view (18.1h earlier); age 30.7h",
+   "LTC/USD (6) 4h Short 55.07-55.33: Dt 2026-11-13 08:01:07 UTC is before the previous read of this pair view (18.1h earlier); age 29.3h",
+   "LTC/USD (6) 4h Short 56.06-56.87: Dt 2026-11-13 08:01:07 UTC is before the previous read of this pair view (18.1h earlier); age 29.3h",
+   "SHIB/USD (3) 15m Long 4.04e-06-4.05e-06: Dt 2026-11-13 18:02:11 UTC is before the previous read of this pair view (18.1h earlier); age 19.2h",
+   "W/USD (2) 1h Long 0.0085616067-0.0087300904: Dt 2026-11-09 16:18:09 UTC is before the previous read of this pair view (11.9h earlier); age 117.0h",
+   "W/USD (2) 4h Long 0.0085616067-0.0087300904: Dt 2026-11-09 16:18:07 UTC is before the previous read of this pair view (11.9h earlier); age 117.0h",
+   "BNB/USD (3) 15m Long 611.93-613.73: Dt 2026-11-13 20:06:11 UTC is before the previous read of this pair view (12.0h earlier); age 17.2h",
+   "DOGE/USD (5) 15m Long 0.06054-0.061: Dt 2026-11-13 20:20:13 UTC is before the previous read of this pair view (11.9h earlier); age 17.0h",
+   "DOGE/USD (5) 1d Long 0.06125-0.06438: Dt 2026-09-23 00:14:04 UTC is before the previous read of this pair view (11.9h earlier); age 1261.1h",
+   "DOT/USD (2) 1d Long 0.668-0.702: Dt 2026-05-14 00:42:03 UTC is before the previous read of this pair view (11.9h earlier); age 4428.6h",
+   "ETH/USD (5) 1d Short 3186.72-3424.65: Dt 2026-06-07 00:34:04 UTC is before the previous read of this pair view (11.9h earlier); age 3852.7h",
+   "SUI/USD (3) 1d Short 1.304-1.325: Dt 2026-09-16 00:36:05 UTC is before the previous read of this pair view (12.0h earlier); age 1428.7h",
+   "SUI/USD (3) 1d Short 1.507-1.557: Dt 2026-09-16 00:36:05 UTC is before the previous read of this pair view (12.0h earlier); age 1428.7h"
+  ],
+  "rejected_items": [],
+  "rejected_views": [],
+  "view_warnings": [
+   "T:LITUSDT (1): menu count 1 vs 11 parsed Dt line(s)",
+   "T:AAVEUSDT (1): menu count 1 vs 4 parsed Dt line(s)"
+  ],
+  "new_signals": 22
+ }
+}

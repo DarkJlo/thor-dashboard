@@ -536,6 +536,22 @@ def daily_candles(sym):
             log('daily candles incomplete',sym,f'attempt {att}: {len(d)} days, last {max(d) if d else None}')
         except Exception as e: log('daily candles failed',sym,f'attempt {att}:',e); d=None
     DAILY[sym]=(today,d); return d
+def asset_ema_ok(D,t_ms,direction,n):
+    """Last completed UTC-day close vs that asset's daily EMA(n), at fill (mirrors scratch/bt_ema200_supertrend.py).
+    D: {UTC day index: (h, l, c)} from daily_candles (or None). No lookahead: only days whose close_t <= t_ms (day <= t_ms//DAYMS-1).
+    EMA = pandas ewm(span=n, adjust=False) on the chronological series of available closes; first n-1 values are treated as unwarmed.
+    Long only if close > ema, Short only if close < ema (equal is not allowed).
+    Returns True (take), False (skip), None (no/failed/empty data or no closed day before fill -> caller skip_asset_ema_nodata).
+    Uncovered (fewer than n closes up to the last closed day) returns True, matching the backtest (uncovered trades pass)."""
+    if not D or t_ms is None or t_ms!=t_ms: return None
+    n=int(n); k=int(t_ms)//DAYMS-1
+    days=sorted(d for d in D if d<=k)
+    if not days: return None
+    closes=np.array([D[d][2] for d in days],dtype=float)
+    if len(closes)<n: return True
+    ema=pd.Series(closes).ewm(span=n,adjust=False).mean().values
+    c,e=float(closes[-1]),float(ema[-1])
+    return (c<e) if direction=='Short' else (c>e)
 TREND_MEMO={}; TREND_NEW=[]   # loaded / flushed by portfolios(c) (table trend_memo, created in db())
 def trend_at(sym,t_ms):
     """donchian_trend(daily_candles(sym),t_ms), memoised in tracker.db once known: it only uses days completed before t_ms, so a known
@@ -613,6 +629,11 @@ def variants(X,P,now):
                 i=np.searchsorted(bt[0],t,side='right')-1; return None if i<0 else bool(bt[1][i])
             up=X.fill_ts.map(tr2); bad=((X.direction=='Long')&(up!=True))|((X.direction=='Short')&(up!=False))
             X.loc[bad&X._why.isna(),'_why']='skip_btc_trend'
+    if P.get('asset_ema_gate'):   # default-off: Long only while this asset's last closed daily close > daily EMA(n); Short only while below (n = int gate). Uncovered (<n days) passes; no data -> skip_asset_ema_nodata.
+        n=int(P['asset_ema_gate'])
+        ok=[asset_ema_ok(daily_candles(r.symbol),r.fill_ts,r.direction,n) for r in X.itertuples()]
+        X['_asset_ema']=ok; nod=pd.isna(X._asset_ema); bad=~nod&(X._asset_ema==False)
+        X.loc[nod&X._why.isna(),'_why']='skip_asset_ema_nodata'; X.loc[bad&X._why.isna(),'_why']='skip_asset_ema'
     if P.get('trend_filter'):   # opt-in: donchian55_slope = longs only above a rising 55d midpoint, shorts only below a falling one (at signal start_ts)
         if P['trend_filter']!='donchian55_slope': raise ValueError(f"unknown trend_filter {P['trend_filter']!r}")
         tr=[trend_at(r.symbol,r.start_ts) for r in X.itertuples()]

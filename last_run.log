@@ -1,0 +1,14 @@
+2026-11-21 00:31:46 check_2026-11-21T0013.json: 18 old ladder(s) skipped (stale_history), e.g. NKE (1) 1d Short 53.02-54.24: Dt 2026-11-19 15:24:05 UTC is before the previous read of this pair view (36.0h earlier); age 39.8h
+2026-11-21 00:31:46 dedup: BONK/USD|1d|Long|2.1656e-06|2.2383e-06|2.9426e-06|3.1602e-06|3.3777e-06 is the same signal as BONK/USD|1d|Long|2.1656|2.2383|2.9426|3.1602|3.3777
+2026-11-21 00:31:46 suspect signal T:ALGOUSDT 15m Short entry mid 0.0759 is +5.6% from HL mid 0.071859 (limit 5% for 15m)
+2026-11-21 00:31:46 suspect signal T:ALGOUSDT 1h Short entry mid 0.0759 is +5.6% from HL mid 0.071859 (limit 5% for 1h)
+2026-11-21 00:31:46 suspect signal T:ICPUSDT 1h Short entry mid 2.099 is +9.6% from HL mid 1.91505 (limit 5% for 1h)
+2026-11-21 00:31:46 suspect signal T:ENAUSDT 15m Short entry mid 0.102965 is +9.2% from HL mid 0.094303 (limit 5% for 15m)
+2026-11-21 00:31:46 suspect signal W/USD 4h Short entry mid 0.00962513 is +24.8% from HL mid 0.00771 (limit 15% for 4h)
+2026-11-21 00:31:46 suspect signal W/USD 4h Short entry mid 0.0104938 is +36.1% from HL mid 0.00771 (limit 15% for 4h)
+2026-11-21 00:31:46 suspect signal W/USD 4h Short entry mid 0.0108609 is +40.9% from HL mid 0.00771 (limit 15% for 4h)
+2026-11-21 00:31:46 suspect signal DOT/USD 15m Short entry mid 0.689 is +7.2% from HL mid 0.64276 (limit 5% for 15m)
+2026-11-21 00:31:46 suspect signal HBAR/USD 15m Short entry mid 0.053305 is +6.6% from HL mid 0.04999 (limit 5% for 15m)
+2026-11-21 00:31:46 suspect signal WIF/USD 15m Short entry mid 0.125765 is +8.5% from HL mid 0.11593 (limit 5% for 15m)
+2026-11-21 00:32:52 cycle {'ts': '2026-11-21 00:32:52', 'epoch': 1795246372, 'new_signals': 14, 'status': {'cancelled': 1386, 'closed': 592, 'duplicate': 5, 'filled': 5, 'pending': 5, 'stale_history': 43, 'suspect': 981}, 'still_enterable': 1, 'sources': {'ADA/USD': 'hyperliquid', 'HYPE/USD': 'hyperliquid', 'RKLB': 'okxswap', 'SHIB/USD': 'hyperliquid', 'SOL/BTC': 'binance', 'SOL/USD': 'hyperliquid', 'T:ALGOUSDT': 'hyperliquid'}, 'frozen': {}, 'mark_rejected': {}, 'inbox': {'check_2026-11-21T0013.json': {'ok': True, 'error': None, 'new': 14, 'rejected': 0, 'warnings': 1, 'stale': 18}}}
+cycle_seconds=68

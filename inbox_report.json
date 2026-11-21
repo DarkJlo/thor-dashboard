@@ -1,0 +1,32 @@
+{
+ "check_2026-11-21T0013.json": {
+  "file": "check_2026-11-21T0013.json",
+  "ok": true,
+  "stale_ladders": [
+   "NKE (1) 1d Short 53.02-54.24: Dt 2026-11-19 15:24:05 UTC is before the previous read of this pair view (36.0h earlier); age 39.8h",
+   "RKLB (5) 1h Long 48.404-49.263: Dt 2026-11-19 14:04:52 UTC is before the previous read of this pair view (36.0h earlier); age 41.2h",
+   "RKLB (5) 4h Long 48.404-49.263: Dt 2026-11-19 14:04:21 UTC is before the previous read of this pair view (36.0h earlier); age 41.2h",
+   "RKLB (5) 4h Short 71.784-75.861: Dt 2026-11-19 14:04:21 UTC is before the previous read of this pair view (36.0h earlier); age 41.2h",
+   "RKLB (5) 1d Long 20.936-27.37: Dt 2026-07-13 17:48:29 UTC is before the previous read of this pair view (36.0h earlier); age 3133.4h",
+   "RKLB (5) 1d Short 71.784-75.861: Dt 2026-11-19 14:04:06 UTC is before the previous read of this pair view (36.0h earlier); age 41.2h",
+   "ASTS (2) 4h Short 40.46-41.725: Dt 2026-11-19 13:54:20 UTC is before the previous read of this pair view (36.1h earlier); age 41.3h",
+   "ASTS (2) 1d Long 18.262-21.675: Dt 2026-07-16 15:16:05 UTC is before the previous read of this pair view (36.1h earlier); age 3064.0h",
+   "JUP/USD (1) 1d Long 0.0895-0.10108: Dt 2026-10-22 00:07:04 UTC is before the previous read of this pair view (48.0h earlier); age 727.1h",
+   "DOT/USD (2) 1d Long 0.668-0.702: Dt 2026-05-14 00:42:03 UTC is before the previous read of this pair view (42.1h earlier); age 4590.5h",
+   "ETH/USD (1) 1d Short 3186.72-3424.65: Dt 2026-06-07 00:34:04 UTC is before the previous read of this pair view (42.1h earlier); age 4014.7h",
+   "HBAR/USD (2) 1d Long 0.05437-0.06236: Dt 2025-11-11 00:06:04 UTC is before the previous read of this pair view (42.1h earlier); age 9007.1h",
+   "HYPE/USD (1) 1d Long 57.227-61.029: Dt 2026-09-25 00:09:04 UTC is before the previous read of this pair view (42.1h earlier); age 1375.1h",
+   "SOL/USD (3) 1h Long 65.565-66.323: Dt 2026-11-19 08:42:33 UTC is before the previous read of this pair view (42.1h earlier); age 46.5h",
+   "SOL/USD (3) 1h Long 65.565-66.289: Dt 2026-11-19 08:42:33 UTC is before the previous read of this pair view (42.1h earlier); age 46.5h",
+   "XRP/USD (3) 1h Long 0.8779-0.8829: Dt 2026-11-19 10:42:09 UTC is before the previous read of this pair view (42.1h earlier); age 44.5h",
+   "XRP/USD (3) 4h Long 0.981-0.9931: Dt 2026-09-25 16:00:06 UTC is before the previous read of this pair view (42.1h earlier); age 1359.2h",
+   "XRP/USD (3) 1d Long 0.3413-0.3908: Dt 2026-01-07 00:14:04 UTC is before the previous read of this pair view (42.1h earlier); age 7639.0h"
+  ],
+  "rejected_items": [],
+  "rejected_views": [],
+  "view_warnings": [
+   "T:ALGOUSDT (1): menu count 1 vs 3 parsed Dt line(s)"
+  ],
+  "new_signals": 14
+ }
+}

@@ -1,0 +1,313 @@
+{
+ "checked_at": "2026-11-26 00:09:30",
+ "source": "Telegram user API (gramJS), CyberFrogsThor bot chat (@cf_thor_bot)",
+ "native_assets": [
+  "W/USD (4)",
+  "FART/USD (4)",
+  "ADA/USD (1)",
+  "ARB/USD (4)",
+  "AVAX/USD (4)",
+  "BNB/USD (1)",
+  "BONK/USD (9)",
+  "BTC/USD (1)",
+  "DOGE/USD (0)",
+  "DOT/USD (3)",
+  "ETH/USD (1)",
+  "HBAR/USD (4)",
+  "HYPE/USD (3)",
+  "INJ/USD (6)",
+  "JTO/USD (3)",
+  "JUP/USD (4)",
+  "LTC/USD (0)",
+  "SAND/USD (4)",
+  "SEI/USD (2)",
+  "SHIB/USD (1)",
+  "SOL/BTC (6)",
+  "SOL/USD (6)",
+  "SUI/USD (4)",
+  "WIF/USD (2)",
+  "XRP/USD (2)",
+  "T:UNIUSDT (1)",
+  "T:MORPHOUSDT (1)"
+ ],
+ "menu_captured_at": "2026-11-26 00:09:33",
+ "active": [
+  {
+   "symbol": "SAND/USD",
+   "timeframe": "15m",
+   "direction": "Short",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 0.0331,
+   "entry_high": 0.0334,
+   "tp1": 0.0322,
+   "tp2": 0.0319,
+   "tp3": 0.0317,
+   "invalid": 0.0307,
+   "dt": "2026-11-25 15:42:10",
+   "raw_text": "Short 0.0334 - 0.0331 | TPs: 0.0322, 0.0319, 0.0317 | Invalid: 0.0307 | Dt: 2026-11-25 15:42:10"
+  },
+  {
+   "symbol": "SAND/USD",
+   "timeframe": "1h",
+   "direction": "Short",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 0.0331,
+   "entry_high": 0.0334,
+   "tp1": 0.0322,
+   "tp2": 0.0319,
+   "tp3": 0.0317,
+   "invalid": 0.0307,
+   "dt": "2026-11-25 15:42:08",
+   "raw_text": "Short 0.0334 - 0.0331 | TPs: 0.0322, 0.0319, 0.0317 | Invalid: 0.0307 | Dt: 2026-11-25 15:42:08"
+  },
+  {
+   "symbol": "UNI/USD",
+   "timeframe": "4h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 5.0818,
+   "entry_high": 5.3578,
+   "tp1": 7.2053,
+   "tp2": 7.7759,
+   "tp3": 8.3466,
+   "invalid": 10.194,
+   "dt": "2026-09-27 08:31:06",
+   "raw_text": "Long 5.3578 - 5.0818 | TPs: 7.2053, 7.7759, 8.3466 | Invalid: 10.194 | Dt: 2026-09-27 08:31:06"
+  },
+  {
+   "symbol": "XRP/USD",
+   "timeframe": "4h",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 0.981,
+   "entry_high": 0.9931,
+   "tp1": 1.2364,
+   "tp2": 1.3115,
+   "tp3": 1.3867,
+   "invalid": 1.63,
+   "dt": "2026-09-25 16:00:06",
+   "raw_text": "Long 0.9931 - 0.981 | TPs: 1.2364, 1.3115, 1.3867 | Invalid: 1.63 | Dt: 2026-09-25 16:00:06"
+  },
+  {
+   "symbol": "HYPE/USD",
+   "timeframe": "1d",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 57.227,
+   "entry_high": 61.029,
+   "tp1": 75.152,
+   "tp2": 79.514,
+   "tp3": 83.877,
+   "invalid": 97.999,
+   "dt": "2026-09-25 00:09:04",
+   "raw_text": "Long 61.029 - 57.227 | TPs: 75.152, 79.514, 83.877 | Invalid: 97.999 | Dt: 2026-09-25 00:09:04"
+  },
+  {
+   "symbol": "DOT/USD",
+   "timeframe": "1d",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 0.668,
+   "entry_high": 0.702,
+   "tp1": 0.983,
+   "tp2": 1.07,
+   "tp3": 1.157,
+   "invalid": 1.438,
+   "dt": "2026-05-14 00:42:03",
+   "raw_text": "Long 0.702 - 0.668 | TPs: 0.983, 1.07, 1.157 | Invalid: 1.438 | Dt: 2026-05-14 00:42:03"
+  },
+  {
+   "symbol": "JTO/USD",
+   "timeframe": "1d",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 0.261,
+   "entry_high": 0.27758,
+   "tp1": 0.43016,
+   "tp2": 0.47729,
+   "tp3": 0.52442,
+   "invalid": 0.677,
+   "dt": "2026-08-23 00:36:04",
+   "raw_text": "Long 0.27758 - 0.261 | TPs: 0.43016, 0.47729, 0.52442 | Invalid: 0.677 | Dt: 2026-08-23 00:36:04"
+  },
+  {
+   "symbol": "HBAR/USD",
+   "timeframe": "1d",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 0.05437,
+   "entry_high": 0.06236,
+   "tp1": 0.11444,
+   "tp2": 0.13053,
+   "tp3": 0.14661,
+   "invalid": 0.19869,
+   "dt": "2025-11-11 00:06:04",
+   "raw_text": "Long 0.06236 - 0.05437 | TPs: 0.11444, 0.13053, 0.14661 | Invalid: 0.19869 | Dt: 2025-11-11 00:06:04"
+  },
+  {
+   "symbol": "BONK/USD",
+   "timeframe": "1d",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 2.1656e-06,
+   "entry_high": 2.2383e-06,
+   "tp1": 2.9426e-06,
+   "tp2": 3.1602e-06,
+   "tp3": 3.3777e-06,
+   "invalid": 4.082e-06,
+   "dt": "2026-10-06 00:40:04",
+   "raw_text": "Long 0.0000022383 - 0.0000021656 | TPs: 0.0000029426, 0.0000031602, 0.0000033777 | Invalid: 0.000004082 | Dt: 2026-10-06 00:40:04"
+  },
+  {
+   "symbol": "BONK/USD",
+   "timeframe": "1d",
+   "direction": "Long",
+   "source": "all_active",
+   "status_text": "All active",
+   "entry_low": 1.8973e-06,
+   "entry_high": 1.9953e-06,
+   "tp1": 2.5189e-06,
+   "tp2": 2.6806e-06,
+   "tp3": 2.8424e-06,
+   "invalid": 3.366e-06,
+   "dt": "2026-10-24 00:30:04",
+   "raw_text": "Long 0.0000019953 - 0.0000018973 | TPs: 0.0000025189, 0.0000026806, 0.0000028424 | Invalid: 0.000003366 | Dt: 2026-10-24 00:30:04"
+  }
+ ],
+ "all_active_message_summary": "10 signals: 15m SAND/USD Short, 1h SAND/USD Short, 4h UNI/USD Long, 4h XRP/USD Long, 1d HYPE/USD Long, 1d DOT/USD Long, 1d JTO/USD Long, 1d HBAR/USD Long, 1d BONK/USD Long, 1d BONK/USD Long.",
+ "all_active_raw": " 15m\nSAND/USD | Price: 0.0332\nHitrate: 66.1%\n\ud83d\udd34 Short 0.0334 - 0.0331\nTPs: 0.0322, 0.0319, 0.0317\nInvalid: 0.0307\nDt: 2026-11-25 15:42:10\n\n 1h\nSAND/USD | Price: 0.0332\nHitrate: 64.6%\n\ud83d\udd34 Short 0.0334 - 0.0331\nTPs: 0.0322, 0.0319, 0.0317\nInvalid: 0.0307\nDt: 2026-11-25 15:42:08\n\n 4h\nUNI/USD | Price: 4.695\nHitrate: 55%\n\ud83d\udfe2 Long 5.3578 - 5.0818\nTPs: 7.2053, 7.7759, 8.3466\nInvalid: 10.194\nDt: 2026-09-27 08:31:06\n\nXRP/USD | Price: 0.9502\nHitrate: 65.8%\n\ud83d\udfe2 Long 0.9931 - 0.981\nTPs: 1.2364, 1.3115, 1.3867\nInvalid: 1.63\nDt: 2026-09-25 16:00:06\n\n 1d\nHYPE/USD | Price: 61.114\nHitrate: 40%\n\ud83d\udfe2 Long 61.029 - 57.227\nTPs: 75.152, 79.514, 83.877\nInvalid: 97.999\nDt: 2026-09-25 00:09:04\n\nDOT/USD | Price: 0.664\nHitrate: 83.9%\n\ud83d\udfe2 Long 0.702 - 0.668\nTPs: 0.983, 1.07, 1.157\nInvalid: 1.438\nDt: 2026-05-14 00:42:03\n\nJTO/USD | Price: 0.2346\nHitrate: 93.8%\n\ud83d\udfe2 Long 0.27758 - 0.261\nTPs: 0.43016, 0.47729, 0.52442\nInvalid: 0.677\nDt: 2026-08-23 00:36:04\n\nHBAR/USD | Price: 0.05322\nHitrate: 64%\n\ud83d\udfe2 Long 0.06236 - 0.05437\nTPs: 0.11444, 0.13053, 0.14661\nInvalid: 0.19869\nDt: 2025-11-11 00:06:04\n\nBONK/USD | Price: 0.000002182\nHitrate: 64%\n\ud83d\udfe2 Long 0.0000022383 - 0.0000021656\nTPs: 0.0000029426, 0.0000031602, 0.0000033777\nInvalid: 0.000004082\nDt: 2026-10-06 00:40:04\n\nBONK/USD | Price: 0.000002182\nHitrate: 64%\n\ud83d\udfe2 Long 0.0000019953 - 0.0000018973\nTPs: 0.0000025189, 0.0000026806, 0.0000028424\nInvalid: 0.000003366\nDt: 2026-10-24 00:30:04",
+ "pair_views": {
+  "T:UNIUSDT (1)": {
+   "text": "T:UNIUSDT 15m | Price: 4.695\nHitrate: 75.6%\n\n\ud83d\udfe2 Long 4.6699 - 4.6659\nTPs: 4.7399, 4.7615, 4.7831\nInvalid: 4.853\nDt: 2026-11-26 00:56:10\n\nT:UNIUSDT 1h | Price: 4.695\nHitrate: 68.6%\n\n\ud83d\udfe2 Long 3.904 - 3.877\nTPs: 4.2665, 4.3785, 4.4905\nInvalid: 4.853\nDt: 2026-11-26 01:39:09\n\nT:UNIUSDT 4h | Price: 4.695\nHitrate: 55%\n\n\ud83d\udfe2 Long 5.3578 - 5.0818\nTPs: 7.2053, 7.7759, 8.3466\nInvalid: 10.194\nDt: 2026-09-27 08:31:06\n\n\ud83d\udfe2 Long 3.904 - 3.877\nTPs: 4.2665, 4.3785, 4.4905\nInvalid: 4.853\nDt: 2026-11-26 04:31:06",
+   "captured_at": "2026-11-26 00:09:37",
+   "prev_captured_at": "2026-11-25 18:14:22",
+   "stale_ladders": [
+    "4h Long 5.0818-5.3578: Dt 2026-09-27 08:31:06 UTC is before the previous read of this pair view (5.9h earlier); age 1438.6h"
+   ]
+  },
+  "SHIB/USD (1)": {
+   "text": "SHIB/USD 15m | Price: 0.00000361\nHitrate: 70.4%\n\n\ud83d\udfe2 Long 0.00000359 - 0.00000359\nTPs: 0.00000362, 0.00000363, 0.00000364\nInvalid: 0.00000367\nDt: 2026-11-26 04:01:11",
+   "captured_at": "2026-11-26 00:10:02",
+   "prev_captured_at": "2026-11-24 12:08:21",
+   "stale_ladders": []
+  },
+  "ADA/USD (1)": {
+   "text": "ADA/USD 1h | Price: 0.1479\nHitrate: 62.1%\n\n\ud83d\udfe2 Long 0.1204 - 0.1177\nTPs: 0.1317, 0.1352, 0.1387\nInvalid: 0.15\nDt: 2026-11-26 06:16:08",
+   "captured_at": "2026-11-26 00:10:04",
+   "prev_captured_at": "2026-11-25 06:09:06",
+   "stale_ladders": []
+  },
+  "WIF/USD (2)": {
+   "text": "WIF/USD 15m | Price: 0.131\nHitrate: 65.9%\n\n\ud83d\udfe2 Long 0.12715 - 0.12666\nTPs: 0.12962, 0.13038, 0.13114\nInvalid: 0.1336\nDt: 2026-11-26 05:11:10\n\nWIF/USD 4h | Price: 0.131\nHitrate: 67.3%\n\n\ud83d\udd34 Short 0.14597 - 0.14365\nTPs: 0.13267, 0.12927, 0.12588\nInvalid: 0.1149\nDt: 2026-11-25 16:17:06",
+   "captured_at": "2026-11-26 00:10:05",
+   "prev_captured_at": "2026-11-25 06:09:16",
+   "stale_ladders": []
+  },
+  "W/USD (4)": {
+   "text": "W/USD 1h | Price: 0.0086394078\nHitrate: 64.8%\n\n\ud83d\udfe2 Long 0.0068057317 - 0.0065890759\nTPs: 0.0075114471, 0.007729443, 0.0079474388\nInvalid: 0.0086531543\nDt: 2026-11-26 06:39:08\n\nW/USD 4h | Price: 0.0086394078\nHitrate: 64.4%\n\n\ud83d\udd34 Short 0.009686228 - 0.0095640394\nTPs: 0.008676739, 0.0084026514, 0.0081285638\nInvalid: 0.0072412634\nDt: 2026-11-21 04:04:06\n\n\ud83d\udd34 Short 0.0106363248 - 0.0103512891\nTPs: 0.0091632593, 0.0087962762, 0.0084292932\nInvalid: 0.0072412634\nDt: 2026-11-21 04:04:06\n\n\ud83d\udd34 Short 0.0110855473 - 0.0106363248\nTPs: 0.0093394113, 0.0089387941, 0.0085381768\nInvalid: 0.0072412634\nDt: 2026-11-21 04:04:06",
+   "captured_at": "2026-11-26 00:10:06",
+   "prev_captured_at": "2026-11-25 12:10:45",
+   "stale_ladders": [
+    "4h Short 0.0095640394-0.009686228: Dt 2026-11-21 04:04:06 UTC is before the previous read of this pair view (12.0h earlier); age 123.1h",
+    "4h Short 0.0103512891-0.0106363248: Dt 2026-11-21 04:04:06 UTC is before the previous read of this pair view (12.0h earlier); age 123.1h",
+    "4h Short 0.0106363248-0.0110855473: Dt 2026-11-21 04:04:06 UTC is before the previous read of this pair view (12.0h earlier); age 123.1h"
+   ]
+  },
+  "FART/USD (4)": {
+   "text": "FART/USD 1h | Price: 0.08077\nHitrate: 71.9%\n\n\ud83d\udfe2 Long 0.06796 - 0.06595\nTPs: 0.07369, 0.07546, 0.07723\nInvalid: 0.08296\nDt: 2026-11-26 01:13:07\n\n\ud83d\udd34 Short 0.09287 - 0.09129\nTPs: 0.08518, 0.0833, 0.08141\nInvalid: 0.07531\nDt: 2026-11-25 14:28:07\n\nFART/USD 4h | Price: 0.08077\nHitrate: 79.4%\n\n\ud83d\udfe2 Long 0.06796 - 0.06595\nTPs: 0.07369, 0.07546, 0.07723\nInvalid: 0.08296\nDt: 2026-11-26 04:05:06\n\n\ud83d\udd34 Short 0.09201 - 0.09132\nTPs: 0.08488, 0.08289, 0.0809\nInvalid: 0.07445\nDt: 2026-11-25 16:37:06",
+   "captured_at": "2026-11-26 00:10:08",
+   "prev_captured_at": "2026-11-25 12:10:47",
+   "stale_ladders": [
+    "1h Short 0.09129-0.09287: Dt 2026-11-25 14:28:07 UTC is before the previous read of this pair view (12.0h earlier); age 16.7h",
+    "4h Short 0.09132-0.09201: Dt 2026-11-25 16:37:06 UTC is before the previous read of this pair view (12.0h earlier); age 14.6h"
+   ]
+  },
+  "BNB/USD (1)": {
+   "text": "BNB/USD 4h | Price: 555.22\nHitrate: 78.2%\n\n\ud83d\udd34 Short 632.83 - 624.93\nTPs: 587.31, 575.68, 564.06\nInvalid: 526.43\nDt: 2026-11-25 16:28:06",
+   "captured_at": "2026-11-26 00:10:09",
+   "prev_captured_at": "2026-11-25 12:10:48",
+   "stale_ladders": [
+    "4h Short 624.93-632.83: Dt 2026-11-25 16:28:06 UTC is before the previous read of this pair view (12.0h earlier); age 14.7h"
+   ]
+  },
+  "ETH/USD (1)": {
+   "text": "ETH/USD 1d | Price: 1686.51\nHitrate: 67.5%\n\n\ud83d\udd34 Short 3424.65 - 3186.72\nTPs: 2544.44, 2346.03, 2147.63\nInvalid: 1505.35\nDt: 2026-06-07 00:34:04",
+   "captured_at": "2026-11-26 00:10:11",
+   "prev_captured_at": "2026-11-25 12:10:50",
+   "stale_ladders": [
+    "1d Short 3186.72-3424.65: Dt 2026-06-07 00:34:04 UTC is before the previous read of this pair view (12.0h earlier); age 4134.6h"
+   ]
+  },
+  "HBAR/USD (4)": {
+   "text": "HBAR/USD 4h | Price: 0.05322\nHitrate: 64.4%\n\n\ud83d\udd34 Short 0.05761 - 0.05701\nTPs: 0.05379, 0.0528, 0.05181\nInvalid: 0.04859\nDt: 2026-11-25 16:09:07\n\n\ud83d\udd34 Short 0.06234 - 0.0615\nTPs: 0.05657, 0.05505, 0.05352\nInvalid: 0.04859\nDt: 2026-11-25 16:09:07\n\n\ud83d\udd34 Short 0.07365 - 0.07084\nTPs: 0.06234, 0.05972, 0.05709\nInvalid: 0.04859\nDt: 2026-11-25 16:09:07\n\nHBAR/USD 1d | Price: 0.05322\nHitrate: 64%\n\n\ud83d\udfe2 Long 0.06236 - 0.05437\nTPs: 0.11444, 0.13053, 0.14661\nInvalid: 0.19869\nDt: 2025-11-11 00:06:04",
+   "captured_at": "2026-11-26 00:10:12",
+   "prev_captured_at": "2026-11-25 12:10:51",
+   "stale_ladders": [
+    "4h Short 0.05701-0.05761: Dt 2026-11-25 16:09:07 UTC is before the previous read of this pair view (12.0h earlier); age 15.0h",
+    "4h Short 0.0615-0.06234: Dt 2026-11-25 16:09:07 UTC is before the previous read of this pair view (12.0h earlier); age 15.0h",
+    "4h Short 0.07084-0.07365: Dt 2026-11-25 16:09:07 UTC is before the previous read of this pair view (12.0h earlier); age 15.0h",
+    "1d Long 0.05437-0.06236: Dt 2025-11-11 00:06:04 UTC is before the previous read of this pair view (12.0h earlier); age 9127.1h"
+   ]
+  },
+  "HYPE/USD (3)": {
+   "text": "HYPE/USD 15m | Price: 61.114\nHitrate: 69.5%\n\n\ud83d\udfe2 Long 60.557 - 60.507\nTPs: 61.149, 61.331, 61.514\nInvalid: 62.106\nDt: 2026-11-26 06:13:09\n\nHYPE/USD 1h | Price: 61.114\nHitrate: 71%\n\n\ud83d\udfe2 Long 47.551 - 47.108\nTPs: 53.444, 55.264, 57.084\nInvalid: 62.976\nDt: 2026-11-26 02:38:08\n\nHYPE/USD 1d | Price: 61.114\nHitrate: 40%\n\n\ud83d\udfe2 Long 61.029 - 57.227\nTPs: 75.152, 79.514, 83.877\nInvalid: 97.999\nDt: 2026-09-25 00:09:04",
+   "captured_at": "2026-11-26 00:10:13",
+   "prev_captured_at": "2026-11-25 12:10:53",
+   "stale_ladders": [
+    "1d Long 57.227-61.029: Dt 2026-09-25 00:09:04 UTC is before the previous read of this pair view (12.0h earlier); age 1495.0h"
+   ]
+  },
+  "INJ/USD (6)": {
+   "text": "INJ/USD 15m | Price: 6.153\nHitrate: 63.7%\n\n\ud83d\udfe2 Long 5.92788 - 5.92344\nTPs: 6.02801, 6.05894, 6.08987\nInvalid: 6.19\nDt: 2026-11-26 05:50:10\n\n\ud83d\udfe2 Long 5.84089 - 5.81634\nTPs: 5.97425, 6.01544, 6.05664\nInvalid: 6.19\nDt: 2026-11-26 05:50:10\n\nINJ/USD 4h | Price: 6.153\nHitrate: 67.2%\n\n\ud83d\udd34 Short 7.35323 - 7.22401\nTPs: 6.58645, 6.3895, 6.19256\nInvalid: 5.555\nDt: 2026-11-25 16:13:06\n\n\ud83d\udd34 Short 8.213 - 7.94479\nTPs: 7.03189, 6.74989, 6.4679\nInvalid: 5.555\nDt: 2026-11-25 16:13:06\n\nINJ/USD 1d | Price: 6.153\nHitrate: 69%\n\n\ud83d\udfe2 Long 5.16338 - 5.00729\nTPs: 6.79246, 7.29569, 7.79891\nInvalid: 9.428\nDt: 2026-10-17 00:00:04\n\n\ud83d\udfe2 Long 4.54811 - 4.11302\nTPs: 6.41223, 6.98806, 7.56388\nInvalid: 9.428\nDt: 2026-10-17 00:00:04",
+   "captured_at": "2026-11-26 00:10:32",
+   "prev_captured_at": "2026-11-25 12:10:54",
+   "stale_ladders": [
+    "4h Short 7.22401-7.35323: Dt 2026-11-25 16:13:06 UTC is before the previous read of this pair view (12.0h earlier); age 15.0h",
+    "4h Short 7.94479-8.213: Dt 2026-11-25 16:13:06 UTC is before the previous read of this pair view (12.0h earlier); age 15.0h",
+    "1d Long 5.00729-5.16338: Dt 2026-10-17 00:00:04 UTC is before the previous read of this pair view (12.0h earlier); age 967.2h",
+    "1d Long 4.11302-4.54811: Dt 2026-10-17 00:00:04 UTC is before the previous read of this pair view (12.0h earlier); age 967.2h"
+   ]
+  }
+ },
+ "notes": [
+  "Script run (thor_check.mjs --live) started 2026-11-26 00:09:30; /start sent once at 2026-11-26 00:09:30; THOR menu read 2026-11-26 00:09:33, All active read 2026-11-26 00:09:35 (mode new).",
+  "open_always: T:UNIUSDT, T:MORPHOUSDT. open_rotation (10): SHIB/USD, ADA/USD, WIF/USD, W/USD, FART/USD, BNB/USD, ETH/USD, HBAR/USD, HYPE/USD, INJ/USD. skipped: DOGE/USD, LTC/USD, SOL/BTC.",
+  "All active: 10 signals. Vs 18:14: no change.",
+  "Menu vs 18:14: W/USD 3->4, FART/USD 3->4, ADA/USD 0->1, AVAX/USD 2->4, DOT/USD 2->3, HYPE/USD 1->3, INJ/USD 4->6, JTO/USD 2->3, LTC/USD 1->0, SHIB/USD 0->1, SOL/BTC 4->6, SOL/USD 4->6, SUI/USD 3->4, WIF/USD 1->2.",
+  "No Ask Thor used. Only /start, THOR, All active and pair buttons tapped (code allow-list); Hyperliquid/Trade, Alert, Mute and Cancel untouched.",
+  "Ladder filter: 17 of 31 pair-view ladder(s) are old history (own Dt before the previous read of that pair, or older than max age {'15m': 12, '1h': 24, '4h': 48, '1d': 48}); the engine skips them (T:UNIUSDT 1, W/USD 3, FART/USD 2, BNB/USD 1, ETH/USD 1, HBAR/USD 4, HYPE/USD 1, INJ/USD 4).",
+  "no reply for T:MORPHOUSDT (1) (timeout)"
+ ],
+ "taps": {
+  "text_messages_sent": [
+   "/start"
+  ],
+  "button_taps": [
+   "THOR",
+   "All active",
+   "pair T:UNIUSDT (1)",
+   "pair T:MORPHOUSDT (1)",
+   "pair SHIB/USD (1)",
+   "pair ADA/USD (1)",
+   "pair WIF/USD (2)",
+   "pair W/USD (4)",
+   "pair FART/USD (4)",
+   "pair BNB/USD (1)",
+   "pair ETH/USD (1)",
+   "pair HBAR/USD (4)",
+   "pair HYPE/USD (3)",
+   "pair INJ/USD (6)"
+  ],
+  "button_tap_count": 14,
+  "cancel_tapped": false
+ }
+}

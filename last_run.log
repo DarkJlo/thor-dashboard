@@ -1,0 +1,10 @@
+2026-11-28 05:54:19 check_2026-11-28T0012.json: 50 old ladder(s) skipped (stale_history), e.g. T:ICPUSDT (1) 15m Long 1.941-1.949: Dt 2026-11-27 14:17:10 UTC is before the previous read of this pair view (6.0h earlier); age 16.9h
+2026-11-28 05:54:19 dedup: BONK/USD|1d|Long|2.1656e-06|2.2383e-06|2.9426e-06|3.1602e-06|3.3777e-06 is the same signal as BONK/USD|1d|Long|2.1656|2.2383|2.9426|3.1602|3.3777
+2026-11-28 05:54:19 suspect signal W/USD 15m Long entry mid 0.00827641 is -6.6% from HL mid 0.00886 (limit 5% for 15m)
+2026-11-28 05:54:19 suspect signal W/USD 1h Long entry mid 0.00827641 is -6.6% from HL mid 0.00886 (limit 5% for 1h)
+2026-11-28 05:54:19 suspect signal FART/USD 15m Short entry mid 0.082215 is +5.5% from HL mid 0.07796 (limit 5% for 15m)
+2026-11-28 05:54:19 suspect signal FART/USD 15m Short entry mid 0.08396 is +7.7% from HL mid 0.07796 (limit 5% for 15m)
+2026-11-28 05:54:19 suspect signal FART/USD 1h Short entry mid 0.082215 is +5.5% from HL mid 0.07796 (limit 5% for 1h)
+2026-11-28 05:54:19 suspect signal FART/USD 1h Short entry mid 0.08396 is +7.7% from HL mid 0.07796 (limit 5% for 1h)
+2026-11-28 05:54:59 cycle {'ts': '2026-11-28 05:54:59', 'epoch': 1795870499, 'new_signals': 18, 'status': {'cancelled': 1513, 'closed': 673, 'duplicate': 5, 'filled': 6, 'pending': 26, 'stale_history': 43, 'suspect': 1277}, 'still_enterable': 0, 'sources': {'ADA/USD': 'hyperliquid', 'ARB/USD': 'hyperliquid', 'AVAX/USD': 'hyperliquid', 'BNB/USD': 'hyperliquid', 'BONK/USD': 'hyperliquid', 'BTC/USD': 'hyperliquid', 'ETH/USD': 'hyperliquid', 'FART/USD': 'hyperliquid', 'HBAR/USD': 'hyperliquid', 'HYPE/USD': 'hyperliquid', 'JUP/USD': 'hyperliquid', 'LIT/USD': 'hyperliquid', 'SAND/USD': 'hyperliquid', 'SHIB/USD': 'hyperliquid', 'SOL/USD': 'hyperliquid', 'SUI/USD': 'hyperliquid', 'T:ENAUSDT': 'hyperliquid', 'T:ICPUSDT': 'hyperliquid', 'WIF/USD': 'hyperliquid'}, 'frozen': {}, 'mark_rejected': {}, 'inbox': {'check_2026-11-28T0012.json': {'ok': True, 'error': None, 'new': 18, 'rejected': 0, 'warnings': 3, 'stale': 50}}}
+cycle_seconds=41
